@@ -35,7 +35,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "ipywidgets>=8.0.0",
+    "ipywidgets>=7.7.1",
     "simplejson >=3.19.0",
     "anywidget >= 0.9.6"
 ]
