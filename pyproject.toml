@@ -1,0 +1,103 @@
+[build-system]
+requires = [
+    "hatchling>=1.21.1",
+    "jupyterlab>=4.0.0,<5",
+    "hatch-nodejs-version>=0.3.2",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "d3vis_ipynb"
+description = "A Custom Jupyter Widget Library with visualizations created with D3.js."
+readme = "README.md"
+license = { file = "LICENSE.txt" }
+requires-python = ">=3.9"
+authors = [
+    { name = "Daniel Adam Miranda", email = "daniel.miranda@eldorado.org.br" },
+]
+keywords = [
+    "IPython",
+    "Jupyter",
+    "Widgets",
+]
+classifiers = [
+    "Framework :: Jupyter",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "ipywidgets>=8.0.0",
+    "simplejson >=3.19.0",
+    "anywidget >= 0.9.6"
+]
+version = "0.1.0.dev0"
+
+[project.optional-dependencies]
+docs = [
+    "jupyter_sphinx",
+    "nbsphinx",
+    "nbsphinx-link",
+    "pypandoc",
+    "pytest_check_links",
+    "recommonmark",
+    "sphinx>=1.5",
+    "sphinx_rtd_theme",
+]
+examples = []
+test = [
+    "nbval",
+    "pytest-cov",
+    "pytest>=6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/H-IAAC/d3vis_ipynb"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build]
+artifacts = [
+    "d3vis_ipynb/nbextension/index.*",
+    "d3vis_ipynb/labextension/*.tgz",
+    "d3vis_ipynb/labextension",
+]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"d3vis_ipynb/nbextension" = "share/jupyter/nbextensions/d3vis_ipynb"
+"d3vis_ipynb/labextension" = "share/jupyter/labextensions/d3vis_ipynb"
+"./install.json" = "share/jupyter/labextensions/d3vis_ipynb/install.json"
+"./d3vis_ipynb.json" = "etc/jupyter/nbconfig/notebook.d/d3vis_ipynb.json"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    ".github",
+]
+
+[tool.hatch.build.hooks.jupyter-builder]
+build-function = "hatch_jupyter_builder.npm_builder"
+ensured-targets = [
+    "d3vis_ipynb/nbextension/index.js",
+    "d3vis_ipynb/labextension/package.json",
+]
+skip-if-exists = [
+    "d3vis_ipynb/nbextension/index.js",
+    "d3vis_ipynb/labextension/package.json",
+]
+dependencies = [
+    "hatch-jupyter-builder>=0.8.3",
+]
+
+[tool.hatch.build.hooks.jupyter-builder.build-kwargs]
+path = "js/"
+build_cmd = "build:prod"
+npm = ["npm"]

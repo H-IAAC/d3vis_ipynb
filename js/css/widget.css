@@ -1,0 +1,36 @@
+/***** BASIC *****/
+.basic .dashboard-div {
+  border: 1px solid black;
+  text-align: center;
+}
+
+/***** DARK *****/
+.dark .dashboard-div {
+  margin: 2px;
+  border-radius: 10px;
+  background-color: #262626;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/***** GLASSMORPHISM *****/
+.glassmorphism .dashboard-div {
+  margin: 5px;
+  border-radius: 10px;
+  background: rgb(255, 254, 254);
+  border: 1px solid rgb(255, 255, 255);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/***** NEUMORPHISM *****/
+.neumorphism .dashboard-div {
+  margin: 10px;
+  border-radius: 15px;
+  background-color: #e0e0e0;
+  box-shadow: 5px 5px 10px #bebebe, -5px -5px 10px #ffffff;
+}
+
+/***** MINIMALISM *****/
+.minimalism .dashboard-div {
+  margin-bottom: 5px;
+}

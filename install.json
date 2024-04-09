@@ -1,0 +1,5 @@
+{
+  "packageManager": "python",
+  "packageName": "d3vis_ipynb",
+  "uninstallInstructions": "Use your Python package manager (pip, conda, etc.) to uninstall the package d3vis_ipynb"
+}

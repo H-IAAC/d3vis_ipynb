@@ -1,0 +1,5 @@
+{
+  "load_extensions": {
+    "d3vis_ipynb/extension": true
+  }
+}
