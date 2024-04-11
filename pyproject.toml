@@ -39,7 +39,7 @@ dependencies = [
     "simplejson >=3.19.0",
     "anywidget >= 0.9.6"
 ]
-version = "0.1.0.dev0"
+version = "0.1.1"
 
 [project.optional-dependencies]
 docs = [

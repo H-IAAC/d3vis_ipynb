@@ -4,6 +4,8 @@ dist/
 build/
 *.py[cod]
 node_modules/
+examples/
+venv/
 
 # Compiled javascript
 d3vis_ipynb/nbextension/

@@ -6,7 +6,7 @@ A Custom Jupyter Widget Library with visualizations created with D3.js.
 
 To install use pip:
 
-    $ pip install d3vis_ipynb
+    $ pip install d3vis-ipynb
 
 For a development installation (requires [Node.js](https://nodejs.org) and [Yarn version 1](https://classic.yarnpkg.com/)),
 
