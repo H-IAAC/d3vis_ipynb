@@ -9,6 +9,7 @@ export function histogramplot(data, x_axis, xStart, xEnd, element, that) {
     customHeight = element.clientHeight;
   } else {
     element = that.el;
+    customWidth = element.clientWidth
   }
   d3.select(element).selectAll("*").remove();
 

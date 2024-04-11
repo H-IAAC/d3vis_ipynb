@@ -34,11 +34,14 @@ export class LinearHistPlotModel extends DOMWidgetModel {
 }
 
 export class LinearHistPlotView extends DOMWidgetView {
+  timeout;
+
   render() {
     this.value_changed();
 
     // Observe and act on future changes to the value attribute
     this.model.on("change:linearData_x", this.value_changed, this);
+    window.addEventListener("resize", this.value_changed.bind(this));
   }
 
   value_changed() {
@@ -49,7 +52,10 @@ export class LinearHistPlotView extends DOMWidgetView {
     var histogramData = this.model.get("histogramData");
     var element = this.model.get("element");
 
-    setTimeout(() => {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    this.timeout = setTimeout(() => {
       linearhistplot(
         linearData_x,
         linearData_y,
@@ -58,7 +64,7 @@ export class LinearHistPlotView extends DOMWidgetView {
         this.setValue,
         that
       );
-    }, 50);
+    }, 100);
   }
 
   setValue(text, that) {
@@ -97,11 +103,14 @@ export class ScatterPlotModel extends DOMWidgetModel {
 }
 
 export class ScatterPlotView extends DOMWidgetView {
+  timeout;
+
   render() {
     this.value_changed();
 
     // Observe and act on future changes to the value attribute
     this.model.on("change:data", this.value_changed, this);
+    window.addEventListener("resize", this.value_changed.bind(this));
   }
 
   value_changed() {
@@ -113,7 +122,10 @@ export class ScatterPlotView extends DOMWidgetView {
     var hue = this.model.get("hue");
     var element = this.model.get("element");
 
-    setTimeout(() => {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    this.timeout = setTimeout(() => {
       scatterplot(
         data,
         x,
@@ -124,7 +136,7 @@ export class ScatterPlotView extends DOMWidgetView {
         this.setSelectedValues,
         that
       );
-    }, 50);
+    }, 100);
   }
 
   setValue(text, that) {
@@ -166,11 +178,14 @@ export class BarPlotModel extends DOMWidgetModel {
 }
 
 export class BarPlotView extends DOMWidgetView {
+  timeout;
+
   render() {
     this.value_changed();
 
     // Observe and act on future changes to the value attribute
     this.model.on("change:data", this.value_changed, this);
+    window.addEventListener("resize", this.value_changed.bind(this));
   }
 
   value_changed() {
@@ -182,9 +197,12 @@ export class BarPlotView extends DOMWidgetView {
     var hue = this.model.get("hue");
     var element = this.model.get("element");
 
-    setTimeout(() => {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    this.timeout = setTimeout(() => {
       barplot(data, x, y, hue, element, that);
-    }, 50);
+    }, 100);
   }
 }
 
@@ -216,11 +234,14 @@ export class HistogramPlotModel extends DOMWidgetModel {
 }
 
 export class HistogramPlotView extends DOMWidgetView {
+  timeout;
+
   render() {
     this.value_changed();
 
     // Observe and act on future changes to the value attribute
     this.model.on("change:data", this.value_changed, this);
+    window.addEventListener("resize", this.value_changed.bind(this));
   }
 
   value_changed() {
@@ -232,9 +253,12 @@ export class HistogramPlotView extends DOMWidgetView {
     var end = this.model.get("end");
     var element = this.model.get("element");
 
-    setTimeout(() => {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    this.timeout = setTimeout(() => {
       histogramplot(data, x, start, end, element, that);
-    }, 50);
+    }, 100);
   }
 }
 
@@ -267,9 +291,6 @@ export class EmbeddingModel extends DOMWidgetModel {
 export class EmbeddingView extends DOMWidgetView {
   render() {
     this.value_changed();
-
-    // Observe and act on future changes to the value attribute
-    this.model.on("change:data", this.value_changed, this);
   }
 
   value_changed() {
@@ -280,13 +301,13 @@ export class EmbeddingView extends DOMWidgetView {
     var grid_template_areas = this.model.get("grid_template_areas");
     var style = this.model.get("style");
 
-    if(!style ){
-      style="basic"
+    if (!style) {
+      style = "basic";
     }
 
     const node = document.createElement("div");
 
-    node.classList.add(style)
+    node.classList.add(style);
     node.style.display = "grid";
     node.style.gridTemplateAreas = grid_template_areas;
     node.style.gridTemplateRows = "repeat(" + matrix.length + ", 20vh)";
@@ -297,7 +318,7 @@ export class EmbeddingView extends DOMWidgetView {
       const grid_area = document.createElement("div");
       grid_area.setAttribute("id", area);
       grid_area.style.gridArea = area;
-      grid_area.classList.add("dashboard-div")
+      grid_area.classList.add("dashboard-div");
       node.appendChild(grid_area);
     });
 
