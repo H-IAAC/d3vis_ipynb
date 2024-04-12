@@ -21,18 +21,40 @@ class WebWidget(anywidget.AnyWidget):
 
         function render({{ model, el }} ) {{
             {jsUrlStr}
+            
+            let timeout;
 
-            function value_changed() {{
+            function plotAfterInterval() {{
+                if (timeout) {{
+                    clearTimeout(timeout);
+                }}
+                timeout = setTimeout(() => {{
+                    plot(model, el);
+                }}, 100);
+            }}
+        
+            function plot() {{
                 {modelVars}
-
-                setTimeout(() => {{
-                    {widgetCall};
-                }}, 50);
+                
+                let height = 400;
+                let element = el;
+                if (elementId) {{
+                element = document.getElementById(elementId);
+                height = element.clientHeight;
+                }}
+                let width = element.clientWidth;
+                const margin = {{ top: 20, right: 20, bottom: 30, left: 40 }};
+                
+                {widgetCall};
             }}
 
-            value_changed();
-            model.on("change:data", value_changed);
+            plotAfterInterval();
+            
+            model.on("change:data", plotAfterInterval);
+            window.addEventListener("resize", () => plotAfterInterval(this).bind(this));
         }}
+        
+        
 
         export default {{ render }};
         """.format(
