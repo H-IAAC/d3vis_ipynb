@@ -9,7 +9,7 @@ function plot_linearhistplot(
   linearData_x,
   linearData_y,
   histogramData,
-  element,
+  elementId,
   setValue
 ) {
   setTimeout(() => {
@@ -17,7 +17,7 @@ function plot_linearhistplot(
       linearData_x,
       linearData_y,
       histogramData,
-      element,
+      elementId,
       setValue
     );
   }, 50);
@@ -28,24 +28,24 @@ function plot_scatterplot(
   x,
   y,
   hue,
-  element,
+  elementId,
   setValue,
   setSelectedValues
 ) {
   setTimeout(() => {
-    scatterplot(data, x, y, hue, element, setValue, setSelectedValues);
+    scatterplot(data, x, y, hue, elementId, setValue, setSelectedValues);
   }, 50);
 }
 
-function plot_barplot(data, x, y, hue, element) {
+function plot_barplot(data, x, y, hue, elementId) {
   setTimeout(() => {
-    barplot(data, x, y, hue, element);
+    barplot(data, x, y, hue, elementId);
   }, 50);
 }
 
-function plot_histogramplot(data, x, start, end, element) {
+function plot_histogramplot(data, x, start, end, elementId) {
   setTimeout(() => {
-    histogramplot(data, x, start, end, element);
+    histogramplot(data, x, start, end, elementId);
   }, 50);
 }
 
@@ -123,7 +123,7 @@ function main() {
       linearhistplot_data.linearData_x,
       linearhistplot_data.linearData_y,
       linearhistplot_data.histogramData,
-      linearhistplot_data.element,
+      linearhistplot_data.elementId,
       linearhistplot_data.setValue
     );
   let plot_scatterplot_data = () =>
@@ -132,7 +132,7 @@ function main() {
       scatterplot_data.x,
       scatterplot_data.y,
       scatterplot_data.hue,
-      scatterplot_data.element,
+      scatterplot_data.elementId,
       scatterplot_data.setValue,
       scatterplot_data.setSelectedValues
     );
@@ -142,7 +142,7 @@ function main() {
       barplot_data.x,
       barplot_data.y,
       barplot_data.hue,
-      barplot_data.element
+      barplot_data.elementId
     );
   let plot_histogramplot_data = () =>
     plot_histogramplot(
@@ -150,7 +150,7 @@ function main() {
       histogramplot_data.x,
       histogramplot_data.start,
       histogramplot_data.end,
-      histogramplot_data.element
+      histogramplot_data.elementId
     );
 
   const widgets = data.widgets;
@@ -160,7 +160,7 @@ function main() {
     linearhistplot_data.linearData_x = widget_data.linearData_x;
     linearhistplot_data.linearData_y = widget_data.linearData_y;
     linearhistplot_data.histogramData = widget_data.histogramData;
-    linearhistplot_data.element = widget_data.element;
+    linearhistplot_data.elementId = widget_data.elementId;
     linearhistplot_data.observing = widget_data.observing;
     linearhistplot_data.plot = plot_linearhistplot_data;
   }
@@ -170,7 +170,7 @@ function main() {
     scatterplot_data.x = widget_data.x;
     scatterplot_data.y = widget_data.y;
     scatterplot_data.hue = widget_data.hue;
-    scatterplot_data.element = widget_data.element;
+    scatterplot_data.elementId = widget_data.elementId;
     scatterplot_data.observing = widget_data.observing;
     scatterplot_data.plot = plot_scatterplot_data;
   }
@@ -180,7 +180,7 @@ function main() {
     barplot_data.x = widget_data.x;
     barplot_data.y = widget_data.y;
     barplot_data.hue = widget_data.hue;
-    barplot_data.element = widget_data.element;
+    barplot_data.elementId = widget_data.elementId;
     barplot_data.observing = widget_data.observing;
     barplot_data.plot = plot_barplot_data;
     check_for_observers(barplot_data);
@@ -191,7 +191,7 @@ function main() {
     histogramplot_data.x = widget_data.x;
     histogramplot_data.y = widget_data.start;
     histogramplot_data.hue = widget_data.end;
-    histogramplot_data.element = widget_data.element;
+    histogramplot_data.elementId = widget_data.elementId;
     histogramplot_data.observing = widget_data.observing;
     histogramplot_data.plot = plot_histogramplot_data;
   }

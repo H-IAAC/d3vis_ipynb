@@ -1,21 +1,19 @@
 import * as d3 from "d3";
 
-export function histogramplot(data, x_axis, xStart, xEnd, element, that) {
-  var customHeight = 375;
-  var customWidth = 720;
-  if (element) {
-    element = document.getElementById(element)
-    customWidth = element.clientWidth;
-    customHeight = element.clientHeight;
-  } else {
-    element = that.el;
-    customWidth = element.clientWidth
-  }
-  d3.select(element).selectAll("*").remove();
+export function histogramplot(
+  data,
+  x_axis,
+  xStart,
+  xEnd,
+  element,
+  width,
+  height,
+  margin
+) {
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
 
-  const margin = { top: 20, right: 20, bottom: 30, left: 40 };
-  const width = customWidth - margin.left - margin.right;
-  const height = customHeight - margin.top - margin.bottom;
+  d3.select(element).selectAll("*").remove();
 
   let xMin = xStart;
   if (!xStart) {
@@ -26,9 +24,9 @@ export function histogramplot(data, x_axis, xStart, xEnd, element, that) {
     xMax = d3.max(data, (d) => d[x_axis]);
   }
 
-  const x = d3.scaleLinear().range([0, width]);
+  const x = d3.scaleLinear().range([0, innerWidth]);
 
-  const y = d3.scaleLinear().range([height, 0]);
+  const y = d3.scaleLinear().range([innerHeight, 0]);
 
   const xAxis = d3.axisBottom(x);
 
@@ -42,8 +40,8 @@ export function histogramplot(data, x_axis, xStart, xEnd, element, that) {
   const svg = d3
     .select(element)
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("width", width)
+    .attr("height", height)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -52,10 +50,10 @@ export function histogramplot(data, x_axis, xStart, xEnd, element, that) {
 
   svg
     .append("g")
-    .attr("transform", "translate(0," + height + ")")
+    .attr("transform", "translate(0," + innerHeight + ")")
     .call(xAxis)
     .append("text")
-    .attr("x", width)
+    .attr("x", innerWidth)
     .attr("y", -6)
     .style("text-anchor", "end");
 

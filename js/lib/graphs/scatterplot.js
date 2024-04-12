@@ -9,34 +9,26 @@ export function scatterplot(
   element,
   setValue,
   setSelectedValues,
-  that
+  width,
+  height,
+  margin
 ) {
-  for (let i = 0; i < data.length; i++) {
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
+  for (let i = 0; i < data.length; i++) {''
     data[i]["id"] = i;
   }
 
   var randomString = Math.floor(Math.random() * Date.now() * 10000).toString(
     36
   );
-  var customHeight = 375;
-  var customWidth = 720;
-  if (element) {
-    element = document.getElementById(element)
-    customWidth = element.clientWidth;
-    customHeight = element.clientHeight;
-  } else {
-    element = that.el;
-    customWidth = element.clientWidth
-  }
+
   d3.select(element).selectAll("*").remove();
 
-  const margin = { top: 20, right: 20, bottom: 30, left: 40 };
-  const width = customWidth - margin.left - margin.right;
-  const height = customHeight - margin.top - margin.bottom;
+  var x = d3.scaleLinear().range([0, innerWidth]);
 
-  var x = d3.scaleLinear().range([0, width]);
-
-  var y = d3.scaleLinear().range([height, 0]);
+  var y = d3.scaleLinear().range([innerHeight, 0]);
 
   var color = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -73,15 +65,15 @@ export function scatterplot(
       "y:" +
       Math.round(d[y_value] * 10) / 10;
     if (setValue !== undefined) {
-      setValue(text, that);
+      setValue(text);
     }
   }
 
   var svg = d3
     .select(element)
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("width", width)
+    .attr("height", height)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -99,11 +91,11 @@ export function scatterplot(
   svg
     .append("g")
     .attr("class", "x axis")
-    .attr("transform", "translate(0," + height + ")")
+    .attr("transform", "translate(0," + innerHeight + ")")
     .call(xAxis)
     .append("text")
     .attr("class", "label")
-    .attr("x", width)
+    .attr("x", innerWidth)
     .attr("y", -6)
     .style("text-anchor", "end");
 
@@ -153,7 +145,7 @@ export function scatterplot(
 
   function setLassoValues(values) {
     if (setSelectedValues !== undefined) {
-      setSelectedValues(values, that);
+      setSelectedValues(values);
     }
   }
 
@@ -182,14 +174,14 @@ export function scatterplot(
 
   legend
     .append("rect")
-    .attr("x", width - 18)
+    .attr("x", innerWidth - 18)
     .attr("width", 18)
     .attr("height", 18)
     .style("fill", color);
 
   legend
     .append("text")
-    .attr("x", width - 24)
+    .attr("x", innerWidth - 24)
     .attr("y", 9)
     .attr("dy", ".35em")
     .style("text-anchor", "end")

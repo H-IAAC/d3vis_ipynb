@@ -6,6 +6,19 @@ import { histogramplot } from "./graphs/histogramplot";
 import "../css/widget.css";
 const data = require("../package.json");
 
+const WIDGET_HEIGHT = 400;
+const WIDGET_MARGIN = { top: 20, right: 20, bottom: 30, left: 40 };
+const RENDER_INTERVAL = 100;
+
+function plotAfterInterval(that) {
+  if (that.timeout) {
+    clearTimeout(that.timeout);
+  }
+  that.timeout = setTimeout(() => {
+    that.plot();
+  }, RENDER_INTERVAL);
+}
+
 export class LinearHistPlotModel extends DOMWidgetModel {
   defaults() {
     return {
@@ -20,7 +33,7 @@ export class LinearHistPlotModel extends DOMWidgetModel {
       linearData_x: [],
       linearData_y: [],
       histogramData: [],
-      element: String,
+      elementId: String,
       clickedValue: String,
     };
   }
@@ -37,39 +50,42 @@ export class LinearHistPlotView extends DOMWidgetView {
   timeout;
 
   render() {
-    this.value_changed();
+    plotAfterInterval(this);
 
-    // Observe and act on future changes to the value attribute
-    this.model.on("change:linearData_x", this.value_changed, this);
-    window.addEventListener("resize", this.value_changed.bind(this));
+    this.model.on("change:linearData_x", () => plotAfterInterval(this), this);
+    window.addEventListener("resize", () => plotAfterInterval(this).bind(this));
   }
 
-  value_changed() {
-    let that = this;
-
+  plot() {
     var linearData_x = this.model.get("linearData_x");
     var linearData_y = this.model.get("linearData_y");
     var histogramData = this.model.get("histogramData");
-    var element = this.model.get("element");
+    var elementId = this.model.get("elementId");
 
-    if (this.timeout) {
-      clearTimeout(this.timeout);
+    let height = WIDGET_HEIGHT;
+    let element = this.el;
+    if (elementId) {
+      element = document.getElementById(elementId);
+      height = element.clientHeight;
     }
-    this.timeout = setTimeout(() => {
-      linearhistplot(
-        linearData_x,
-        linearData_y,
-        histogramData,
-        element,
-        this.setValue,
-        that
-      );
-    }, 100);
+    let width = element.clientWidth;
+    const margin = WIDGET_MARGIN;
+
+    linearhistplot(
+      linearData_x,
+      linearData_y,
+      histogramData,
+      element,
+      this.setValue.bind(this),
+      width,
+      height,
+      margin
+    );
   }
 
-  setValue(text, that) {
-    that.model.set({ clickedValue: text });
-    that.model.save_changes();
+  setValue(text) {
+    this.model.set({ clickedValue: text });
+    this.model.save_changes();
   }
 }
 
@@ -88,7 +104,7 @@ export class ScatterPlotModel extends DOMWidgetModel {
       x: String,
       y: String,
       hue: String,
-      element: String,
+      elementId: String,
       clickedValue: String,
       selectedValues: [],
     };
@@ -106,47 +122,50 @@ export class ScatterPlotView extends DOMWidgetView {
   timeout;
 
   render() {
-    this.value_changed();
+    plotAfterInterval(this);
 
-    // Observe and act on future changes to the value attribute
-    this.model.on("change:data", this.value_changed, this);
-    window.addEventListener("resize", this.value_changed.bind(this));
+    this.model.on("change:data", () => plotAfterInterval(this), this);
+    window.addEventListener("resize", () => plotAfterInterval(this).bind(this));
   }
 
-  value_changed() {
-    let that = this;
-
+  plot() {
     var data = this.model.get("data");
     var x = this.model.get("x");
     var y = this.model.get("y");
     var hue = this.model.get("hue");
-    var element = this.model.get("element");
+    var elementId = this.model.get("elementId");
 
-    if (this.timeout) {
-      clearTimeout(this.timeout);
+    let height = WIDGET_HEIGHT;
+    let element = this.el;
+    if (elementId) {
+      element = document.getElementById(elementId);
+      height = element.clientHeight;
     }
-    this.timeout = setTimeout(() => {
-      scatterplot(
-        data,
-        x,
-        y,
-        hue,
-        element,
-        this.setValue,
-        this.setSelectedValues,
-        that
-      );
-    }, 100);
+    let width = element.clientWidth;
+    const margin = WIDGET_MARGIN;
+
+    scatterplot(
+      data,
+      x,
+      y,
+      hue,
+      element,
+      this.setValue.bind(this),
+      this.setSelectedValues.bind(this),
+      width,
+      height,
+      margin
+    );
   }
 
-  setValue(text, that) {
-    that.model.set({ clickedValue: text });
-    that.model.save_changes();
+  setValue(text) {
+    this.model.set({ clickedValue: text });
+    this.model.save_changes();
   }
 
-  setSelectedValues(values, that) {
-    that.model.set({ selectedValues: values });
-    that.model.save_changes();
+  setSelectedValues(values) {
+    this.model.set({ selectedValues: values });
+    this.model.save_changes();
   }
 }
 
@@ -165,7 +184,7 @@ export class BarPlotModel extends DOMWidgetModel {
       x: String,
       y: String,
       hue: String,
-      element: String,
+      elementId: String,
     };
   }
 
@@ -181,28 +200,29 @@ export class BarPlotView extends DOMWidgetView {
   timeout;
 
   render() {
-    this.value_changed();
+    plotAfterInterval(this);
 
-    // Observe and act on future changes to the value attribute
-    this.model.on("change:data", this.value_changed, this);
-    window.addEventListener("resize", this.value_changed.bind(this));
+    this.model.on("change:data", () => plotAfterInterval(this), this);
+    window.addEventListener("resize", () => plotAfterInterval(this).bind(this));
   }
 
-  value_changed() {
-    let that = this;
-
+  plot() {
     var data = this.model.get("data");
     var x = this.model.get("x");
     var y = this.model.get("y");
     var hue = this.model.get("hue");
-    var element = this.model.get("element");
+    var elementId = this.model.get("elementId");
 
-    if (this.timeout) {
-      clearTimeout(this.timeout);
+    let height = WIDGET_HEIGHT;
+    let element = this.el;
+    if (elementId) {
+      element = document.getElementById(elementId);
+      height = element.clientHeight;
     }
-    this.timeout = setTimeout(() => {
-      barplot(data, x, y, hue, element, that);
-    }, 100);
+    let width = element.clientWidth;
+    const margin = WIDGET_MARGIN;
+
+    barplot(data, x, y, hue, element, width, height, margin);
   }
 }
 
@@ -221,7 +241,7 @@ export class HistogramPlotModel extends DOMWidgetModel {
       x: String,
       start: Number,
       end: Number,
-      element: String,
+      elementId: String,
     };
   }
 
@@ -237,28 +257,29 @@ export class HistogramPlotView extends DOMWidgetView {
   timeout;
 
   render() {
-    this.value_changed();
+    plotAfterInterval(this);
 
-    // Observe and act on future changes to the value attribute
-    this.model.on("change:data", this.value_changed, this);
-    window.addEventListener("resize", this.value_changed.bind(this));
+    this.model.on("change:data", () => plotAfterInterval(this), this);
+    window.addEventListener("resize", () => plotAfterInterval(this).bind(this));
   }
 
-  value_changed() {
-    let that = this;
-
+  plot() {
     var data = this.model.get("data");
     var x = this.model.get("x");
     var start = this.model.get("start");
     var end = this.model.get("end");
-    var element = this.model.get("element");
+    var elementId = this.model.get("elementId");
 
-    if (this.timeout) {
-      clearTimeout(this.timeout);
+    let height = WIDGET_HEIGHT;
+    let element = this.el;
+    if (elementId) {
+      element = document.getElementById(elementId);
+      height = element.clientHeight;
     }
-    this.timeout = setTimeout(() => {
-      histogramplot(data, x, start, end, element, that);
-    }, 100);
+    let width = element.clientWidth;
+    const margin = WIDGET_MARGIN;
+
+    histogramplot(data, x, start, end, element, width, height, margin);
   }
 }
 

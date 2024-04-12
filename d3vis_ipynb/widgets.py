@@ -20,7 +20,7 @@ class LinearHistPlot(widgets.DOMWidget):
     linearData_x = List([]).tag(sync=True)
     linearData_y = List([]).tag(sync=True)
     histogramData = List([]).tag(sync=True)
-    element = Unicode().tag(sync=True)
+    elementId = Unicode().tag(sync=True)
     clickedValue = Unicode().tag(sync=True)
 
     def name(self):
@@ -31,7 +31,7 @@ class LinearHistPlot(widgets.DOMWidget):
             "linearData_x": self.linearData_x,
             "linearData_y": self.linearData_y,
             "histogramData": self.histogramData,
-            "element": self.element,
+            "elementId": self.elementId,
             "observing": self._observing,
         }
 
@@ -54,7 +54,7 @@ class ScatterPlot(widgets.DOMWidget):
     x = Unicode().tag(sync=True)
     y = Unicode().tag(sync=True)
     hue = Unicode().tag(sync=True)
-    element = Unicode().tag(sync=True)
+    elementId = Unicode().tag(sync=True)
     clickedValue = Unicode().tag(sync=True)
     selectedValues = List([]).tag(sync=True)
 
@@ -67,7 +67,7 @@ class ScatterPlot(widgets.DOMWidget):
             "x": self.x,
             "y": self.y,
             "hue": self.hue,
-            "element": self.element,
+            "elementId": self.elementId,
             "observing": self._observing,
         }
 
@@ -90,7 +90,7 @@ class BarPlot(widgets.DOMWidget):
     x = Unicode().tag(sync=True)
     y = Unicode().tag(sync=True)
     hue = Unicode().tag(sync=True)
-    element = Unicode().tag(sync=True)
+    elementId = Unicode().tag(sync=True)
 
     def name(self):
         return self._name
@@ -101,7 +101,7 @@ class BarPlot(widgets.DOMWidget):
             "x": self.x,
             "y": self.y,
             "hue": self.hue,
-            "element": self.element,
+            "elementId": self.elementId,
             "observing": self._observing,
         }
 
@@ -132,7 +132,7 @@ class HistogramPlot(widgets.DOMWidget):
     x = Unicode().tag(sync=True)
     start = Float().tag(sync=True)
     end = Float().tag(sync=True)
-    element = Unicode().tag(sync=True)
+    elementId = Unicode().tag(sync=True)
 
     def name(self):
         return self._name
@@ -143,7 +143,7 @@ class HistogramPlot(widgets.DOMWidget):
             "x": self.x,
             "start": self.start,
             "end": self.end,
-            "element": self.element,
+            "elementId": self.elementId,
             "observing": self._observing,
         }
 

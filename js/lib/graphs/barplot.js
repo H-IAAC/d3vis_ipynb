@@ -1,27 +1,16 @@
 import * as d3 from "d3";
 
-export function barplot(data, x_axis, y_axis, hue_axis, element, that) {
-  var customHeight = 375;
-  var customWidth = 720;
-  if (element) {
-    element = document.getElementById(element)
-    customWidth = element.clientWidth;
-    customHeight = element.clientHeight;
-  } else {
-    element = that.el;
-    customWidth = element.clientWidth
-  }
-  d3.select(element).selectAll("*").remove();
+export function barplot(data, x_axis, y_axis, hue_axis, element, width, height, margin) {
+  const innerWidth = width - margin.left - margin.right
+  const innerHeight = height - margin.top - margin.bottom
 
-  const margin = { top: 20, right: 20, bottom: 30, left: 40 };
-  const width = customWidth - margin.left - margin.right;
-  const height = customHeight - margin.top - margin.bottom;
+  d3.select(element).selectAll("*").remove();
 
   var svg = d3
     .select(element)
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("width", width)
+    .attr("height", height)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -90,11 +79,11 @@ export function barplot(data, x_axis, y_axis, hue_axis, element, that) {
     if (y_domain[0] > 0 && y_domain[1] > 0) y_domain[0] = 0;
     else if (y_domain[0] < 0 && y_domain[1] < 0) y_domain[1] = 0;
 
-    var y = d3.scaleLinear().domain(y_domain).range([height, 0]);
+    var y = d3.scaleLinear().domain(y_domain).range([innerHeight, 0]);
 
     svg.append("g").call(d3.axisLeft(y));
 
-    var x = d3.scaleBand().domain(groups).range([0, width]).padding([0.2]);
+    var x = d3.scaleBand().domain(groups).range([0, innerWidth]).padding([0.2]);
 
     svg
       .append("g")
@@ -223,11 +212,11 @@ export function barplot(data, x_axis, y_axis, hue_axis, element, that) {
     if (y_domain[0] > 0 && y_domain[1] > 0) y_domain[0] = 0;
     else if (y_domain[0] < 0 && y_domain[1] < 0) y_domain[1] = 0;
 
-    var y = d3.scaleLinear().domain(y_domain).range([height, 0]);
+    var y = d3.scaleLinear().domain(y_domain).range([innerHeight, 0]);
 
     svg.append("g").call(d3.axisLeft(y));
 
-    var x = d3.scaleBand().domain(groups).range([0, width]).padding([0.2]);
+    var x = d3.scaleBand().domain(groups).range([0, innerWidth]).padding([0.2]);
 
     var xSubgroup = d3
       .scaleBand()
@@ -316,14 +305,14 @@ export function barplot(data, x_axis, y_axis, hue_axis, element, that) {
 
     legend
       .append("rect")
-      .attr("x", width - 18)
+      .attr("x", innerWidth - 18)
       .attr("width", 18)
       .attr("height", 18)
       .style("fill", color);
 
     legend
       .append("text")
-      .attr("x", width - 24)
+      .attr("x", innerWidth - 24)
       .attr("y", 9)
       .attr("dy", ".35em")
       .style("text-anchor", "end")

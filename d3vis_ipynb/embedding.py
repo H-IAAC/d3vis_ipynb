@@ -119,7 +119,7 @@ class Embedding(widgets.DOMWidget):
     def add(self, widget, position: int):
         self._all_widgets.append(widget)
         if self._is_displayed:
-            widget.element = self.positions_hashs[position]
+            widget.elementId = self.positions_hashs[position]
             display(widget)
         else:
             self._widgets_to_display[position] = widget
@@ -128,7 +128,7 @@ class Embedding(widgets.DOMWidget):
         self._is_displayed = True
         for key in self._widgets_to_display.keys():
             widget = self._widgets_to_display[key]
-            widget.element = self.positions_hashs[key]
+            widget.elementId = self.positions_hashs[key]
             display(widget)
 
     def export(self):
