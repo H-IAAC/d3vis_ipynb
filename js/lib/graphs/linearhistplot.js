@@ -10,11 +10,11 @@ export function linearhistplot(
   height,
   margin
 ) {
-  const innerWidth = width - margin.left - margin.right
-  const innerHeight = height - margin.top - margin.bottom
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
   const heightHist = innerHeight / 4;
 
-  d3.select(element).selectAll("*").remove();  
+  d3.select(element).selectAll("*").remove();
 
   const xMin = Math.min(d3.min(linearData_x), d3.min(histogramData));
   const xMax = Math.max(d3.max(linearData_x), d3.max(histogramData));
@@ -88,7 +88,7 @@ export function linearhistplot(
     .attr("stroke-width", 4)
     .style("opacity", 0);
 
-  var focusText = svg
+  const focusText = svg
     .append("g")
     .append("text")
     .style("opacity", 0)
@@ -128,7 +128,7 @@ export function linearhistplot(
         .curve(d3.curveCatmullRom)
     );
 
-  var coords = linearData_x
+  const coords = linearData_x
     .map((v, i) => [v, linearData_y[i]])
     .map(([x, y]) => ({ x, y }));
 

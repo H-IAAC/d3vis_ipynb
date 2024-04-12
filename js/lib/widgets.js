@@ -57,10 +57,10 @@ export class LinearHistPlotView extends DOMWidgetView {
   }
 
   plot() {
-    var linearData_x = this.model.get("linearData_x");
-    var linearData_y = this.model.get("linearData_y");
-    var histogramData = this.model.get("histogramData");
-    var elementId = this.model.get("elementId");
+    const linearData_x = this.model.get("linearData_x");
+    const linearData_y = this.model.get("linearData_y");
+    const histogramData = this.model.get("histogramData");
+    const elementId = this.model.get("elementId");
 
     let height = WIDGET_HEIGHT;
     let element = this.el;
@@ -129,11 +129,11 @@ export class ScatterPlotView extends DOMWidgetView {
   }
 
   plot() {
-    var data = this.model.get("data");
-    var x = this.model.get("x");
-    var y = this.model.get("y");
-    var hue = this.model.get("hue");
-    var elementId = this.model.get("elementId");
+    const data = this.model.get("data");
+    const x = this.model.get("x");
+    const y = this.model.get("y");
+    const hue = this.model.get("hue");
+    const elementId = this.model.get("elementId");
 
     let height = WIDGET_HEIGHT;
     let element = this.el;
@@ -207,11 +207,11 @@ export class BarPlotView extends DOMWidgetView {
   }
 
   plot() {
-    var data = this.model.get("data");
-    var x = this.model.get("x");
-    var y = this.model.get("y");
-    var hue = this.model.get("hue");
-    var elementId = this.model.get("elementId");
+    const data = this.model.get("data");
+    const x = this.model.get("x");
+    const y = this.model.get("y");
+    const hue = this.model.get("hue");
+    const elementId = this.model.get("elementId");
 
     let height = WIDGET_HEIGHT;
     let element = this.el;
@@ -264,11 +264,11 @@ export class HistogramPlotView extends DOMWidgetView {
   }
 
   plot() {
-    var data = this.model.get("data");
-    var x = this.model.get("x");
-    var start = this.model.get("start");
-    var end = this.model.get("end");
-    var elementId = this.model.get("elementId");
+    const data = this.model.get("data");
+    const x = this.model.get("x");
+    const start = this.model.get("start");
+    const end = this.model.get("end");
+    const elementId = this.model.get("elementId");
 
     let height = WIDGET_HEIGHT;
     let element = this.el;
@@ -315,12 +315,10 @@ export class EmbeddingView extends DOMWidgetView {
   }
 
   value_changed() {
-    let that = this;
-
-    var matrix = this.model.get("matrix");
-    var grid_areas = this.model.get("grid_areas");
-    var grid_template_areas = this.model.get("grid_template_areas");
-    var style = this.model.get("style");
+    const matrix = this.model.get("matrix");
+    const grid_areas = this.model.get("grid_areas");
+    const grid_template_areas = this.model.get("grid_template_areas");
+    let style = this.model.get("style");
 
     if (!style) {
       style = "basic";
@@ -343,6 +341,6 @@ export class EmbeddingView extends DOMWidgetView {
       node.appendChild(grid_area);
     });
 
-    that.el.appendChild(node);
+    this.el.appendChild(node);
   }
 }

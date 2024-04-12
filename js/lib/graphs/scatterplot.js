@@ -16,25 +16,26 @@ export function scatterplot(
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
-  for (let i = 0; i < data.length; i++) {''
+  for (let i = 0; i < data.length; i++) {
+    ("");
     data[i]["id"] = i;
   }
 
-  var randomString = Math.floor(Math.random() * Date.now() * 10000).toString(
+  const randomString = Math.floor(Math.random() * Date.now() * 10000).toString(
     36
   );
 
   d3.select(element).selectAll("*").remove();
 
-  var x = d3.scaleLinear().range([0, innerWidth]);
+  const x = d3.scaleLinear().range([0, innerWidth]);
 
-  var y = d3.scaleLinear().range([innerHeight, 0]);
+  const y = d3.scaleLinear().range([innerHeight, 0]);
 
-  var color = d3.scaleOrdinal(d3.schemeCategory10);
+  const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-  var xAxis = d3.axisBottom(x);
+  const xAxis = d3.axisBottom(x);
 
-  var yAxis = d3.axisLeft(y);
+  const yAxis = d3.axisLeft(y);
 
   function mouseover(event, d) {
     focus.style("opacity", 1);
@@ -69,7 +70,7 @@ export function scatterplot(
     }
   }
 
-  var svg = d3
+  const svg = d3
     .select(element)
     .append("svg")
     .attr("width", width)
@@ -162,7 +163,7 @@ export function scatterplot(
     randomString
   );
 
-  var legend = svg
+  const legend = svg
     .selectAll(".legend")
     .data(color.domain())
     .enter()
@@ -199,7 +200,7 @@ export function scatterplot(
     .attr("stroke-width", 4)
     .style("opacity", 0);
 
-  var focusText = svg
+  const focusText = svg
     .append("g")
     .append("text")
     .style("opacity", 0)

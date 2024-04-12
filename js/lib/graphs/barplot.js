@@ -6,7 +6,7 @@ export function barplot(data, x_axis, y_axis, hue_axis, element, width, height, 
 
   d3.select(element).selectAll("*").remove();
 
-  var svg = d3
+  const svg = d3
     .select(element)
     .append("svg")
     .attr("width", width)
@@ -22,9 +22,9 @@ export function barplot(data, x_axis, y_axis, hue_axis, element, width, height, 
     }
     return all;
   }, []);
-  let values = {};
+  const values = {};
 
-  var color = d3.scaleOrdinal(d3.schemeCategory10);
+  const color = d3.scaleOrdinal(d3.schemeCategory10);
 
   if (hue_axis == x_axis) {
     createSingleBars();
@@ -34,15 +34,15 @@ export function barplot(data, x_axis, y_axis, hue_axis, element, width, height, 
 
   function createSingleBars() {
     let result = data.reduce((res, row) => {
-      let x = row[x_axis];
-      let y = row[y_axis];
+      const x = row[x_axis];
+      const y = row[y_axis];
 
       if (x in res) {
         res[x] += y;
         values[x]["qt"] += 1;
         values[x][y_axis].push(y);
       } else {
-        var newValues = {};
+        const newValues = {};
         newValues["qt"] = 1;
         newValues[y_axis] = [];
         newValues[y_axis].push(y);
@@ -54,7 +54,7 @@ export function barplot(data, x_axis, y_axis, hue_axis, element, width, height, 
     }, {});
 
     result = Object.keys(result).map((key) => {
-      let newRow = {};
+      const newRow = {};
       newRow[x_axis] = key;
       newRow[y_axis] = result[key];
       if (values[key]["qt"] != 0) {
@@ -64,26 +64,26 @@ export function barplot(data, x_axis, y_axis, hue_axis, element, width, height, 
     });
 
     Object.keys(values).forEach((key) => {
-      let array = values[key][y_axis];
-      let [min, max] = getCI(array);
+      const array = values[key][y_axis];
+      const [min, max] = getCI(array);
       values[key]["min"] = min;
       values[key]["max"] = max;
     });
 
-    var groups = result.map((r) => r[x_axis]);
+    const groups = result.map((r) => r[x_axis]);
 
-    let y_domain = [];
-    let all_min_max = Object.keys(values).map((key) => values[key]);
+    const y_domain = [];
+    const all_min_max = Object.keys(values).map((key) => values[key]);
     y_domain.push(d3.min(all_min_max, (v) => v.min));
     y_domain.push(d3.max(all_min_max, (v) => v.max));
     if (y_domain[0] > 0 && y_domain[1] > 0) y_domain[0] = 0;
     else if (y_domain[0] < 0 && y_domain[1] < 0) y_domain[1] = 0;
 
-    var y = d3.scaleLinear().domain(y_domain).range([innerHeight, 0]);
+    const y = d3.scaleLinear().domain(y_domain).range([innerHeight, 0]);
 
     svg.append("g").call(d3.axisLeft(y));
 
-    var x = d3.scaleBand().domain(groups).range([0, innerWidth]).padding([0.2]);
+    const x = d3.scaleBand().domain(groups).range([0, innerWidth]).padding([0.2]);
 
     svg
       .append("g")
@@ -107,7 +107,7 @@ export function barplot(data, x_axis, y_axis, hue_axis, element, width, height, 
       });
 
     const itrValues = Object.keys(values).map((key) => {
-      let newRow = {};
+      const newRow = {};
       newRow[x_axis] = key;
       newRow["min"] = values[key]["min"];
       newRow["max"] = values[key]["max"];
@@ -140,25 +140,25 @@ export function barplot(data, x_axis, y_axis, hue_axis, element, width, height, 
 
   function createGroupBars() {
     let result = data.reduce((res, row) => {
-      let x = row[x_axis];
-      let y = row[y_axis];
-      let hue = row[hue_axis];
+      const x = row[x_axis];
+      const y = row[y_axis];
+      const hue = row[hue_axis];
 
       if (x in res) {
         values[x]["qt"][y_axis + "-" + hue] += 1;
         values[x][hue][y_axis].push(y);
-        for (let h of allHues) {
+        for (const h of allHues) {
           if (hue == h) res[x][y_axis + "-" + h] += y;
         }
       } else {
-        var newValues = {};
+        const newValues = {};
         allHues.forEach((hue) => {
           newValues[hue] = {};
           newValues[hue][y_axis] = [];
         });
 
-        var qt = {};
-        for (let h of allHues) {
+        const qt = {};
+        for (const h of allHues) {
           qt[y_axis + "-" + h] = 0;
         }
         qt[y_axis + "-" + hue] = 1;
@@ -166,8 +166,8 @@ export function barplot(data, x_axis, y_axis, hue_axis, element, width, height, 
         newValues["qt"] = qt;
         newValues[hue][y_axis].push(y);
         values[x] = newValues;
-        let newRow = {};
-        for (var h of allHues) {
+        const newRow = {};
+        for (const h of allHues) {
           if (hue == h) newRow[y_axis + "-" + h] = y;
           else newRow[y_axis + "-" + h] = 0;
         }
@@ -180,7 +180,7 @@ export function barplot(data, x_axis, y_axis, hue_axis, element, width, height, 
     result = Object.keys(result).map((key) => {
       let newRow = {};
       newRow[x_axis] = key;
-      for (let i of Object.keys(result[key])) {
+      for (const i of Object.keys(result[key])) {
         if (values[key]["qt"][i] != 0) {
           result[key][i] = result[key][i] / values[key]["qt"][i];
         }
@@ -191,34 +191,34 @@ export function barplot(data, x_axis, y_axis, hue_axis, element, width, height, 
 
     Object.keys(values).forEach((key) => {
       allHues.forEach((h) => {
-        let array = values[key][h][y_axis];
-        let [min, max] = getCI(array);
+        const array = values[key][h][y_axis];
+        const [min, max] = getCI(array);
         values[key][h]["min"] = min;
         values[key][h]["max"] = max;
       });
     });
 
-    var subgroups = allHues.map((value) => y_axis + "-" + value);
-    var groups = result.map((r) => r[x_axis]);
+    const subgroups = allHues.map((value) => y_axis + "-" + value);
+    const groups = result.map((r) => r[x_axis]);
 
-    let all_min_max = [];
+    const all_min_max = [];
     Object.keys(values).map((key) => {
       allHues.forEach((h) => all_min_max.push(values[key][h]));
     });
 
-    let y_domain = [];
+    const y_domain = [];
     y_domain.push(d3.min(all_min_max, (v) => v.min));
     y_domain.push(d3.max(all_min_max, (v) => v.max));
     if (y_domain[0] > 0 && y_domain[1] > 0) y_domain[0] = 0;
     else if (y_domain[0] < 0 && y_domain[1] < 0) y_domain[1] = 0;
 
-    var y = d3.scaleLinear().domain(y_domain).range([innerHeight, 0]);
+    const y = d3.scaleLinear().domain(y_domain).range([innerHeight, 0]);
 
     svg.append("g").call(d3.axisLeft(y));
 
-    var x = d3.scaleBand().domain(groups).range([0, innerWidth]).padding([0.2]);
+    const x = d3.scaleBand().domain(groups).range([0, innerWidth]).padding([0.2]);
 
-    var xSubgroup = d3
+    const xSubgroup = d3
       .scaleBand()
       .domain(subgroups)
       .range([0, x.bandwidth()])
@@ -293,7 +293,7 @@ export function barplot(data, x_axis, y_axis, hue_axis, element, width, height, 
         return y(d.value["min"]) - y(d.value["max"]);
       });
 
-    var legend = svg
+    const legend = svg
       .selectAll(".legend")
       .data(color.domain())
       .enter()
@@ -337,6 +337,6 @@ function standardDeviationPerSquareRootedSize(array, mean) {
 
 function getCI(array) {
   const mean = array.reduce((a, b) => a + b, 0) / array.length;
-  let complement = 1.96 * standardDeviationPerSquareRootedSize(array, mean);
+  const complement = 1.96 * standardDeviationPerSquareRootedSize(array, mean);
   return [mean - complement, mean + complement];
 }
