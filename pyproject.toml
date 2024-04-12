@@ -81,6 +81,7 @@ artifacts = [
 [tool.hatch.build.targets.sdist]
 exclude = [
     ".github",
+    "samples",
 ]
 
 [tool.hatch.build.hooks.jupyter-builder]
