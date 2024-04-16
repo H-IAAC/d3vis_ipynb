@@ -37,6 +37,9 @@ class LinearHistPlot(widgets.DOMWidget):
 
         return {self._name: data}
 
+    def on_click_value(self, callback):
+        self.observe(callback, names=["clickedValue"])
+
 
 @widgets.register
 class ScatterPlot(widgets.DOMWidget):
@@ -73,6 +76,12 @@ class ScatterPlot(widgets.DOMWidget):
 
         return {self._name: data}
 
+    def on_select_values(self, callback):
+        self.observe(callback, names=["selectedValues"])
+
+    def on_click_value(self, callback):
+        self.observe(callback, names=["clickedValue"])
+
 
 @widgets.register
 class BarPlot(widgets.DOMWidget):
@@ -106,14 +115,6 @@ class BarPlot(widgets.DOMWidget):
         }
 
         return {self._name: data}
-
-    def linkData(self, widget, widgetAttr):
-        self._observing.append({"data": {widget.name(): widgetAttr}})
-
-        def callback(change):
-            self.data = getattr(widget, widgetAttr)
-
-        widget.observe(callback, names=[widgetAttr])
 
 
 @widgets.register
