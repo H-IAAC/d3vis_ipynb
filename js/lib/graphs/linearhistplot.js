@@ -113,6 +113,14 @@ export function linearhistplot(
     .attr("dy", ".71em")
     .style("text-anchor", "end");
 
+    const firstPathPoint = []
+    firstPathPoint['x0'] = bins[0]['x0'] - 2.5
+    firstPathPoint['x1'] = bins[0]['x1'] - 2.5
+    bins.unshift(firstPathPoint)
+    const lastPathPoint = []
+    lastPathPoint['x0'] = bins[bins.length - 1]['x0'] + 2.5
+    lastPathPoint['x1'] = bins[bins.length - 1]['x1'] + 2.5
+
   svg
     .append("path")
     .datum(bins)
