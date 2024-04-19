@@ -53,6 +53,8 @@ export class LinearHistPlotView extends DOMWidgetView {
     plotAfterInterval(this);
 
     this.model.on("change:linearData_x", () => plotAfterInterval(this), this);
+    this.model.on("change:linearData_y", () => plotAfterInterval(this), this);
+    this.model.on("change:histogramData", () => plotAfterInterval(this), this);
     window.addEventListener("resize", () => plotAfterInterval(this).bind(this));
   }
 
@@ -125,6 +127,9 @@ export class ScatterPlotView extends DOMWidgetView {
     plotAfterInterval(this);
 
     this.model.on("change:data", () => plotAfterInterval(this), this);
+    this.model.on("change:x", () => plotAfterInterval(this), this);
+    this.model.on("change:y", () => plotAfterInterval(this), this);
+    this.model.on("change:hue", () => plotAfterInterval(this), this);
     window.addEventListener("resize", () => plotAfterInterval(this).bind(this));
   }
 
@@ -203,6 +208,9 @@ export class BarPlotView extends DOMWidgetView {
     plotAfterInterval(this);
 
     this.model.on("change:data", () => plotAfterInterval(this), this);
+    this.model.on("change:x", () => plotAfterInterval(this), this);
+    this.model.on("change:y", () => plotAfterInterval(this), this);
+    this.model.on("change:hue", () => plotAfterInterval(this), this);
     window.addEventListener("resize", () => plotAfterInterval(this).bind(this));
   }
 
@@ -260,6 +268,9 @@ export class HistogramPlotView extends DOMWidgetView {
     plotAfterInterval(this);
 
     this.model.on("change:data", () => plotAfterInterval(this), this);
+    this.model.on("change:x", () => plotAfterInterval(this), this);
+    this.model.on("change:start", () => plotAfterInterval(this), this);
+    this.model.on("change:end", () => plotAfterInterval(this), this);
     window.addEventListener("resize", () => plotAfterInterval(this).bind(this));
   }
 

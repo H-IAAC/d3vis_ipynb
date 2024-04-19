@@ -11,9 +11,12 @@ class WebWidget(anywidget.AnyWidget):
 
     def createWidgetFromUrl(widgetCall: str, varList: list, jsUrl: str):
         modelVars = ""
+        modelChanges = ""
         for var in varList:
-            newLine = "let " + var + ' = model.get("' + var + '");\n'
-            modelVars += newLine
+            newModelVar = "let " + var + ' = model.get("' + var + '");\n'
+            modelVars += newModelVar
+            newModelChange = 'model.on("change:' + var + '", plotAfterInterval);\n'
+            modelChanges += newModelChange
 
         jsUrlStr = WebWidget.readFromWeb(jsUrl)
         jsStr = """
@@ -50,7 +53,7 @@ class WebWidget(anywidget.AnyWidget):
 
             plotAfterInterval();
             
-            model.on("change:data", plotAfterInterval);
+            {modelChanges}
             window.addEventListener("resize", () => plotAfterInterval(this).bind(this));
         }}
         
@@ -58,7 +61,10 @@ class WebWidget(anywidget.AnyWidget):
 
         export default {{ render }};
         """.format(
-            jsUrlStr=jsUrlStr, modelVars=modelVars, widgetCall=widgetCall
+            jsUrlStr=jsUrlStr,
+            modelVars=modelVars,
+            widgetCall=widgetCall,
+            modelChanges=modelChanges,
         )
 
         return jsStr
