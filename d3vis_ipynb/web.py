@@ -9,12 +9,16 @@ class WebWidget(anywidget.AnyWidget):
         text = response.data.decode("utf-8")
         return text
 
-    def createWidgetFromUrl(widgetCall: str, varList: list, jsUrl: str):
+    def createWidgetFromUrl(
+        widgetCall: str, varList: list, updatableVars: list, jsUrl: str
+    ):
         modelVars = ""
         modelChanges = ""
         for var in varList:
             newModelVar = "let " + var + ' = model.get("' + var + '");\n'
             modelVars += newModelVar
+
+        for var in updatableVars:
             newModelChange = 'model.on("change:' + var + '", plotAfterInterval);\n'
             modelChanges += newModelChange
 
