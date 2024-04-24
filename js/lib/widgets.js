@@ -1,9 +1,10 @@
 import { DOMWidgetModel, DOMWidgetView } from "@jupyter-widgets/base";
-import { linearhistplot } from "./graphs/linearhistplot";
-import { scatterplot } from "./graphs/scatterplot";
+import "../css/widget.css";
 import { barplot } from "./graphs/barplot";
 import { histogramplot } from "./graphs/histogramplot";
-import "../css/widget.css";
+import { linearhistplot } from "./graphs/linearhistplot";
+import { rangeslider } from "./graphs/rangeslider";
+import { scatterplot } from "./graphs/scatterplot";
 const data = require("../package.json");
 
 const WIDGET_HEIGHT = 400;
@@ -55,7 +56,7 @@ export class LinearHistPlotView extends DOMWidgetView {
     this.model.on("change:linearData_x", () => plotAfterInterval(this), this);
     this.model.on("change:linearData_y", () => plotAfterInterval(this), this);
     this.model.on("change:histogramData", () => plotAfterInterval(this), this);
-    window.addEventListener("resize", () => plotAfterInterval(this).bind(this));
+    window.addEventListener("resize", () => plotAfterInterval(this));
   }
 
   plot() {
@@ -130,7 +131,7 @@ export class ScatterPlotView extends DOMWidgetView {
     this.model.on("change:x", () => plotAfterInterval(this), this);
     this.model.on("change:y", () => plotAfterInterval(this), this);
     this.model.on("change:hue", () => plotAfterInterval(this), this);
-    window.addEventListener("resize", () => plotAfterInterval(this).bind(this));
+    window.addEventListener("resize", () => plotAfterInterval(this));
   }
 
   plot() {
@@ -211,7 +212,7 @@ export class BarPlotView extends DOMWidgetView {
     this.model.on("change:x", () => plotAfterInterval(this), this);
     this.model.on("change:y", () => plotAfterInterval(this), this);
     this.model.on("change:hue", () => plotAfterInterval(this), this);
-    window.addEventListener("resize", () => plotAfterInterval(this).bind(this));
+    window.addEventListener("resize", () => plotAfterInterval(this));
   }
 
   plot() {
@@ -271,7 +272,7 @@ export class HistogramPlotView extends DOMWidgetView {
     this.model.on("change:x", () => plotAfterInterval(this), this);
     this.model.on("change:start", () => plotAfterInterval(this), this);
     this.model.on("change:end", () => plotAfterInterval(this), this);
-    window.addEventListener("resize", () => plotAfterInterval(this).bind(this));
+    window.addEventListener("resize", () => plotAfterInterval(this));
   }
 
   plot() {
@@ -353,5 +354,80 @@ export class EmbeddingView extends DOMWidgetView {
     });
 
     this.el.appendChild(node);
+  }
+}
+
+export class RangeSliderModel extends DOMWidgetModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: RangeSliderModel.model_name,
+      _view_name: RangeSliderModel.view_name,
+      _model_module: RangeSliderModel.model_module,
+      _view_module: RangeSliderModel.view_module,
+      _model_module_version: RangeSliderModel.model_module_version,
+      _view_module_version: RangeSliderModel.view_module_version,
+
+      data: [],
+      column: String,
+      step: Number,
+      description: String,
+      minValue: Number,
+      maxValue: Number,
+      elementId: String,
+    };
+  }
+
+  static model_name = "RangeSliderModel";
+  static model_module = data.name;
+  static model_module_version = data.version;
+  static view_name = "RangeSliderView"; // Set to null if no view
+  static view_module = data.name; // Set to null if no view
+  static view_module_version = data.version;
+}
+
+export class RangeSliderView extends DOMWidgetView {
+  render() {
+    plotAfterInterval(this);
+
+    this.model.on("change:data", () => plotAfterInterval(this), this);
+    this.model.on("change:column", () => plotAfterInterval(this), this);
+    this.model.on("change:step", () => plotAfterInterval(this), this);
+    this.model.on("change:description", () => plotAfterInterval(this), this);
+    window.addEventListener("resize", () => plotAfterInterval(this));
+  }
+
+  plot() {
+    const data = this.model.get("data");
+    const column = this.model.get("column");
+    const step = this.model.get("step");
+    const description = this.model.get("description");
+    const elementId = this.model.get("elementId");
+    const minValue = this.model.get("minValue");
+    const maxValue = this.model.get("maxValue");
+
+    let element = this.el;
+    if (elementId) {
+      element = document.getElementById(elementId);
+    }
+    const margin = WIDGET_MARGIN;
+
+    rangeslider(
+      data,
+      column,
+      step,
+      description,
+      minValue,
+      maxValue,
+      this.setValues.bind(this),
+      element,
+      margin
+    );
+  }
+
+  setValues(min, max) {
+    this.model.set({ minValue: min });
+    this.model.set({ maxValue: max });
+    this.model.save_changes();
   }
 }

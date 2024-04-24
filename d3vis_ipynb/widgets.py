@@ -149,3 +149,42 @@ class HistogramPlot(widgets.DOMWidget):
         }
 
         return {self._name: data}
+
+
+@widgets.register
+class RangeSlider(widgets.DOMWidget):
+    _view_name = Unicode("RangeSliderView").tag(sync=True)
+    _model_name = Unicode("RangeSliderModel").tag(sync=True)
+    _view_module = Unicode("d3vis_ipynb").tag(sync=True)
+    _model_module = Unicode("d3vis_ipynb").tag(sync=True)
+    _view_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
+    _model_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
+
+    _name = "rangeslider"
+    _observing = []
+
+    data = List([]).tag(sync=True)
+    column = Unicode().tag(sync=True)
+    step = Float().tag(sync=True)
+    description = Unicode().tag(sync=True)
+    minValue = Float().tag(sync=True)
+    maxValue = Float().tag(sync=True)
+    elementId = Unicode().tag(sync=True)
+
+    def name(self):
+        return self._name
+
+    def export_data(self):
+        data = {
+            "data": self.data,
+            "column": self.column,
+            "step": self.step,
+            "description": self.description,
+            "elementId": self.elementId,
+            "observing": self._observing,
+        }
+
+        return {self._name: data}
+
+    def on_values_changed(self, callback):
+        self.observe(callback, names=["minValue", "maxValue"])

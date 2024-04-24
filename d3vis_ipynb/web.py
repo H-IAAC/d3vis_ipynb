@@ -54,7 +54,7 @@ class WebWidget(anywidget.AnyWidget):
             plotAfterInterval();
             
             {modelChanges}
-            window.addEventListener("resize", () => plotAfterInterval(this).bind(this));
+            window.addEventListener("resize", () => plotAfterInterval(this));
         }}
         
         

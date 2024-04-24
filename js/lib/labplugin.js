@@ -1,17 +1,19 @@
+import { IJupyterWidgetRegistry } from "@jupyter-widgets/base";
 import {
-  LinearHistPlotModel,
-  LinearHistPlotView,
-  ScatterPlotModel,
-  ScatterPlotView,
   BarPlotModel,
   BarPlotView,
-  HistogramPlotModel,
-  HistogramPlotView,
   EmbeddingModel,
   EmbeddingView,
+  HistogramPlotModel,
+  HistogramPlotView,
+  LinearHistPlotModel,
+  LinearHistPlotView,
+  RangeSliderModel,
+  RangeSliderView,
+  ScatterPlotModel,
+  ScatterPlotView,
   version,
 } from "./index";
-import { IJupyterWidgetRegistry } from "@jupyter-widgets/base";
 
 export const helloWidgetPlugin = {
   id: "d3vis_ipynb:plugin",
@@ -31,6 +33,8 @@ export const helloWidgetPlugin = {
         HistogramPlotView,
         EmbeddingModel,
         EmbeddingView,
+        RangeSliderModel,
+        RangeSliderView,
       },
     });
   },
