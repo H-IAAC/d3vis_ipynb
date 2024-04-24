@@ -1,3 +1,13 @@
+function setValue(text) {
+  model.set({ clickedValue: text });
+  model.save_changes();
+}
+
+function setSelectedValues(values) {
+  model.set({ selectedValues: values });
+  model.save_changes();
+}
+
 function scatterplot(
   data,
   x_value,
