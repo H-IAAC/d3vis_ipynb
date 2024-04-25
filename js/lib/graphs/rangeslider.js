@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 
-function rangeslider(
+export function rangeslider(
   data,
   column,
   step,

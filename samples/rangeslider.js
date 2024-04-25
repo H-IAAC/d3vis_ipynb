@@ -4,7 +4,7 @@ function setValues(min, max) {
   model.save_changes();
 }
 
-export function rangeslider(
+function rangeslider(
   data,
   column,
   step,
