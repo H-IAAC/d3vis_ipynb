@@ -164,7 +164,7 @@ class RangeSlider(widgets.DOMWidget):
     _observing = []
 
     data = List([]).tag(sync=True)
-    column = Unicode().tag(sync=True)
+    variable = Unicode().tag(sync=True)
     step = Float().tag(sync=True)
     description = Unicode().tag(sync=True)
     minValue = Float().tag(sync=True)
@@ -177,7 +177,7 @@ class RangeSlider(widgets.DOMWidget):
     def export_data(self):
         data = {
             "data": self.data,
-            "column": self.column,
+            "variable": self.variable,
             "step": self.step,
             "description": self.description,
             "elementId": self.elementId,

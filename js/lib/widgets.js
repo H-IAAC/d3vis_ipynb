@@ -369,7 +369,7 @@ export class RangeSliderModel extends DOMWidgetModel {
       _view_module_version: RangeSliderModel.view_module_version,
 
       data: [],
-      column: String,
+      variable: String,
       step: Number,
       description: String,
       minValue: Number,
@@ -391,7 +391,7 @@ export class RangeSliderView extends DOMWidgetView {
     plotAfterInterval(this);
 
     this.model.on("change:data", () => plotAfterInterval(this), this);
-    this.model.on("change:column", () => plotAfterInterval(this), this);
+    this.model.on("change:variable", () => plotAfterInterval(this), this);
     this.model.on("change:step", () => plotAfterInterval(this), this);
     this.model.on("change:description", () => plotAfterInterval(this), this);
     window.addEventListener("resize", () => plotAfterInterval(this));
@@ -399,7 +399,7 @@ export class RangeSliderView extends DOMWidgetView {
 
   plot() {
     const data = this.model.get("data");
-    const column = this.model.get("column");
+    const variable = this.model.get("variable");
     const step = this.model.get("step");
     const description = this.model.get("description");
     const elementId = this.model.get("elementId");
@@ -414,7 +414,7 @@ export class RangeSliderView extends DOMWidgetView {
 
     rangeslider(
       data,
-      column,
+      variable,
       step,
       description,
       minValue,

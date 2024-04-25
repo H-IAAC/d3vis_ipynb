@@ -6,7 +6,7 @@ function setValues(min, max) {
 
 function rangeslider(
   data,
-  column,
+  variable,
   step,
   description,
   fromValue,
@@ -60,8 +60,8 @@ function rangeslider(
     setValues(min, max);
   }
 
-  const minValue = d3.min(data, (d) => d[column]);
-  const maxValue = d3.max(data, (d) => d[column]);
+  const minValue = d3.min(data, (d) => d[variable]);
+  const maxValue = d3.max(data, (d) => d[variable]);
 
   fromSlider.setAttribute("min", minValue);
   fromSlider.setAttribute("max", maxValue);
