@@ -82,6 +82,7 @@ artifacts = [
 exclude = [
     ".github",
     "samples",
+    "examples",
 ]
 
 [tool.hatch.build.hooks.jupyter-builder]
