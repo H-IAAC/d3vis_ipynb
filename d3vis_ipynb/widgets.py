@@ -186,5 +186,5 @@ class RangeSlider(widgets.DOMWidget):
 
         return {self._name: data}
 
-    def on_values_changed(self, callback):
+    def on_drag(self, callback):
         self.observe(callback, names=["minValue", "maxValue"])
