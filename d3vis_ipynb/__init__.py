@@ -1,7 +1,12 @@
+import sys
+
 from ._version import __version__
 from .embedding import Embedding
 from .web import WebWidget
 from .widgets import *
+
+if "google.colab.output" in sys.modules:
+    sys.modules["google.colab.output"].enable_custom_widget_manager()
 
 
 def _jupyter_labextension_paths():
