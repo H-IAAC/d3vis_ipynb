@@ -1,8 +1,24 @@
 import * as d3 from "d3";
 
-export function barplot(data, x_axis, y_axis, hue_axis, element, width, height, margin) {
-  const innerWidth = width - margin.left - margin.right
-  const innerHeight = height - margin.top - margin.bottom
+export function barplot(
+  data,
+  x_axis,
+  y_axis,
+  hue_axis,
+  element,
+  width,
+  height,
+  margin
+) {
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
+  console.log("element:");
+  console.log(element);
+  console.log("width:");
+  console.log(width);
+  console.log("height:");
+  console.log(height);
 
   d3.select(element).selectAll("*").remove();
 
@@ -83,7 +99,11 @@ export function barplot(data, x_axis, y_axis, hue_axis, element, width, height, 
 
     svg.append("g").call(d3.axisLeft(y));
 
-    const x = d3.scaleBand().domain(groups).range([0, innerWidth]).padding([0.2]);
+    const x = d3
+      .scaleBand()
+      .domain(groups)
+      .range([0, innerWidth])
+      .padding([0.2]);
 
     svg
       .append("g")
@@ -216,7 +236,11 @@ export function barplot(data, x_axis, y_axis, hue_axis, element, width, height, 
 
     svg.append("g").call(d3.axisLeft(y));
 
-    const x = d3.scaleBand().domain(groups).range([0, innerWidth]).padding([0.2]);
+    const x = d3
+      .scaleBand()
+      .domain(groups)
+      .range([0, innerWidth])
+      .padding([0.2]);
 
     const xSubgroup = d3
       .scaleBand()
