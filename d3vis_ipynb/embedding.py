@@ -124,12 +124,13 @@ class Embedding(widgets.DOMWidget):
         else:
             self._widgets_to_display[position] = widget
 
-    def _repr_html_(self):
+    def _ipython_display_(self):
         self._is_displayed = True
         for key in self._widgets_to_display.keys():
             widget = self._widgets_to_display[key]
             widget.elementId = self.positions_hashs[key]
             display(widget)
+        super()._ipython_display_()
 
     def export(self):
         absolute_path = os.path.dirname(__file__)
