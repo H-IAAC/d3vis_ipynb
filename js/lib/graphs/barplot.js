@@ -13,13 +13,6 @@ export function barplot(
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
-  console.log("element:");
-  console.log(element);
-  console.log("width:");
-  console.log(width);
-  console.log("height:");
-  console.log(height);
-
   d3.select(element).selectAll("*").remove();
 
   const svg = d3

@@ -222,10 +222,6 @@ export class BarPlotView extends DOMWidgetView {
     const hue = this.model.get("hue");
     const elementId = this.model.get("elementId");
 
-    console.log("barplot");
-    console.log("elementId:");
-    console.log(elementId);
-
     let height = WIDGET_HEIGHT;
     let element = this.el;
     if (elementId) {
@@ -358,8 +354,6 @@ export class EmbeddingView extends DOMWidgetView {
     });
 
     this.el.appendChild(node);
-    console.log("Embedding:")
-    console.log(node)
   }
 }
 
