@@ -1,8 +1,8 @@
 import sys
 
 from ._version import __version__
+from .custom import CustomWidget
 from .embedding import Embedding
-from .web import WebWidget
 from .widgets import *
 
 if "google.colab.output" in sys.modules:

@@ -2,15 +2,36 @@ import anywidget
 import urllib3
 
 
-class WebWidget(anywidget.AnyWidget):
+class CustomWidget(anywidget.AnyWidget):
     def readFromWeb(url):
         http = urllib3.PoolManager(cert_reqs="CERT_NONE")
         response = http.request("GET", url)
         text = response.data.decode("utf-8")
         return text
 
+    def readFromLocalFile(path):
+        text = ""
+        with open(path, "r") as file:
+            lines = file.readlines()
+            text = text.join(lines)
+        return text
+
+    def createWidgetFromLocalFile(
+        widgetCall: str, varList: list, updatableVars: list, filePath: str
+    ):
+        return CustomWidget._createWidget(
+            widgetCall, varList, updatableVars, filePath, CustomWidget.readFromLocalFile
+        )
+
     def createWidgetFromUrl(
         widgetCall: str, varList: list, updatableVars: list, jsUrl: str
+    ):
+        return CustomWidget._createWidget(
+            widgetCall, varList, updatableVars, jsUrl, CustomWidget.readFromWeb
+        )
+
+    def _createWidget(
+        widgetCall: str, varList: list, updatableVars: list, string: str, fileReader
     ):
         modelVars = ""
         modelChanges = ""
@@ -22,12 +43,12 @@ class WebWidget(anywidget.AnyWidget):
             newModelChange = 'model.on("change:' + var + '", plotAfterInterval);\n'
             modelChanges += newModelChange
 
-        jsUrlStr = WebWidget.readFromWeb(jsUrl)
+        fileStr = fileReader(string)
         jsStr = """
         import * as d3 from "https://esm.sh/d3@7";
 
         function render({{ model, el }} ) {{
-            {jsUrlStr}
+            {fileStr}
             
             let timeout;
 
@@ -65,16 +86,10 @@ class WebWidget(anywidget.AnyWidget):
 
         export default {{ render }};
         """.format(
-            jsUrlStr=jsUrlStr,
+            fileStr=fileStr,
             modelVars=modelVars,
             widgetCall=widgetCall,
             modelChanges=modelChanges,
         )
 
         return jsStr
-
-    def linkData(self, widget, widgetAttr):
-        def callback(change):
-            self.data = getattr(widget, widgetAttr)
-
-        widget.observe(callback, names=[widgetAttr])
