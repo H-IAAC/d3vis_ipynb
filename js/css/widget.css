@@ -63,7 +63,6 @@ input[type="range"]::-webkit-slider-thumb {
   width: 24px;
   height: 24px;
   background-color: #fff;
-  border: none !important;
   border-radius: 50%;
   box-shadow: 0 0 0 1px #c6c6c6;
   cursor: pointer;
@@ -94,6 +93,7 @@ input[type="range"] {
   appearance: none;
   height: 10px;
   width: 100%;
+  border: none !important;
   position: absolute;
   background-color: #f79847;
   pointer-events: none;
