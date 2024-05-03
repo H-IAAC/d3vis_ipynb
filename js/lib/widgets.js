@@ -5,7 +5,7 @@ import { histogramplot } from "./graphs/histogramplot";
 import { linearhistplot } from "./graphs/linearhistplot";
 import { rangeslider } from "./graphs/rangeslider";
 import { scatterplot } from "./graphs/scatterplot";
-const data = require("../package.json");
+const packageData = require("../package.json");
 
 const WIDGET_HEIGHT = 400;
 const WIDGET_MARGIN = { top: 20, right: 20, bottom: 30, left: 40 };
@@ -40,11 +40,11 @@ export class LinearHistPlotModel extends DOMWidgetModel {
   }
 
   static model_name = "LinearHistPlotModel";
-  static model_module = data.name;
-  static model_module_version = data.version;
+  static model_module = packageData.name;
+  static model_module_version = packageData.version;
   static view_name = "LinearHistPlotView"; // Set to null if no view
-  static view_module = data.name; // Set to null if no view
-  static view_module_version = data.version;
+  static view_module = packageData.name; // Set to null if no view
+  static view_module_version = packageData.version;
 }
 
 export class LinearHistPlotView extends DOMWidgetView {
@@ -103,22 +103,22 @@ export class ScatterPlotModel extends DOMWidgetModel {
       _model_module_version: ScatterPlotModel.model_module_version,
       _view_module_version: ScatterPlotModel.view_module_version,
 
-      data: [],
+      dataRecords: [],
       x: String,
       y: String,
       hue: String,
       elementId: String,
       clickedValue: String,
-      selectedValues: [],
+      selectedValuesRecords: [],
     };
   }
 
   static model_name = "ScatterplotModel";
-  static model_module = data.name;
-  static model_module_version = data.version;
+  static model_module = packageData.name;
+  static model_module_version = packageData.version;
   static view_name = "ScatterplotView"; // Set to null if no view
-  static view_module = data.name; // Set to null if no view
-  static view_module_version = data.version;
+  static view_module = packageData.name; // Set to null if no view
+  static view_module_version = packageData.version;
 }
 
 export class ScatterPlotView extends DOMWidgetView {
@@ -127,7 +127,7 @@ export class ScatterPlotView extends DOMWidgetView {
   render() {
     plotAfterInterval(this);
 
-    this.model.on("change:data", () => plotAfterInterval(this), this);
+    this.model.on("change:dataRecords", () => plotAfterInterval(this), this);
     this.model.on("change:x", () => plotAfterInterval(this), this);
     this.model.on("change:y", () => plotAfterInterval(this), this);
     this.model.on("change:hue", () => plotAfterInterval(this), this);
@@ -135,7 +135,7 @@ export class ScatterPlotView extends DOMWidgetView {
   }
 
   plot() {
-    const data = this.model.get("data");
+    const data = this.model.get("dataRecords");
     const x = this.model.get("x");
     const y = this.model.get("y");
     const hue = this.model.get("hue");
@@ -170,7 +170,7 @@ export class ScatterPlotView extends DOMWidgetView {
   }
 
   setSelectedValues(values) {
-    this.model.set({ selectedValues: values });
+    this.model.set({ selectedValuesRecords: values });
     this.model.save_changes();
   }
 }
@@ -186,7 +186,7 @@ export class BarPlotModel extends DOMWidgetModel {
       _model_module_version: BarPlotModel.model_module_version,
       _view_module_version: BarPlotModel.view_module_version,
 
-      data: [],
+      dataRecords: [],
       x: String,
       y: String,
       hue: String,
@@ -195,11 +195,11 @@ export class BarPlotModel extends DOMWidgetModel {
   }
 
   static model_name = "BarplotModel";
-  static model_module = data.name;
-  static model_module_version = data.version;
+  static model_module = packageData.name;
+  static model_module_version = packageData.version;
   static view_name = "BarplotView"; // Set to null if no view
-  static view_module = data.name; // Set to null if no view
-  static view_module_version = data.version;
+  static view_module = packageData.name; // Set to null if no view
+  static view_module_version = packageData.version;
 }
 
 export class BarPlotView extends DOMWidgetView {
@@ -208,7 +208,7 @@ export class BarPlotView extends DOMWidgetView {
   render() {
     plotAfterInterval(this);
 
-    this.model.on("change:data", () => plotAfterInterval(this), this);
+    this.model.on("change:dataRecords", () => plotAfterInterval(this), this);
     this.model.on("change:x", () => plotAfterInterval(this), this);
     this.model.on("change:y", () => plotAfterInterval(this), this);
     this.model.on("change:hue", () => plotAfterInterval(this), this);
@@ -216,7 +216,7 @@ export class BarPlotView extends DOMWidgetView {
   }
 
   plot() {
-    const data = this.model.get("data");
+    const data = this.model.get("dataRecords");
     const x = this.model.get("x");
     const y = this.model.get("y");
     const hue = this.model.get("hue");
@@ -246,7 +246,7 @@ export class HistogramPlotModel extends DOMWidgetModel {
       _model_module_version: HistogramPlotModel.model_module_version,
       _view_module_version: HistogramPlotModel.view_module_version,
 
-      data: [],
+      dataRecords: [],
       x: String,
       start: Number,
       end: Number,
@@ -255,11 +255,11 @@ export class HistogramPlotModel extends DOMWidgetModel {
   }
 
   static model_name = "HistogramplotModel";
-  static model_module = data.name;
-  static model_module_version = data.version;
+  static model_module = packageData.name;
+  static model_module_version = packageData.version;
   static view_name = "HistogramplotView"; // Set to null if no view
-  static view_module = data.name; // Set to null if no view
-  static view_module_version = data.version;
+  static view_module = packageData.name; // Set to null if no view
+  static view_module_version = packageData.version;
 }
 
 export class HistogramPlotView extends DOMWidgetView {
@@ -268,7 +268,7 @@ export class HistogramPlotView extends DOMWidgetView {
   render() {
     plotAfterInterval(this);
 
-    this.model.on("change:data", () => plotAfterInterval(this), this);
+    this.model.on("change:dataRecords", () => plotAfterInterval(this), this);
     this.model.on("change:x", () => plotAfterInterval(this), this);
     this.model.on("change:start", () => plotAfterInterval(this), this);
     this.model.on("change:end", () => plotAfterInterval(this), this);
@@ -276,7 +276,7 @@ export class HistogramPlotView extends DOMWidgetView {
   }
 
   plot() {
-    const data = this.model.get("data");
+    const data = this.model.get("dataRecords");
     const x = this.model.get("x");
     const start = this.model.get("start");
     const end = this.model.get("end");
@@ -314,11 +314,11 @@ export class EmbeddingModel extends DOMWidgetModel {
   }
 
   static model_name = "EmbeddingModel";
-  static model_module = data.name;
-  static model_module_version = data.version;
+  static model_module = packageData.name;
+  static model_module_version = packageData.version;
   static view_name = "EmbeddingView"; // Set to null if no view
-  static view_module = data.name; // Set to null if no view
-  static view_module_version = data.version;
+  static view_module = packageData.name; // Set to null if no view
+  static view_module_version = packageData.version;
 }
 
 export class EmbeddingView extends DOMWidgetView {
@@ -368,7 +368,7 @@ export class RangeSliderModel extends DOMWidgetModel {
       _model_module_version: RangeSliderModel.model_module_version,
       _view_module_version: RangeSliderModel.view_module_version,
 
-      data: [],
+      dataRecords: [],
       variable: String,
       step: Number,
       description: String,
@@ -379,18 +379,18 @@ export class RangeSliderModel extends DOMWidgetModel {
   }
 
   static model_name = "RangeSliderModel";
-  static model_module = data.name;
-  static model_module_version = data.version;
+  static model_module = packageData.name;
+  static model_module_version = packageData.version;
   static view_name = "RangeSliderView"; // Set to null if no view
-  static view_module = data.name; // Set to null if no view
-  static view_module_version = data.version;
+  static view_module = packageData.name; // Set to null if no view
+  static view_module_version = packageData.version;
 }
 
 export class RangeSliderView extends DOMWidgetView {
   render() {
     plotAfterInterval(this);
 
-    this.model.on("change:data", () => plotAfterInterval(this), this);
+    this.model.on("change:dataRecords", () => plotAfterInterval(this), this);
     this.model.on("change:variable", () => plotAfterInterval(this), this);
     this.model.on("change:step", () => plotAfterInterval(this), this);
     this.model.on("change:description", () => plotAfterInterval(this), this);
@@ -398,7 +398,7 @@ export class RangeSliderView extends DOMWidgetView {
   }
 
   plot() {
-    const data = this.model.get("data");
+    const data = this.model.get("dataRecords");
     const variable = this.model.get("variable");
     const step = this.model.get("step");
     const description = this.model.get("description");

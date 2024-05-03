@@ -1,5 +1,7 @@
 import ipywidgets as widgets
-from traitlets import Unicode, List, Float
+import pandas as pd
+from traitlets import Float, List, Unicode
+
 from ._version import NPM_PACKAGE_RANGE
 
 # See js/lib/example.js for the frontend counterpart to this file.
@@ -53,13 +55,34 @@ class ScatterPlot(widgets.DOMWidget):
     _name = "scatterplot"
     _observing = []
 
-    data = List([]).tag(sync=True)
+    dataRecords = List([]).tag(sync=True)
     x = Unicode().tag(sync=True)
     y = Unicode().tag(sync=True)
     hue = Unicode().tag(sync=True)
     elementId = Unicode().tag(sync=True)
     clickedValue = Unicode().tag(sync=True)
-    selectedValues = List([]).tag(sync=True)
+    selectedValuesRecords = List([]).tag(sync=True)
+
+    def __init__(self, data, **kwargs):
+        self.data = data
+        self.selectedValues = pd.DataFrame()
+        super().__init__(**kwargs)
+
+    @property
+    def data(self):
+        return pd.DataFrame.from_records(self.dataRecords)
+
+    @data.setter
+    def data(self, val):
+        self.dataRecords = val.to_dict(orient="records")
+
+    @property
+    def selectedValues(self):
+        return pd.DataFrame.from_records(self.selectedValuesRecords)
+
+    @selectedValues.setter
+    def selectedValues(self, val):
+        self.selectedValuesRecords = val.to_dict(orient="records")
 
     def name(self):
         return self._name
@@ -77,7 +100,7 @@ class ScatterPlot(widgets.DOMWidget):
         return {self._name: data}
 
     def on_select_values(self, callback):
-        self.observe(callback, names=["selectedValues"])
+        self.observe(callback, names=["selectedValuesRecords"])
 
     def on_click_value(self, callback):
         self.observe(callback, names=["clickedValue"])
@@ -95,11 +118,23 @@ class BarPlot(widgets.DOMWidget):
     _name = "barplot"
     _observing = []
 
-    data = List([]).tag(sync=True)
+    dataRecords = List([]).tag(sync=True)
     x = Unicode().tag(sync=True)
     y = Unicode().tag(sync=True)
     hue = Unicode().tag(sync=True)
     elementId = Unicode().tag(sync=True)
+
+    def __init__(self, data, **kwargs):
+        self.data = data
+        super().__init__(**kwargs)
+
+    @property
+    def data(self):
+        return pd.DataFrame.from_records(self.dataRecords)
+
+    @data.setter
+    def data(self, val):
+        self.dataRecords = val.to_dict(orient="records")
 
     def name(self):
         return self._name
@@ -129,11 +164,23 @@ class HistogramPlot(widgets.DOMWidget):
     _name = "histogramplot"
     _observing = []
 
-    data = List([]).tag(sync=True)
+    dataRecords = List([]).tag(sync=True)
     x = Unicode().tag(sync=True)
     start = Float().tag(sync=True)
     end = Float().tag(sync=True)
     elementId = Unicode().tag(sync=True)
+
+    def __init__(self, data, **kwargs):
+        self.data = data
+        super().__init__(**kwargs)
+
+    @property
+    def data(self):
+        return pd.DataFrame.from_records(self.dataRecords)
+
+    @data.setter
+    def data(self, val):
+        self.dataRecords = val.to_dict(orient="records")
 
     def name(self):
         return self._name
@@ -163,13 +210,25 @@ class RangeSlider(widgets.DOMWidget):
     _name = "rangeslider"
     _observing = []
 
-    data = List([]).tag(sync=True)
+    dataRecords = List([]).tag(sync=True)
     variable = Unicode().tag(sync=True)
     step = Float().tag(sync=True)
     description = Unicode().tag(sync=True)
     minValue = Float().tag(sync=True)
     maxValue = Float().tag(sync=True)
     elementId = Unicode().tag(sync=True)
+
+    def __init__(self, data, **kwargs):
+        self.data = data
+        super().__init__(**kwargs)
+
+    @property
+    def data(self):
+        return pd.DataFrame.from_records(self.dataRecords)
+
+    @data.setter
+    def data(self, val):
+        self.dataRecords = val.to_dict(orient="records")
 
     def name(self):
         return self._name
