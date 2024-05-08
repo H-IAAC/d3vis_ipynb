@@ -16,5 +16,3 @@ d3vis_ipynb/labextension/
 js/yarn-error.log
 js/yarn.lock
 js/package-lock.json
-js/lib/wrappers/data.json
-js/export/

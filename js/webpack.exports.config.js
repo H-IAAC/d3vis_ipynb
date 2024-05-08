@@ -2,10 +2,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = (env) => {
-  let entry = "./lib/web-dev.js"
-  if(env.export){
-      entry = "./lib/wrappers/embedding.wrapper.js"
-  }
+  let entry = "./lib/web-dev.js";
 
   return {
     mode: "development",

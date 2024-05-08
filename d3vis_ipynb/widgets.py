@@ -16,28 +16,11 @@ class LinearHistPlot(widgets.DOMWidget):
     _view_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
     _model_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
 
-    _name = "linearhistplot"
-    _observing = []
-
     linearData_x = List([]).tag(sync=True)
     linearData_y = List([]).tag(sync=True)
     histogramData = List([]).tag(sync=True)
     elementId = Unicode().tag(sync=True)
     clickedValue = Unicode().tag(sync=True)
-
-    def name(self):
-        return self._name
-
-    def export_data(self):
-        data = {
-            "linearData_x": self.linearData_x,
-            "linearData_y": self.linearData_y,
-            "histogramData": self.histogramData,
-            "elementId": self.elementId,
-            "observing": self._observing,
-        }
-
-        return {self._name: data}
 
     def on_click_value(self, callback):
         self.observe(callback, names=["clickedValue"])
@@ -51,9 +34,6 @@ class ScatterPlot(widgets.DOMWidget):
     _model_module = Unicode("d3vis_ipynb").tag(sync=True)
     _view_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
     _model_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
-
-    _name = "scatterplot"
-    _observing = []
 
     dataRecords = List([]).tag(sync=True)
     x = Unicode().tag(sync=True)
@@ -84,21 +64,6 @@ class ScatterPlot(widgets.DOMWidget):
     def selectedValues(self, val):
         self.selectedValuesRecords = val.to_dict(orient="records")
 
-    def name(self):
-        return self._name
-
-    def export_data(self):
-        data = {
-            "data": self.data,
-            "x": self.x,
-            "y": self.y,
-            "hue": self.hue,
-            "elementId": self.elementId,
-            "observing": self._observing,
-        }
-
-        return {self._name: data}
-
     def on_select_values(self, callback):
         self.observe(callback, names=["selectedValuesRecords"])
 
@@ -114,9 +79,6 @@ class BarPlot(widgets.DOMWidget):
     _model_module = Unicode("d3vis_ipynb").tag(sync=True)
     _view_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
     _model_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
-
-    _name = "barplot"
-    _observing = []
 
     dataRecords = List([]).tag(sync=True)
     x = Unicode().tag(sync=True)
@@ -136,21 +98,6 @@ class BarPlot(widgets.DOMWidget):
     def data(self, val):
         self.dataRecords = val.to_dict(orient="records")
 
-    def name(self):
-        return self._name
-
-    def export_data(self):
-        data = {
-            "data": self.data,
-            "x": self.x,
-            "y": self.y,
-            "hue": self.hue,
-            "elementId": self.elementId,
-            "observing": self._observing,
-        }
-
-        return {self._name: data}
-
 
 @widgets.register
 class HistogramPlot(widgets.DOMWidget):
@@ -160,9 +107,6 @@ class HistogramPlot(widgets.DOMWidget):
     _model_module = Unicode("d3vis_ipynb").tag(sync=True)
     _view_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
     _model_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
-
-    _name = "histogramplot"
-    _observing = []
 
     dataRecords = List([]).tag(sync=True)
     x = Unicode().tag(sync=True)
@@ -182,21 +126,6 @@ class HistogramPlot(widgets.DOMWidget):
     def data(self, val):
         self.dataRecords = val.to_dict(orient="records")
 
-    def name(self):
-        return self._name
-
-    def export_data(self):
-        data = {
-            "data": self.data,
-            "x": self.x,
-            "start": self.start,
-            "end": self.end,
-            "elementId": self.elementId,
-            "observing": self._observing,
-        }
-
-        return {self._name: data}
-
 
 @widgets.register
 class RangeSlider(widgets.DOMWidget):
@@ -206,9 +135,6 @@ class RangeSlider(widgets.DOMWidget):
     _model_module = Unicode("d3vis_ipynb").tag(sync=True)
     _view_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
     _model_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
-
-    _name = "rangeslider"
-    _observing = []
 
     dataRecords = List([]).tag(sync=True)
     variable = Unicode().tag(sync=True)
@@ -229,21 +155,6 @@ class RangeSlider(widgets.DOMWidget):
     @data.setter
     def data(self, val):
         self.dataRecords = val.to_dict(orient="records")
-
-    def name(self):
-        return self._name
-
-    def export_data(self):
-        data = {
-            "data": self.data,
-            "variable": self.variable,
-            "step": self.step,
-            "description": self.description,
-            "elementId": self.elementId,
-            "observing": self._observing,
-        }
-
-        return {self._name: data}
 
     def on_drag(self, callback):
         self.observe(callback, names=["minValue", "maxValue"])

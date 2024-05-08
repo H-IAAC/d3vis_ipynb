@@ -30,8 +30,6 @@
     "build:labextension:dev": "jupyter labextension build --development True .",
     "watch": "webpack --watch --mode=development",
     "start": "webpack serve --open --config webpack.exports.config.js",
-    "start:export": "webpack serve --open --config webpack.exports.config.js --env export",
-    "export": "webpack --env export --config webpack.exports.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
