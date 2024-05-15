@@ -1,7 +1,8 @@
 import * as d3 from "d3";
 import { lasso } from "../tools/lasso";
+import { getDataMeans, groupArrayBy } from "../tools/group_data";
 
-export function scatterplot(
+export function linearplot(
   data,
   x_value,
   y_value,
@@ -15,6 +16,7 @@ export function scatterplot(
 ) {
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
+  data = getDataMeans(data, x_value, [y_value], hue);
 
   for (let i = 0; i < data.length; i++) {
     data[i]["id"] = i;
@@ -109,6 +111,31 @@ export function scatterplot(
     .attr("y", 6)
     .attr("dy", ".71em")
     .style("text-anchor", "end");
+
+  function addPath(datum, colorSelector) {
+    svg
+    .append("path")
+    .datum(datum)
+    .attr("fill", "none")
+    .attr("stroke", color(colorSelector))
+    .attr("stroke-width", 2)
+    .attr(
+      "d",
+      d3
+        .line()
+        .x((d) => x(d[x_value]))
+        .y((d) => y(d[y_value]))
+    );
+  }
+
+  if(!hue){
+    addPath(data)
+  }else {
+    const groupedByHue = groupArrayBy(data, hue)
+    Object.keys(groupedByHue).forEach(function(key, index) {
+      addPath(groupedByHue[key], key)
+    })
+  }
 
   svg
     .selectAll(".dot")

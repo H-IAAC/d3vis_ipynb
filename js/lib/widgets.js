@@ -3,6 +3,7 @@ import "../css/widget.css";
 import { barplot } from "./graphs/barplot";
 import { histogramplot } from "./graphs/histogramplot";
 import { linearhistplot } from "./graphs/linearhistplot";
+import { linearplot } from "./graphs/linearplot";
 import { rangeslider } from "./graphs/rangeslider";
 import { scatterplot } from "./graphs/scatterplot";
 const packageData = require("../package.json");
@@ -113,10 +114,10 @@ export class ScatterPlotModel extends DOMWidgetModel {
     };
   }
 
-  static model_name = "ScatterplotModel";
+  static model_name = "ScatterPlotModel";
   static model_module = packageData.name;
   static model_module_version = packageData.version;
-  static view_name = "ScatterplotView"; // Set to null if no view
+  static view_name = "ScatterPlotView"; // Set to null if no view
   static view_module = packageData.name; // Set to null if no view
   static view_module_version = packageData.version;
 }
@@ -151,6 +152,89 @@ export class ScatterPlotView extends DOMWidgetView {
     const margin = WIDGET_MARGIN;
 
     scatterplot(
+      data,
+      x,
+      y,
+      hue,
+      element,
+      this.setValue.bind(this),
+      this.setSelectedValues.bind(this),
+      width,
+      height,
+      margin
+    );
+  }
+
+  setValue(text) {
+    this.model.set({ clickedValue: text });
+    this.model.save_changes();
+  }
+
+  setSelectedValues(values) {
+    this.model.set({ selectedValuesRecords: values });
+    this.model.save_changes();
+  }
+}
+
+export class LinearPlotModel extends DOMWidgetModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: LinearPlotModel.model_name,
+      _view_name: LinearPlotModel.view_name,
+      _model_module: LinearPlotModel.model_module,
+      _view_module: LinearPlotModel.view_module,
+      _model_module_version: LinearPlotModel.model_module_version,
+      _view_module_version: LinearPlotModel.view_module_version,
+
+      dataRecords: [],
+      x: String,
+      y: String,
+      hue: String,
+      elementId: String,
+      clickedValue: String,
+      selectedValuesRecords: [],
+    };
+  }
+
+  static model_name = "LinearPlotModel";
+  static model_module = packageData.name;
+  static model_module_version = packageData.version;
+  static view_name = "LinearPlotView"; // Set to null if no view
+  static view_module = packageData.name; // Set to null if no view
+  static view_module_version = packageData.version;
+}
+
+export class LinearPlotView extends DOMWidgetView {
+  timeout;
+
+  render() {
+    plotAfterInterval(this);
+
+    this.model.on("change:dataRecords", () => plotAfterInterval(this), this);
+    this.model.on("change:x", () => plotAfterInterval(this), this);
+    this.model.on("change:y", () => plotAfterInterval(this), this);
+    this.model.on("change:hue", () => plotAfterInterval(this), this);
+    window.addEventListener("resize", () => plotAfterInterval(this));
+  }
+
+  plot() {
+    const data = this.model.get("dataRecords");
+    const x = this.model.get("x");
+    const y = this.model.get("y");
+    const hue = this.model.get("hue");
+    const elementId = this.model.get("elementId");
+
+    let height = WIDGET_HEIGHT;
+    let element = this.el;
+    if (elementId) {
+      element = document.getElementById(elementId);
+      height = element.clientHeight;
+    }
+    let width = element.clientWidth;
+    const margin = WIDGET_MARGIN;
+
+    linearplot(
       data,
       x,
       y,

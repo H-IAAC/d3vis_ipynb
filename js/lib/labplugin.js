@@ -12,6 +12,8 @@ import {
   RangeSliderView,
   ScatterPlotModel,
   ScatterPlotView,
+  LinearPlotModel,
+  LinearPlotView,
   version,
 } from "./index";
 
@@ -27,6 +29,8 @@ export const helloWidgetPlugin = {
         LinearHistPlotView,
         ScatterPlotModel,
         ScatterPlotView,
+        LinearPlotModel,
+        LinearPlotView,
         BarPlotModel,
         BarPlotView,
         HistogramPlotModel,
