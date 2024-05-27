@@ -8,25 +8,6 @@ from ._version import NPM_PACKAGE_RANGE
 
 
 @widgets.register
-class LinearHistPlot(widgets.DOMWidget):
-    _view_name = Unicode("LinearHistPlotView").tag(sync=True)
-    _model_name = Unicode("LinearHistPlotModel").tag(sync=True)
-    _view_module = Unicode("d3vis_ipynb").tag(sync=True)
-    _model_module = Unicode("d3vis_ipynb").tag(sync=True)
-    _view_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
-    _model_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
-
-    linearData_x = List([]).tag(sync=True)
-    linearData_y = List([]).tag(sync=True)
-    histogramData = List([]).tag(sync=True)
-    elementId = Unicode().tag(sync=True)
-    clickedValue = Unicode().tag(sync=True)
-
-    def on_click_value(self, callback):
-        self.observe(callback, names=["clickedValue"])
-
-
-@widgets.register
 class ScatterPlot(widgets.DOMWidget):
     _view_name = Unicode("ScatterPlotView").tag(sync=True)
     _model_name = Unicode("ScatterPlotModel").tag(sync=True)
@@ -69,6 +50,7 @@ class ScatterPlot(widgets.DOMWidget):
 
     def on_click_value(self, callback):
         self.observe(callback, names=["clickedValue"])
+
 
 @widgets.register
 class LinearPlot(widgets.DOMWidget):
@@ -113,6 +95,7 @@ class LinearPlot(widgets.DOMWidget):
 
     def on_click_value(self, callback):
         self.observe(callback, names=["clickedValue"])
+
 
 @widgets.register
 class BarPlot(widgets.DOMWidget):

@@ -6,8 +6,6 @@ import {
   EmbeddingView,
   HistogramPlotModel,
   HistogramPlotView,
-  LinearHistPlotModel,
-  LinearHistPlotView,
   RangeSliderModel,
   RangeSliderView,
   ScatterPlotModel,
@@ -25,8 +23,6 @@ export const helloWidgetPlugin = {
       name: "d3vis_ipynb",
       version: version,
       exports: {
-        LinearHistPlotModel,
-        LinearHistPlotView,
         ScatterPlotModel,
         ScatterPlotView,
         LinearPlotModel,

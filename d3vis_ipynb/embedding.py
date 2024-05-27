@@ -1,10 +1,9 @@
-import os
 import random
 import string
 
 import ipywidgets as widgets
 from IPython.display import display
-from traitlets import Float, List, Unicode
+from traitlets import List, Unicode
 
 from ._version import NPM_PACKAGE_RANGE
 

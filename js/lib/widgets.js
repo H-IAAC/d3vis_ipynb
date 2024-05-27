@@ -2,7 +2,6 @@ import { DOMWidgetModel, DOMWidgetView } from "@jupyter-widgets/base";
 import "../css/widget.css";
 import { barplot } from "./graphs/barplot";
 import { histogramplot } from "./graphs/histogramplot";
-import { linearhistplot } from "./graphs/linearhistplot";
 import { linearplot } from "./graphs/linearplot";
 import { rangeslider } from "./graphs/rangeslider";
 import { scatterplot } from "./graphs/scatterplot";
@@ -19,80 +18,6 @@ function plotAfterInterval(that) {
   that.timeout = setTimeout(() => {
     that.plot();
   }, RENDER_INTERVAL);
-}
-
-export class LinearHistPlotModel extends DOMWidgetModel {
-  defaults() {
-    return {
-      ...super.defaults(),
-      _model_name: LinearHistPlotModel.model_name,
-      _view_name: LinearHistPlotModel.view_name,
-      _model_module: LinearHistPlotModel.model_module,
-      _view_module: LinearHistPlotModel.view_module,
-      _model_module_version: LinearHistPlotModel.model_module_version,
-      _view_module_version: LinearHistPlotModel.view_module_version,
-
-      linearData_x: [],
-      linearData_y: [],
-      histogramData: [],
-      elementId: String,
-      clickedValue: String,
-    };
-  }
-
-  static model_name = "LinearHistPlotModel";
-  static model_module = packageData.name;
-  static model_module_version = packageData.version;
-  static view_name = "LinearHistPlotView"; // Set to null if no view
-  static view_module = packageData.name; // Set to null if no view
-  static view_module_version = packageData.version;
-}
-
-export class LinearHistPlotView extends DOMWidgetView {
-  timeout;
-
-  render() {
-    plotAfterInterval(this);
-
-    this.model.on("change:linearData_x", () => plotAfterInterval(this), this);
-    this.model.on("change:linearData_y", () => plotAfterInterval(this), this);
-    this.model.on("change:histogramData", () => plotAfterInterval(this), this);
-    window.addEventListener("resize", () => plotAfterInterval(this));
-  }
-
-  plot() {
-    const linearData_x = this.model.get("linearData_x");
-    const linearData_y = this.model.get("linearData_y");
-    const histogramData = this.model.get("histogramData");
-    let elementId = this.model.get("elementId");
-
-    if (typeof elementId === "function") elementId = elementId();
-
-    let height = WIDGET_HEIGHT;
-    let element = this.el;
-    if (elementId) {
-      element = document.getElementById(elementId);
-      height = element.clientHeight;
-    }
-    let width = element.clientWidth;
-    const margin = WIDGET_MARGIN;
-
-    linearhistplot(
-      linearData_x,
-      linearData_y,
-      histogramData,
-      element,
-      this.setValue.bind(this),
-      width,
-      height,
-      margin
-    );
-  }
-
-  setValue(text) {
-    this.model.set({ clickedValue: text });
-    this.model.save_changes();
-  }
 }
 
 export class ScatterPlotModel extends DOMWidgetModel {
