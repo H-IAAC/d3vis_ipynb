@@ -63,12 +63,16 @@ export class ScatterPlotView extends DOMWidgetView {
   }
 
   plot() {
-    const data = this.model.get("dataRecords");
-    const x = this.model.get("x");
-    const y = this.model.get("y");
-    const hue = this.model.get("hue");
+    let data = this.model.get("dataRecords");
+    let x = this.model.get("x");
+    let y = this.model.get("y");
+    let hue = this.model.get("hue");
     let elementId = this.model.get("elementId");
 
+    if (typeof data === "function") data = data();
+    if (typeof x === "function") x = x();
+    if (typeof y === "function") y = y();
+    if (typeof hue === "function") hue = hue();
     if (typeof elementId === "function") elementId = elementId();
 
     let height = WIDGET_HEIGHT;
@@ -148,12 +152,16 @@ export class LinearPlotView extends DOMWidgetView {
   }
 
   plot() {
-    const data = this.model.get("dataRecords");
-    const x = this.model.get("x");
-    const y = this.model.get("y");
-    const hue = this.model.get("hue");
+    let data = this.model.get("dataRecords");
+    let x = this.model.get("x");
+    let y = this.model.get("y");
+    let hue = this.model.get("hue");
     let elementId = this.model.get("elementId");
 
+    if (typeof data === "function") data = data();
+    if (typeof x === "function") x = x();
+    if (typeof y === "function") y = y();
+    if (typeof hue === "function") hue = hue();
     if (typeof elementId === "function") elementId = elementId();
 
     let height = WIDGET_HEIGHT;
@@ -231,12 +239,16 @@ export class BarPlotView extends DOMWidgetView {
   }
 
   plot() {
-    const data = this.model.get("dataRecords");
-    const x = this.model.get("x");
-    const y = this.model.get("y");
-    const hue = this.model.get("hue");
+    let data = this.model.get("dataRecords");
+    let x = this.model.get("x");
+    let y = this.model.get("y");
+    let hue = this.model.get("hue");
     let elementId = this.model.get("elementId");
 
+    if (typeof data === "function") data = data();
+    if (typeof x === "function") x = x();
+    if (typeof y === "function") y = y();
+    if (typeof hue === "function") hue = hue();
     if (typeof elementId === "function") elementId = elementId();
 
     let height = WIDGET_HEIGHT;
@@ -293,12 +305,16 @@ export class HistogramPlotView extends DOMWidgetView {
   }
 
   plot() {
-    const data = this.model.get("dataRecords");
-    const x = this.model.get("x");
-    const start = this.model.get("start");
-    const end = this.model.get("end");
+    let data = this.model.get("dataRecords");
+    let x = this.model.get("x");
+    let start = this.model.get("start");
+    let end = this.model.get("end");
     let elementId = this.model.get("elementId");
 
+    if (typeof data === "function") data = data();
+    if (typeof x === "function") x = x();
+    if (typeof start === "function") start = start();
+    if (typeof end === "function") end = end();
     if (typeof elementId === "function") elementId = elementId();
 
     let height = WIDGET_HEIGHT;
@@ -417,15 +433,21 @@ export class RangeSliderView extends DOMWidgetView {
   }
 
   plot() {
-    const data = this.model.get("dataRecords");
-    const variable = this.model.get("variable");
-    const step = this.model.get("step");
-    const description = this.model.get("description");
+    let data = this.model.get("dataRecords");
+    let variable = this.model.get("variable");
+    let step = this.model.get("step");
+    let description = this.model.get("description");
     let elementId = this.model.get("elementId");
-    const minValue = this.model.get("minValue");
-    const maxValue = this.model.get("maxValue");
+    let minValue = this.model.get("minValue");
+    let maxValue = this.model.get("maxValue");
 
+    if (typeof data === "function") data = data();
+    if (typeof variable === "function") variable = variable();
+    if (typeof step === "function") step = step();
+    if (typeof description === "function") description = description();
     if (typeof elementId === "function") elementId = elementId();
+    if (typeof minValue === "function") minValue = minValue();
+    if (typeof maxValue === "function") maxValue = maxValue();
 
     let element = this.el;
     if (elementId) {
