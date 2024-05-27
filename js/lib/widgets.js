@@ -64,7 +64,9 @@ export class LinearHistPlotView extends DOMWidgetView {
     const linearData_x = this.model.get("linearData_x");
     const linearData_y = this.model.get("linearData_y");
     const histogramData = this.model.get("histogramData");
-    const elementId = this.model.get("elementId");
+    let elementId = this.model.get("elementId");
+
+    if (typeof elementId === "function") elementId = elementId();
 
     let height = WIDGET_HEIGHT;
     let element = this.el;
@@ -140,7 +142,9 @@ export class ScatterPlotView extends DOMWidgetView {
     const x = this.model.get("x");
     const y = this.model.get("y");
     const hue = this.model.get("hue");
-    const elementId = this.model.get("elementId");
+    let elementId = this.model.get("elementId");
+
+    if (typeof elementId === "function") elementId = elementId();
 
     let height = WIDGET_HEIGHT;
     let element = this.el;
@@ -223,7 +227,9 @@ export class LinearPlotView extends DOMWidgetView {
     const x = this.model.get("x");
     const y = this.model.get("y");
     const hue = this.model.get("hue");
-    const elementId = this.model.get("elementId");
+    let elementId = this.model.get("elementId");
+
+    if (typeof elementId === "function") elementId = elementId();
 
     let height = WIDGET_HEIGHT;
     let element = this.el;
@@ -278,10 +284,10 @@ export class BarPlotModel extends DOMWidgetModel {
     };
   }
 
-  static model_name = "BarplotModel";
+  static model_name = "BarPlotModel";
   static model_module = packageData.name;
   static model_module_version = packageData.version;
-  static view_name = "BarplotView"; // Set to null if no view
+  static view_name = "BarPlotView"; // Set to null if no view
   static view_module = packageData.name; // Set to null if no view
   static view_module_version = packageData.version;
 }
@@ -304,7 +310,9 @@ export class BarPlotView extends DOMWidgetView {
     const x = this.model.get("x");
     const y = this.model.get("y");
     const hue = this.model.get("hue");
-    const elementId = this.model.get("elementId");
+    let elementId = this.model.get("elementId");
+
+    if (typeof elementId === "function") elementId = elementId();
 
     let height = WIDGET_HEIGHT;
     let element = this.el;
@@ -338,10 +346,10 @@ export class HistogramPlotModel extends DOMWidgetModel {
     };
   }
 
-  static model_name = "HistogramplotModel";
+  static model_name = "HistogramPlotModel";
   static model_module = packageData.name;
   static model_module_version = packageData.version;
-  static view_name = "HistogramplotView"; // Set to null if no view
+  static view_name = "HistogramPlotView"; // Set to null if no view
   static view_module = packageData.name; // Set to null if no view
   static view_module_version = packageData.version;
 }
@@ -364,7 +372,9 @@ export class HistogramPlotView extends DOMWidgetView {
     const x = this.model.get("x");
     const start = this.model.get("start");
     const end = this.model.get("end");
-    const elementId = this.model.get("elementId");
+    let elementId = this.model.get("elementId");
+
+    if (typeof elementId === "function") elementId = elementId();
 
     let height = WIDGET_HEIGHT;
     let element = this.el;
@@ -486,9 +496,11 @@ export class RangeSliderView extends DOMWidgetView {
     const variable = this.model.get("variable");
     const step = this.model.get("step");
     const description = this.model.get("description");
-    const elementId = this.model.get("elementId");
+    let elementId = this.model.get("elementId");
     const minValue = this.model.get("minValue");
     const maxValue = this.model.get("maxValue");
+
+    if (typeof elementId === "function") elementId = elementId();
 
     let element = this.el;
     if (elementId) {
