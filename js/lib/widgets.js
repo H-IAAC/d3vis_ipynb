@@ -20,6 +20,19 @@ function plotAfterInterval(that) {
   }, RENDER_INTERVAL);
 }
 
+function getElementAndSizes(elementId, thatEl) {
+  let height = WIDGET_HEIGHT;
+  let element = thatEl;
+  if (elementId) {
+    element = document.getElementById(elementId);
+    height = element.clientHeight;
+  }
+  const width = element.clientWidth;
+  const margin = WIDGET_MARGIN;
+
+  return [element, width, height, margin]
+}
+
 export class ScatterPlotModel extends DOMWidgetModel {
   defaults() {
     return {
@@ -50,8 +63,6 @@ export class ScatterPlotModel extends DOMWidgetModel {
 }
 
 export class ScatterPlotView extends DOMWidgetView {
-  timeout;
-
   render() {
     plotAfterInterval(this);
 
@@ -75,14 +86,7 @@ export class ScatterPlotView extends DOMWidgetView {
     if (typeof hue === "function") hue = hue();
     if (typeof elementId === "function") elementId = elementId();
 
-    let height = WIDGET_HEIGHT;
-    let element = this.el;
-    if (elementId) {
-      element = document.getElementById(elementId);
-      height = element.clientHeight;
-    }
-    let width = element.clientWidth;
-    const margin = WIDGET_MARGIN;
+    const [element, width, height, margin] = getElementAndSizes(elementId, this.el);
 
     scatterplot(
       data,
@@ -139,8 +143,6 @@ export class LinearPlotModel extends DOMWidgetModel {
 }
 
 export class LinearPlotView extends DOMWidgetView {
-  timeout;
-
   render() {
     plotAfterInterval(this);
 
@@ -164,14 +166,7 @@ export class LinearPlotView extends DOMWidgetView {
     if (typeof hue === "function") hue = hue();
     if (typeof elementId === "function") elementId = elementId();
 
-    let height = WIDGET_HEIGHT;
-    let element = this.el;
-    if (elementId) {
-      element = document.getElementById(elementId);
-      height = element.clientHeight;
-    }
-    let width = element.clientWidth;
-    const margin = WIDGET_MARGIN;
+    const [element, width, height, margin] = getElementAndSizes(elementId, this.el);
 
     linearplot(
       data,
@@ -226,8 +221,6 @@ export class BarPlotModel extends DOMWidgetModel {
 }
 
 export class BarPlotView extends DOMWidgetView {
-  timeout;
-
   render() {
     plotAfterInterval(this);
 
@@ -251,14 +244,7 @@ export class BarPlotView extends DOMWidgetView {
     if (typeof hue === "function") hue = hue();
     if (typeof elementId === "function") elementId = elementId();
 
-    let height = WIDGET_HEIGHT;
-    let element = this.el;
-    if (elementId) {
-      element = document.getElementById(elementId);
-      height = element.clientHeight;
-    }
-    let width = element.clientWidth;
-    const margin = WIDGET_MARGIN;
+    const [element, width, height, margin] = getElementAndSizes(elementId, this.el);
 
     barplot(data, x, y, hue, element, width, height, margin);
   }
@@ -292,8 +278,6 @@ export class HistogramPlotModel extends DOMWidgetModel {
 }
 
 export class HistogramPlotView extends DOMWidgetView {
-  timeout;
-
   render() {
     plotAfterInterval(this);
 
@@ -317,14 +301,7 @@ export class HistogramPlotView extends DOMWidgetView {
     if (typeof end === "function") end = end();
     if (typeof elementId === "function") elementId = elementId();
 
-    let height = WIDGET_HEIGHT;
-    let element = this.el;
-    if (elementId) {
-      element = document.getElementById(elementId);
-      height = element.clientHeight;
-    }
-    let width = element.clientWidth;
-    const margin = WIDGET_MARGIN;
+    const [element, width, height, margin] = getElementAndSizes(elementId, this.el);
 
     histogramplot(data, x, start, end, element, width, height, margin);
   }
@@ -472,5 +449,149 @@ export class RangeSliderView extends DOMWidgetView {
     this.model.set({ minValue: min });
     this.model.set({ maxValue: max });
     this.model.save_changes();
+  }
+}
+
+export class VideoModel extends DOMWidgetModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: VideoModel.model_name,
+      _view_name: VideoModel.view_name,
+      _model_module: VideoModel.model_module,
+      _view_module: VideoModel.view_module,
+      _model_module_version: VideoModel.model_module_version,
+      _view_module_version: VideoModel.view_module_version,
+
+      value: String,
+      format: "mp4",
+      width: Number,
+      height: Number,
+    };
+  }
+
+  static model_name = "VideoModel";
+  static model_module = packageData.name;
+  static model_module_version = packageData.version;
+  static view_name = "VideoView"; // Set to null if no view
+  static view_module = packageData.name; // Set to null if no view
+  static view_module_version = packageData.version;
+}
+
+export class VideoView extends DOMWidgetView {
+  render() {
+    plotAfterInterval(this);
+
+    this.model.on("change:value", () => plotAfterInterval(this), this);
+    this.model.on("change:width", () => plotAfterInterval(this), this);
+    this.model.on("change:height", () => plotAfterInterval(this), this);
+    window.addEventListener("resize", () => plotAfterInterval(this));
+  }
+
+  plot() {
+    this.el.innerHTML = "";
+    let value = this.model.get("value");
+    let format = this.model.get("format");
+    let modelWidth = this.model.get("width");
+    let modelHeight = this.model.get("height");
+    let elementId = this.model.get("elementId");
+
+    if (typeof value === "function") value = value();
+    if (typeof format === "function") format = format();
+    if (typeof modelWidth === "function") modelWidth = modelWidth();
+    if (typeof modelHeight === "function") modelHeight = modelHeight();
+
+    let [element, width, height, margin] = getElementAndSizes(elementId, this.el);
+    if (modelWidth) width = modelWidth
+    if (modelHeight) height = modelHeight
+
+    const node = document.createElement("div");
+    const video = document.createElement("video");
+    const source = document.createElement("source");
+
+    source.setAttribute("src", value);
+    source.setAttribute("type", "video/" + format);
+
+    video.appendChild(source);
+    video.setAttribute("controls", "");
+    video.style.maxWidth = "100%";
+    video.style.maxHeight = "100%";
+    video.style.margin = "auto";
+    video.style.display = "block";
+
+    node.style.width = width + "px";
+    node.style.height = height + "px";
+    node.appendChild(video);
+
+    element.appendChild(node);
+  }
+}
+
+export class ImageModel extends DOMWidgetModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: ImageModel.model_name,
+      _view_name: ImageModel.view_name,
+      _model_module: ImageModel.model_module,
+      _view_module: ImageModel.view_module,
+      _model_module_version: ImageModel.model_module_version,
+      _view_module_version: ImageModel.view_module_version,
+
+      value: String,
+      format: "jpg",
+      width: Number,
+      height: Number,
+    };
+  }
+
+  static model_name = "ImageModel";
+  static model_module = packageData.name;
+  static model_module_version = packageData.version;
+  static view_name = "ImageView"; // Set to null if no view
+  static view_module = packageData.name; // Set to null if no view
+  static view_module_version = packageData.version;
+}
+
+export class ImageView extends DOMWidgetView {
+  render() {
+    plotAfterInterval(this);
+
+    this.model.on("change:value", () => plotAfterInterval(this), this);
+    this.model.on("change:width", () => plotAfterInterval(this), this);
+    this.model.on("change:height", () => plotAfterInterval(this), this);
+    window.addEventListener("resize", () => plotAfterInterval(this));
+  }
+
+  plot() {
+    this.el.innerHTML = "";
+    let value = this.model.get("value");
+    let modelWidth = this.model.get("width");
+    let modelHeight = this.model.get("height");
+    let elementId = this.model.get("elementId");
+
+    if (typeof value === "function") value = value();
+    if (typeof modelWidth === "function") modelWidth = modelWidth();
+    if (typeof modelHeight === "function") modelHeight = modelHeight();
+    if (typeof elementId === "function") elementId = elementId();
+
+    let [element, width, height, margin] = getElementAndSizes(elementId, this.el);
+    if (modelWidth) width = modelWidth
+    if (modelHeight) height = modelHeight
+
+    const node = document.createElement("div");
+    const image = document.createElement("img");
+
+    image.setAttribute("src", value);
+    image.style.maxWidth = "100%";
+    image.style.maxHeight = "100%";
+    image.style.margin = "auto";
+    image.style.display = "block";
+
+    node.style.width = width + "px";
+    node.style.height = height + "px";
+    node.appendChild(image);
+
+    element.appendChild(node);
   }
 }

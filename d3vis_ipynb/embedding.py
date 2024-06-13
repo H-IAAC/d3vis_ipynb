@@ -5,17 +5,13 @@ import ipywidgets as widgets
 from IPython.display import display
 from traitlets import List, Unicode
 
-from ._version import NPM_PACKAGE_RANGE
+from d3vis_ipynb.base_widget import BaseWidget
 
 
 @widgets.register
-class Embedding(widgets.DOMWidget):
+class Embedding(BaseWidget):
     _view_name = Unicode("EmbeddingView").tag(sync=True)
     _model_name = Unicode("EmbeddingModel").tag(sync=True)
-    _view_module = Unicode("d3vis_ipynb").tag(sync=True)
-    _model_module = Unicode("d3vis_ipynb").tag(sync=True)
-    _view_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
-    _model_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
 
     matrix = List().tag(sync=True)
     grid_areas = List().tag(sync=True)

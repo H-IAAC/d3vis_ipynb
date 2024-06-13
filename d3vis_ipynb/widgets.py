@@ -2,25 +2,18 @@ import ipywidgets as widgets
 import pandas as pd
 from traitlets import Float, List, Unicode
 
-from ._version import NPM_PACKAGE_RANGE
-
-# See js/lib/example.js for the frontend counterpart to this file.
+from d3vis_ipynb.base_widget import BaseWidget
 
 
 @widgets.register
-class ScatterPlot(widgets.DOMWidget):
+class ScatterPlot(BaseWidget):
     _view_name = Unicode("ScatterPlotView").tag(sync=True)
     _model_name = Unicode("ScatterPlotModel").tag(sync=True)
-    _view_module = Unicode("d3vis_ipynb").tag(sync=True)
-    _model_module = Unicode("d3vis_ipynb").tag(sync=True)
-    _view_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
-    _model_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
 
     dataRecords = List([]).tag(sync=True)
     x = Unicode().tag(sync=True)
     y = Unicode().tag(sync=True)
     hue = Unicode().tag(sync=True)
-    elementId = Unicode().tag(sync=True)
     clickedValue = Unicode().tag(sync=True)
     selectedValuesRecords = List([]).tag(sync=True)
 
@@ -53,19 +46,14 @@ class ScatterPlot(widgets.DOMWidget):
 
 
 @widgets.register
-class LinearPlot(widgets.DOMWidget):
+class LinearPlot(BaseWidget):
     _view_name = Unicode("LinearPlotView").tag(sync=True)
     _model_name = Unicode("LinearPlotModel").tag(sync=True)
-    _view_module = Unicode("d3vis_ipynb").tag(sync=True)
-    _model_module = Unicode("d3vis_ipynb").tag(sync=True)
-    _view_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
-    _model_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
 
     dataRecords = List([]).tag(sync=True)
     x = Unicode().tag(sync=True)
     y = Unicode().tag(sync=True)
     hue = Unicode().tag(sync=True)
-    elementId = Unicode().tag(sync=True)
     clickedValue = Unicode().tag(sync=True)
     selectedValuesRecords = List([]).tag(sync=True)
 
@@ -98,19 +86,14 @@ class LinearPlot(widgets.DOMWidget):
 
 
 @widgets.register
-class BarPlot(widgets.DOMWidget):
+class BarPlot(BaseWidget):
     _view_name = Unicode("BarPlotView").tag(sync=True)
     _model_name = Unicode("BarPlotModel").tag(sync=True)
-    _view_module = Unicode("d3vis_ipynb").tag(sync=True)
-    _model_module = Unicode("d3vis_ipynb").tag(sync=True)
-    _view_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
-    _model_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
 
     dataRecords = List([]).tag(sync=True)
     x = Unicode().tag(sync=True)
     y = Unicode().tag(sync=True)
     hue = Unicode().tag(sync=True)
-    elementId = Unicode().tag(sync=True)
 
     def __init__(self, data, **kwargs):
         self.data = data
@@ -126,19 +109,14 @@ class BarPlot(widgets.DOMWidget):
 
 
 @widgets.register
-class HistogramPlot(widgets.DOMWidget):
+class HistogramPlot(BaseWidget):
     _view_name = Unicode("HistogramPlotView").tag(sync=True)
     _model_name = Unicode("HistogramPlotModel").tag(sync=True)
-    _view_module = Unicode("d3vis_ipynb").tag(sync=True)
-    _model_module = Unicode("d3vis_ipynb").tag(sync=True)
-    _view_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
-    _model_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
 
     dataRecords = List([]).tag(sync=True)
     x = Unicode().tag(sync=True)
     start = Float().tag(sync=True)
     end = Float().tag(sync=True)
-    elementId = Unicode().tag(sync=True)
 
     def __init__(self, data, **kwargs):
         self.data = data
@@ -154,13 +132,9 @@ class HistogramPlot(widgets.DOMWidget):
 
 
 @widgets.register
-class RangeSlider(widgets.DOMWidget):
+class RangeSlider(BaseWidget):
     _view_name = Unicode("RangeSliderView").tag(sync=True)
     _model_name = Unicode("RangeSliderModel").tag(sync=True)
-    _view_module = Unicode("d3vis_ipynb").tag(sync=True)
-    _model_module = Unicode("d3vis_ipynb").tag(sync=True)
-    _view_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
-    _model_module_version = Unicode(NPM_PACKAGE_RANGE).tag(sync=True)
 
     dataRecords = List([]).tag(sync=True)
     variable = Unicode().tag(sync=True)
@@ -168,7 +142,6 @@ class RangeSlider(widgets.DOMWidget):
     description = Unicode().tag(sync=True)
     minValue = Float().tag(sync=True)
     maxValue = Float().tag(sync=True)
-    elementId = Unicode().tag(sync=True)
 
     def __init__(self, data, **kwargs):
         self.data = data

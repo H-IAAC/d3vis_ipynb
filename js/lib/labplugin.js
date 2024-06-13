@@ -12,6 +12,10 @@ import {
   ScatterPlotView,
   LinearPlotModel,
   LinearPlotView,
+  VideoModel,
+  VideoView,
+  ImageModel,
+  ImageView,
   version,
 } from "./index";
 
@@ -35,6 +39,10 @@ export const helloWidgetPlugin = {
         EmbeddingView,
         RangeSliderModel,
         RangeSliderView,
+        VideoModel,
+        VideoView,
+        ImageModel,
+        ImageView,
       },
     });
   },
