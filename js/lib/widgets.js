@@ -1,10 +1,10 @@
 import { DOMWidgetModel, DOMWidgetView } from "@jupyter-widgets/base";
 import "../css/widget.css";
-import { barplot } from "./graphs/barplot";
-import { histogramplot } from "./graphs/histogramplot";
-import { linearplot } from "./graphs/linearplot";
+import { BarPlot } from "./graphs/barplot";
+import { HistogramPlot } from "./graphs/histogramplot";
+import { LinearPlot } from "./graphs/linearplot";
 import { rangeslider } from "./graphs/rangeslider";
-import { scatterplot } from "./graphs/scatterplot";
+import { ScatterPlot } from "./graphs/scatterplot";
 const packageData = require("../package.json");
 
 const WIDGET_HEIGHT = 400;
@@ -20,17 +20,28 @@ function plotAfterInterval(that) {
   }, RENDER_INTERVAL);
 }
 
-function getElementAndSizes(elementId, thatEl) {
-  let height = WIDGET_HEIGHT;
-  let element = thatEl;
+function getElement(that) {
+  that.elementId = that.model.get("elementId");
+
+  let element = that.el;
+  if (that.elementId) {
+    element = document.getElementById(that.elementId);
+  }
+
+  return element;
+}
+
+function setSizes(that) {
+  const elementId = that.model.get("elementId");
+
+  that.height = WIDGET_HEIGHT;
+  let element = that.el;
   if (elementId) {
     element = document.getElementById(elementId);
-    height = element.clientHeight;
+    that.height = element.clientHeight;
   }
-  const width = element.clientWidth;
-  const margin = WIDGET_MARGIN;
-
-  return [element, width, height, margin]
+  that.width = element.clientWidth;
+  that.margin = WIDGET_MARGIN;
 }
 
 export class ScatterPlotModel extends DOMWidgetModel {
@@ -74,31 +85,24 @@ export class ScatterPlotView extends DOMWidgetView {
   }
 
   plot() {
+    if (!this.scatterplot) this.scatterplot = new ScatterPlot(getElement(this));
+    setSizes(this);
+
     let data = this.model.get("dataRecords");
     let x = this.model.get("x");
     let y = this.model.get("y");
     let hue = this.model.get("hue");
-    let elementId = this.model.get("elementId");
 
-    if (typeof data === "function") data = data();
-    if (typeof x === "function") x = x();
-    if (typeof y === "function") y = y();
-    if (typeof hue === "function") hue = hue();
-    if (typeof elementId === "function") elementId = elementId();
-
-    const [element, width, height, margin] = getElementAndSizes(elementId, this.el);
-
-    scatterplot(
+    this.scatterplot.plot(
       data,
       x,
       y,
       hue,
-      element,
       this.setValue.bind(this),
       this.setSelectedValues.bind(this),
-      width,
-      height,
-      margin
+      this.width,
+      this.height,
+      this.margin
     );
   }
 
@@ -154,31 +158,24 @@ export class LinearPlotView extends DOMWidgetView {
   }
 
   plot() {
+    if (!this.linearplot) this.linearplot = new LinearPlot(getElement(this));
+    setSizes(this);
+
     let data = this.model.get("dataRecords");
     let x = this.model.get("x");
     let y = this.model.get("y");
     let hue = this.model.get("hue");
-    let elementId = this.model.get("elementId");
 
-    if (typeof data === "function") data = data();
-    if (typeof x === "function") x = x();
-    if (typeof y === "function") y = y();
-    if (typeof hue === "function") hue = hue();
-    if (typeof elementId === "function") elementId = elementId();
-
-    const [element, width, height, margin] = getElementAndSizes(elementId, this.el);
-
-    linearplot(
+    this.linearplot.plot(
       data,
       x,
       y,
       hue,
-      element,
       this.setValue.bind(this),
       this.setSelectedValues.bind(this),
-      width,
-      height,
-      margin
+      this.width,
+      this.height,
+      this.margin
     );
   }
 
@@ -232,21 +229,15 @@ export class BarPlotView extends DOMWidgetView {
   }
 
   plot() {
-    let data = this.model.get("dataRecords");
-    let x = this.model.get("x");
-    let y = this.model.get("y");
-    let hue = this.model.get("hue");
-    let elementId = this.model.get("elementId");
+    if (!this.barplot) this.barplot = new BarPlot(getElement(this));
+    setSizes(this);
 
-    if (typeof data === "function") data = data();
-    if (typeof x === "function") x = x();
-    if (typeof y === "function") y = y();
-    if (typeof hue === "function") hue = hue();
-    if (typeof elementId === "function") elementId = elementId();
+    const data = this.model.get("dataRecords");
+    const x = this.model.get("x");
+    const y = this.model.get("y");
+    const hue = this.model.get("hue");
 
-    const [element, width, height, margin] = getElementAndSizes(elementId, this.el);
-
-    barplot(data, x, y, hue, element, width, height, margin);
+    this.barplot.plot(data, x, y, hue, this.width, this.height, this.margin);
   }
 }
 
@@ -289,21 +280,24 @@ export class HistogramPlotView extends DOMWidgetView {
   }
 
   plot() {
+    if (!this.histogramplot)
+      this.histogramplot = new HistogramPlot(getElement(this));
+    setSizes(this);
+
     let data = this.model.get("dataRecords");
     let x = this.model.get("x");
     let start = this.model.get("start");
     let end = this.model.get("end");
-    let elementId = this.model.get("elementId");
 
-    if (typeof data === "function") data = data();
-    if (typeof x === "function") x = x();
-    if (typeof start === "function") start = start();
-    if (typeof end === "function") end = end();
-    if (typeof elementId === "function") elementId = elementId();
-
-    const [element, width, height, margin] = getElementAndSizes(elementId, this.el);
-
-    histogramplot(data, x, start, end, element, width, height, margin);
+    this.histogramplot.plot(
+      data,
+      x,
+      start,
+      end,
+      this.width,
+      this.height,
+      this.margin
+    );
   }
 }
 
@@ -494,16 +488,11 @@ export class VideoView extends DOMWidgetView {
     let format = this.model.get("format");
     let modelWidth = this.model.get("width");
     let modelHeight = this.model.get("height");
-    let elementId = this.model.get("elementId");
 
-    if (typeof value === "function") value = value();
-    if (typeof format === "function") format = format();
-    if (typeof modelWidth === "function") modelWidth = modelWidth();
-    if (typeof modelHeight === "function") modelHeight = modelHeight();
+    setSizes(this);
 
-    let [element, width, height, margin] = getElementAndSizes(elementId, this.el);
-    if (modelWidth) width = modelWidth
-    if (modelHeight) height = modelHeight
+    if (modelWidth) this.width = modelWidth;
+    if (modelHeight) this.height = modelHeight;
 
     const node = document.createElement("div");
     const video = document.createElement("video");
@@ -519,11 +508,11 @@ export class VideoView extends DOMWidgetView {
     video.style.margin = "auto";
     video.style.display = "block";
 
-    node.style.width = width + "px";
-    node.style.height = height + "px";
+    node.style.width = this.width + "px";
+    node.style.height = this.height + "px";
     node.appendChild(video);
 
-    element.appendChild(node);
+    getElement(this).appendChild(node);
   }
 }
 
@@ -568,16 +557,10 @@ export class ImageView extends DOMWidgetView {
     let value = this.model.get("value");
     let modelWidth = this.model.get("width");
     let modelHeight = this.model.get("height");
-    let elementId = this.model.get("elementId");
 
-    if (typeof value === "function") value = value();
-    if (typeof modelWidth === "function") modelWidth = modelWidth();
-    if (typeof modelHeight === "function") modelHeight = modelHeight();
-    if (typeof elementId === "function") elementId = elementId();
-
-    let [element, width, height, margin] = getElementAndSizes(elementId, this.el);
-    if (modelWidth) width = modelWidth
-    if (modelHeight) height = modelHeight
+    setSizes(this);
+    if (modelWidth) this.width = modelWidth;
+    if (modelHeight) this.height = modelHeight;
 
     const node = document.createElement("div");
     const image = document.createElement("img");
@@ -588,10 +571,10 @@ export class ImageView extends DOMWidgetView {
     image.style.margin = "auto";
     image.style.display = "block";
 
-    node.style.width = width + "px";
-    node.style.height = height + "px";
+    node.style.width = this.width + "px";
+    node.style.height = this.height + "px";
     node.appendChild(image);
 
-    element.appendChild(node);
+    getElement(this).appendChild(node);
   }
 }
