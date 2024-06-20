@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 
 export function lasso(
-  element,
+  that,
   xScale,
   yScale,
   x_value,
@@ -40,7 +40,7 @@ export function lasso(
     return inside;
   };
 
-  const circles = d3.select(element).selectAll(".dot");
+  const circles = d3.select(that.element).selectAll(".dot");
 
   function drawPath() {
     d3.select("#lasso" + randomString)
@@ -52,8 +52,8 @@ export function lasso(
 
   function dragStart() {
     coords = [];
-    resetColor();
-    d3.select(element).select("svg").append("path").attr("id", "lasso" + randomString);
+    resetColor(that);
+    d3.select(that.element).select("svg").append("path").attr("id", "lasso" + randomString);
   }
 
   function dragMove(event) {
@@ -87,5 +87,5 @@ export function lasso(
     .on("drag", dragMove)
     .on("end", dragEnd);
 
-  d3.select(element).call(drag);
+  d3.select(that.element).call(drag);
 }

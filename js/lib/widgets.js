@@ -102,7 +102,8 @@ export class ScatterPlotView extends DOMWidgetView {
       this.setSelectedValues.bind(this),
       this.width,
       this.height,
-      this.margin
+      this.margin,
+      true
     );
   }
 
@@ -175,7 +176,8 @@ export class LinearPlotView extends DOMWidgetView {
       this.setSelectedValues.bind(this),
       this.width,
       this.height,
-      this.margin
+      this.margin,
+      true
     );
   }
 
@@ -296,7 +298,8 @@ export class HistogramPlotView extends DOMWidgetView {
       end,
       this.width,
       this.height,
-      this.margin
+      this.margin,
+      true
     );
   }
 }

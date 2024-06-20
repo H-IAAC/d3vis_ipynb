@@ -1,14 +1,13 @@
 import * as d3 from "d3";
-export class HistogramPlot {
-  constructor(element) {
-    this.element = element;
-  }
+import { Base } from "./base";
 
-  plot(data, x_axis, xStart, xEnd, width, height, margin) {
-    const innerWidth = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
+export class HistogramPlot extends Base {
+  xScale;
+  yScale;
 
-    d3.select(this.element).selectAll("*").remove();
+  createScales(data, x_axis, xStart, xEnd, width, height, bins) {
+    this.xScale = d3.scaleLinear().range([0, width]);
+    this.yScale = d3.scaleLinear().range([height, 0]);
 
     let xMin = xStart;
     if (!xStart) {
@@ -19,57 +18,43 @@ export class HistogramPlot {
       xMax = d3.max(data, (d) => d[x_axis]);
     }
 
-    const x = d3.scaleLinear().range([0, innerWidth]);
+    this.xScale.domain([xMin, xMax]);
+    this.yScale.domain([0, d3.max(bins, (d) => d.length)]);
+  }
 
-    const y = d3.scaleLinear().range([innerHeight, 0]);
-
-    const xAxis = d3.axisBottom(x);
-
-    const yAxis = d3.axisLeft(y);
+  plot(data, x_axis, xStart, xEnd, width, height, margin, hasAxes) {
+    d3.select(this.element).selectAll("*").remove();
 
     const bins = d3
       .bin()
       .thresholds(40)
       .value((d) => Math.round(d[x_axis] * 10) / 10)(data);
 
-    const svg = d3
-      .select(this.element)
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    this.createSvg(width, height, margin);
+    this.createScales(
+      data,
+      x_axis,
+      xStart,
+      xEnd,
+      this.innerWidth,
+      this.innerHeight,
+      bins
+    );
 
-    x.domain([xMin, xMax]);
-    y.domain([0, d3.max(bins, (d) => d.length)]);
+    const SVG = this.svg;
+    const X = this.xScale;
+    const Y = this.yScale;
 
-    svg
-      .append("g")
-      .attr("transform", "translate(0," + innerHeight + ")")
-      .call(xAxis)
-      .append("text")
-      .attr("x", innerWidth)
-      .attr("y", -6)
-      .style("text-anchor", "end");
+    if (hasAxes) this.plotAxes(SVG, this.innerWidth, this.innerHeight, X, Y);
 
-    svg
-      .append("g")
-      .call(yAxis)
-      .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end");
-
-    svg
-      .append("g")
+    SVG.append("g")
       .attr("fill", "steelblue")
       .selectAll()
       .data(bins)
       .join("rect")
-      .attr("x", (d) => x(d.x0) + 1)
-      .attr("width", (d) => x(d.x1) - x(d.x0) - 1)
-      .attr("y", (d) => y(d.length))
-      .attr("height", (d) => y(0) - y(d.length));
+      .attr("x", (d) => X(d.x0) + 1)
+      .attr("width", (d) => X(d.x1) - X(d.x0) - 1)
+      .attr("y", (d) => Y(d.length))
+      .attr("height", (d) => Y(0) - Y(d.length));
   }
 }

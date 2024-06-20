@@ -1,9 +1,28 @@
 import * as d3 from "d3";
 import { lasso } from "../tools/lasso";
+import { Base } from "./base";
 
-export class ScatterPlot {
-  constructor(element) {
-    this.element = element;
+export class ScatterPlot extends Base {
+  xScale;
+  yScale;
+
+  createScales(data, x_value, y_value, width, height) {
+    this.xScale = d3.scaleLinear().range([0, width]);
+    this.yScale = d3.scaleLinear().range([height, 0]);
+    this.xScale
+      .domain(
+        d3.extent(data, function (d) {
+          return d[x_value];
+        })
+      )
+      .nice();
+    this.yScale
+      .domain(
+        d3.extent(data, function (d) {
+          return d[y_value];
+        })
+      )
+      .nice();
   }
 
   plot(
@@ -11,16 +30,13 @@ export class ScatterPlot {
     x_value,
     y_value,
     hue,
-
     setValue,
     setSelectedValues,
     width,
     height,
-    margin
+    margin,
+    hasAxes
   ) {
-    const innerWidth = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
-
     for (let i = 0; i < data.length; i++) {
       data[i]["id"] = i;
     }
@@ -31,15 +47,22 @@ export class ScatterPlot {
 
     d3.select(this.element).selectAll("*").remove();
 
-    const x = d3.scaleLinear().range([0, innerWidth]);
+    this.createSvg(width, height, margin);
+    this.createScales(
+      data,
+      x_value,
+      y_value,
+      this.innerWidth,
+      this.innerHeight
+    );
 
-    const y = d3.scaleLinear().range([innerHeight, 0]);
+    const SVG = this.svg;
+    const X = this.xScale;
+    const Y = this.yScale;
+
+    if (hasAxes) this.plotAxes(SVG, this.innerWidth, this.innerHeight, X, Y);
 
     const color = d3.scaleOrdinal(d3.schemeCategory10);
-
-    const xAxis = d3.axisBottom(x);
-
-    const yAxis = d3.axisLeft(y);
 
     function mouseover(event, d) {
       focus.style("opacity", 1);
@@ -74,49 +97,7 @@ export class ScatterPlot {
       }
     }
 
-    const svg = d3
-      .select(this.element)
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    x.domain(
-      d3.extent(data, function (d) {
-        return d[x_value];
-      })
-    ).nice();
-    y.domain(
-      d3.extent(data, function (d) {
-        return d[y_value];
-      })
-    ).nice();
-
-    svg
-      .append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + innerHeight + ")")
-      .call(xAxis)
-      .append("text")
-      .attr("class", "label")
-      .attr("x", innerWidth)
-      .attr("y", -6)
-      .style("text-anchor", "end");
-
-    svg
-      .append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-      .append("text")
-      .attr("class", "label")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end");
-
-    svg
-      .selectAll(".dot")
+    SVG.selectAll(".dot")
       .data(data)
       .enter()
       .append("circle")
@@ -126,10 +107,10 @@ export class ScatterPlot {
       .attr("class", "dot")
       .attr("r", 3.5)
       .attr("cx", function (d) {
-        return x(d[x_value]);
+        return X(d[x_value]);
       })
       .attr("cy", function (d) {
-        return y(d[y_value]);
+        return Y(d[y_value]);
       })
       .style("fill", function (d) {
         return color(d[hue]);
@@ -138,8 +119,8 @@ export class ScatterPlot {
       .on("mouseout", mouseout)
       .on("click", mouseClick);
 
-    function resetColor() {
-      svg
+    function resetColor(that) {
+      that.svg
         .selectAll(".dot")
         .data(data)
         .attr("r", 3.5)
@@ -155,9 +136,9 @@ export class ScatterPlot {
     }
 
     lasso(
-      this.element,
-      x,
-      y,
+      this,
+      this.xScale,
+      this.yScale,
       x_value,
       y_value,
       margin.left,
@@ -168,8 +149,7 @@ export class ScatterPlot {
     );
 
     if (hue) {
-      const legend = svg
-        .selectAll(".legend")
+      const legend = SVG.selectAll(".legend")
         .data(color.domain())
         .enter()
         .append("g")
@@ -196,8 +176,7 @@ export class ScatterPlot {
         });
     }
 
-    const focus = svg
-      .append("g")
+    const focus = SVG.append("g")
       .append("rect")
       .style("fill", "none")
       .attr("width", 160)
@@ -206,8 +185,7 @@ export class ScatterPlot {
       .attr("stroke-width", 4)
       .style("opacity", 0);
 
-    const focusText = svg
-      .append("g")
+    const focusText = SVG.append("g")
       .append("text")
       .style("opacity", 0)
       .attr("text-anchor", "left")
