@@ -2,50 +2,27 @@ import * as d3 from "d3";
 import { Base } from "./base";
 
 export class HistogramPlot extends Base {
-  xScale;
-  yScale;
-
-  createScales(data, x_axis, xStart, xEnd, width, height, bins) {
-    this.xScale = d3.scaleLinear().range([0, width]);
-    this.yScale = d3.scaleLinear().range([height, 0]);
-
-    let xMin = xStart;
-    if (!xStart) {
-      xMin = d3.min(data, (d) => d[x_axis]);
-    }
-    let xMax = xEnd;
-    if (!xEnd) {
-      xMax = d3.max(data, (d) => d[x_axis]);
-    }
-
-    this.xScale.domain([xMin, xMax]);
-    this.yScale.domain([0, d3.max(bins, (d) => d.length)]);
-  }
-
-  plot(data, x_axis, xStart, xEnd, width, height, margin, hasAxes) {
-    d3.select(this.element).selectAll("*").remove();
-
+  plot(data, x_axis, width, height, margin, noAxes, svg, xScale) {
     const bins = d3
       .bin()
       .thresholds(40)
       .value((d) => Math.round(d[x_axis] * 10) / 10)(data);
 
-    this.createSvg(width, height, margin);
-    this.createScales(
-      data,
-      x_axis,
-      xStart,
-      xEnd,
-      this.innerWidth,
-      this.innerHeight,
-      bins
-    );
+    let SVG;
+    if (svg) SVG = svg;
+    else SVG = this.getSvg(width, height, margin);
 
-    const SVG = this.svg;
-    const X = this.xScale;
-    const Y = this.yScale;
+    let X;
+    if (xScale) X = xScale;
+    else {
+      const xDomain = d3.extent(data, function (d) {
+        return d[x_axis];
+      });
+      X = this.getXLinearScale(xDomain, width, margin);
+    }
 
-    if (hasAxes) this.plotAxes(SVG, this.innerWidth, this.innerHeight, X, Y);
+    const yDomain = [0, d3.max(bins, (d) => d.length)];
+    const Y = this.getYLinearScale(yDomain, height, margin);
 
     SVG.append("g")
       .attr("fill", "steelblue")
@@ -56,5 +33,12 @@ export class HistogramPlot extends Base {
       .attr("width", (d) => X(d.x1) - X(d.x0) - 1)
       .attr("y", (d) => Y(d.length))
       .attr("height", (d) => Y(0) - Y(d.length));
+
+    if (!noAxes) this.plotAxes(SVG, X, Y, x_axis);
+  }
+
+  replot(data, x_axis, width, height, margin, noAxes, svg, xScale){
+    this.clear()
+    this.plot(data, x_axis, width, height, margin, noAxes, svg, xScale)
   }
 }

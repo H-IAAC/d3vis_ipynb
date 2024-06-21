@@ -4,28 +4,6 @@ import { lasso } from "../tools/lasso";
 import { Base } from "./base";
 
 export class LinearPlot extends Base {
-  xScale;
-  yScale;
-
-  createScales(data, x_value, y_value, width, height) {
-    this.xScale = d3.scaleLinear().range([0, width]);
-    this.yScale = d3.scaleLinear().range([height, 0]);
-    this.xScale
-      .domain(
-        d3.extent(data, function (d) {
-          return d[x_value];
-        })
-      )
-      .nice();
-    this.yScale
-      .domain(
-        d3.extent(data, function (d) {
-          return d[y_value];
-        })
-      )
-      .nice();
-  }
-
   plot(
     data,
     x_value,
@@ -36,7 +14,7 @@ export class LinearPlot extends Base {
     width,
     height,
     margin,
-    hasAxes
+    noAxes
   ) {
     data = getDataMeans(data, x_value, [y_value], hue);
 
@@ -48,22 +26,15 @@ export class LinearPlot extends Base {
       Math.random() * Date.now() * 10000
     ).toString(36);
 
-    d3.select(this.element).selectAll("*").remove();
-
-    this.createSvg(width, height, margin);
-    this.createScales(
-      data,
-      x_value,
-      y_value,
-      this.innerWidth,
-      this.innerHeight
-    );
-
-    const SVG = this.svg;
-    const X = this.xScale;
-    const Y = this.yScale;
-
-    if (hasAxes) this.plotAxes(SVG, this.innerWidth, this.innerHeight, X, Y);
+    const SVG = this.getSvg(width, height, margin);
+    const xDomain = d3.extent(data, function (d) {
+      return d[x_value];
+    });
+    const X = this.getXLinearScale(xDomain, width, margin);
+    const yDomain = d3.extent(data, function (d) {
+      return d[y_value];
+    });
+    const Y = this.getYLinearScale(yDomain, height, margin);
 
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -146,6 +117,8 @@ export class LinearPlot extends Base {
       .on("mouseout", mouseout)
       .on("click", mouseClick);
 
+    if (!noAxes) this.plotAxes(SVG, X, Y, x_value, y_value);
+
     function resetColor() {
       SVG.selectAll(".dot")
         .data(data)
@@ -158,13 +131,14 @@ export class LinearPlot extends Base {
     function setLassoValues(values) {
       if (setSelectedValues !== undefined) {
         setSelectedValues(values);
+        setSelectedValues(values);
       }
     }
 
     lasso(
       this,
-      this.xScale,
-      this.yScale,
+      X,
+      Y,
       x_value,
       y_value,
       margin.left,
@@ -216,5 +190,32 @@ export class LinearPlot extends Base {
       .style("opacity", 0)
       .attr("text-anchor", "left")
       .attr("alignment-baseline", "middle");
+  }
+
+  replot(
+    data,
+    x_value,
+    y_value,
+    hue,
+    setValue,
+    setSelectedValues,
+    width,
+    height,
+    margin,
+    noAxes
+  ) {
+    this.clear();
+    this.plot(
+      data,
+      x_value,
+      y_value,
+      hue,
+      setValue,
+      setSelectedValues,
+      width,
+      height,
+      margin,
+      noAxes
+    );
   }
 }

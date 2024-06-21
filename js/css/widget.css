@@ -1,3 +1,7 @@
+.graph {
+  border: 1px solid #ccc !important;
+}
+
 /***** EMBEDDING *****/
 .basic .dashboard-div {
   border: 1px solid black;

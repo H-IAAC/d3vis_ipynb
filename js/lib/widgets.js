@@ -5,6 +5,7 @@ import { HistogramPlot } from "./graphs/histogramplot";
 import { LinearPlot } from "./graphs/linearplot";
 import { rangeslider } from "./graphs/rangeslider";
 import { ScatterPlot } from "./graphs/scatterplot";
+import { RidgelinePlot } from "./graphs/ridgelineplot";
 const packageData = require("../package.json");
 
 const WIDGET_HEIGHT = 400;
@@ -93,7 +94,7 @@ export class ScatterPlotView extends DOMWidgetView {
     let y = this.model.get("y");
     let hue = this.model.get("hue");
 
-    this.scatterplot.plot(
+    this.scatterplot.replot(
       data,
       x,
       y,
@@ -103,7 +104,7 @@ export class ScatterPlotView extends DOMWidgetView {
       this.width,
       this.height,
       this.margin,
-      true
+      false
     );
   }
 
@@ -167,7 +168,7 @@ export class LinearPlotView extends DOMWidgetView {
     let y = this.model.get("y");
     let hue = this.model.get("hue");
 
-    this.linearplot.plot(
+    this.linearplot.replot(
       data,
       x,
       y,
@@ -177,7 +178,7 @@ export class LinearPlotView extends DOMWidgetView {
       this.width,
       this.height,
       this.margin,
-      true
+      false
     );
   }
 
@@ -256,8 +257,6 @@ export class HistogramPlotModel extends DOMWidgetModel {
 
       dataRecords: [],
       x: String,
-      start: Number,
-      end: Number,
       elementId: String,
     };
   }
@@ -276,8 +275,6 @@ export class HistogramPlotView extends DOMWidgetView {
 
     this.model.on("change:dataRecords", () => plotAfterInterval(this), this);
     this.model.on("change:x", () => plotAfterInterval(this), this);
-    this.model.on("change:start", () => plotAfterInterval(this), this);
-    this.model.on("change:end", () => plotAfterInterval(this), this);
     window.addEventListener("resize", () => plotAfterInterval(this));
   }
 
@@ -288,18 +285,67 @@ export class HistogramPlotView extends DOMWidgetView {
 
     let data = this.model.get("dataRecords");
     let x = this.model.get("x");
-    let start = this.model.get("start");
-    let end = this.model.get("end");
 
-    this.histogramplot.plot(
+    this.histogramplot.replot(
       data,
       x,
-      start,
-      end,
       this.width,
       this.height,
       this.margin,
-      true
+      false
+    );
+  }
+}
+
+export class RidgelinePlotModel extends DOMWidgetModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: RidgelinePlotModel.model_name,
+      _view_name: RidgelinePlotModel.view_name,
+      _model_module: RidgelinePlotModel.model_module,
+      _view_module: RidgelinePlotModel.view_module,
+      _model_module_version: RidgelinePlotModel.model_module_version,
+      _view_module_version: RidgelinePlotModel.view_module_version,
+
+      dataRecords: [],
+      xAxes: String,
+      elementId: String,
+    };
+  }
+
+  static model_name = "RidgelinePlotModel";
+  static model_module = packageData.name;
+  static model_module_version = packageData.version;
+  static view_name = "RidgelinePlotView"; // Set to null if no view
+  static view_module = packageData.name; // Set to null if no view
+  static view_module_version = packageData.version;
+}
+
+export class RidgelinePlotView extends DOMWidgetView {
+  render() {
+    plotAfterInterval(this);
+
+    this.model.on("change:dataRecords", () => plotAfterInterval(this), this);
+    this.model.on("change:x", () => plotAfterInterval(this), this);
+    window.addEventListener("resize", () => plotAfterInterval(this));
+  }
+
+  plot() {
+    if (!this.ridgelineplot)
+      this.ridgelineplot = new RidgelinePlot(getElement(this));
+    setSizes(this);
+
+    let data = this.model.get("dataRecords");
+    let xAxes = this.model.get("xAxes");
+
+    this.ridgelineplot.plot(
+      data,
+      xAxes,
+      this.width,
+      this.height,
+      this.margin,
+      false
     );
   }
 }

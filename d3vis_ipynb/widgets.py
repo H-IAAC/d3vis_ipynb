@@ -115,8 +115,27 @@ class HistogramPlot(BaseWidget):
 
     dataRecords = List([]).tag(sync=True)
     x = Unicode().tag(sync=True)
-    start = Float().tag(sync=True)
-    end = Float().tag(sync=True)
+
+    def __init__(self, data, **kwargs):
+        self.data = data
+        super().__init__(**kwargs)
+
+    @property
+    def data(self):
+        return pd.DataFrame.from_records(self.dataRecords)
+
+    @data.setter
+    def data(self, val):
+        self.dataRecords = val.to_dict(orient="records")
+
+
+@widgets.register
+class RidgelinePlot(BaseWidget):
+    _view_name = Unicode("RidgelinePlotView").tag(sync=True)
+    _model_name = Unicode("RidgelinePlotModel").tag(sync=True)
+
+    dataRecords = List([]).tag(sync=True)
+    xAxes = List([]).tag(sync=True)
 
     def __init__(self, data, **kwargs):
         self.data = data
