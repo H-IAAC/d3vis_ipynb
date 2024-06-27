@@ -1,7 +1,8 @@
 import mimetypes
+import time
 
 import ipywidgets as widgets
-from traitlets import Bool, Int, TraitType, Unicode
+from traitlets import Bool, Float, Int, TraitType, Unicode
 
 from d3vis_ipynb.base_widget import BaseWidget
 
@@ -48,6 +49,7 @@ class Video(_Media):
 
     _play = Bool().tag(sync=True)
     _pause = Bool().tag(sync=True)
+    _duration = Float().tag(sync=True)
 
     controls = Bool().tag(sync=True)
 
@@ -60,6 +62,13 @@ class Video(_Media):
 
     def pause(self):
         self._pause = not self._pause
+
+    @property
+    def duration(self):
+        return self._duration
+
+    def on_duration_set(self, callback):
+        self.observe(callback, names=["_duration"])
 
 
 @widgets.register

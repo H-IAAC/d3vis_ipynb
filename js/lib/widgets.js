@@ -4,8 +4,8 @@ import { BarPlot } from "./graphs/barplot";
 import { HistogramPlot } from "./graphs/histogramplot";
 import { LinearPlot } from "./graphs/linearplot";
 import { rangeslider } from "./graphs/rangeslider";
-import { ScatterPlot } from "./graphs/scatterplot";
 import { RidgelinePlot } from "./graphs/ridgelineplot";
+import { ScatterPlot } from "./graphs/scatterplot";
 const packageData = require("../package.json");
 
 const WIDGET_HEIGHT = 400;
@@ -511,6 +511,9 @@ export class VideoModel extends DOMWidgetModel {
       width: Number,
       height: Number,
       controls: true,
+      _play: Boolean,
+      _pause: Boolean,
+      _duration: Number,
     };
   }
 
@@ -608,6 +611,10 @@ export class VideoView extends DOMWidgetView {
     this.video.style.height = this.height + "px";
 
     getElement(this).appendChild(this.video);
+    setTimeout(() => {
+      this.model.set({ _duration: this.video.duration });
+      this.model.save_changes();
+    }, 50);
   }
 }
 
