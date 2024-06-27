@@ -510,6 +510,7 @@ export class VideoModel extends DOMWidgetModel {
       format: "mp4",
       width: Number,
       height: Number,
+      controls: true,
     };
   }
 
@@ -538,12 +539,20 @@ export class VideoView extends DOMWidgetView {
     super.remove();
   }
 
+  setControls(that) {
+    if (!that.video) return;
+    let controls = that.model.get("controls");
+    if (controls) that.video.setAttribute("controls", "");
+    else that.video.removeAttribute("controls");
+  }
+
   render() {
     plotAfterInterval(this);
 
     this.model.on("change:value", () => plotAfterInterval(this), this);
     this.model.on("change:width", () => plotAfterInterval(this), this);
     this.model.on("change:height", () => plotAfterInterval(this), this);
+    this.model.on("change:controls", () => this.setControls(this), this);
     window.addEventListener("resize", () => plotAfterInterval(this));
   }
 
@@ -553,13 +562,14 @@ export class VideoView extends DOMWidgetView {
     let format = this.model.get("format");
     let modelWidth = this.model.get("width");
     let modelHeight = this.model.get("height");
+    let controls = this.model.get("controls");
 
     setSizes(this);
 
     if (modelWidth) this.width = modelWidth;
     if (modelHeight) this.height = modelHeight;
 
-    const video = document.createElement("video");
+    this.video = document.createElement("video");
     const source = document.createElement("source");
 
     const type = `video/${format}`;
@@ -577,15 +587,15 @@ export class VideoView extends DOMWidgetView {
     source.setAttribute("src", this.src);
     source.setAttribute("type", type);
 
-    video.appendChild(source);
-    video.setAttribute("controls", "");
-    video.style.margin = "auto";
-    video.style.display = "block";
+    this.video.appendChild(source);
+    if (controls) this.video.setAttribute("controls", "");
+    this.video.style.margin = "auto";
+    this.video.style.display = "block";
 
-    video.style.width = this.width + "px";
-    video.style.height = this.height + "px";
+    this.video.style.width = this.width + "px";
+    this.video.style.height = this.height + "px";
 
-    getElement(this).appendChild(video);
+    getElement(this).appendChild(this.video);
   }
 }
 

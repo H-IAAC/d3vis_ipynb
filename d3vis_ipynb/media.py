@@ -1,9 +1,7 @@
 import mimetypes
-import pathlib
-from base64 import b64encode
 
 import ipywidgets as widgets
-from traitlets import Int, Unicode, TraitType
+from traitlets import Bool, Int, TraitType, Unicode
 
 from d3vis_ipynb.base_widget import BaseWidget
 
@@ -48,7 +46,10 @@ class Video(_Media):
     _view_name = Unicode("VideoView").tag(sync=True)
     _model_name = Unicode("VideoModel").tag(sync=True)
 
-    def __init__(self, file, **kwargs):
+    controls = Bool().tag(sync=True)
+
+    def __init__(self, file, controls=True, **kwargs):
+        self.controls = controls
         super().__init__(file, "video", **kwargs)
 
 
