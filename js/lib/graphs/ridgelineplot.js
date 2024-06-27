@@ -1,8 +1,8 @@
 import * as d3 from "d3";
-import { Base } from "./base";
+import { BasePlot } from "./baseplot";
 import { HistogramPlot } from "./histogramplot";
 
-export class RidgelinePlot extends Base {
+export class RidgelinePlot extends BasePlot {
   histList;
 
   getXDomain(data, x_axes) {

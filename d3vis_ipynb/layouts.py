@@ -9,9 +9,9 @@ from d3vis_ipynb.base_widget import BaseWidget
 
 
 @widgets.register
-class Embedding(BaseWidget):
-    _view_name = Unicode("EmbeddingView").tag(sync=True)
-    _model_name = Unicode("EmbeddingModel").tag(sync=True)
+class MatrixLayout(BaseWidget):
+    _view_name = Unicode("MatrixLayoutView").tag(sync=True)
+    _model_name = Unicode("MatrixLayoutModel").tag(sync=True)
 
     matrix = List().tag(sync=True)
     grid_areas = List().tag(sync=True)

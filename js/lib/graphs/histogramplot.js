@@ -1,7 +1,7 @@
 import * as d3 from "d3";
-import { Base } from "./base";
+import { BasePlot } from "./baseplot";
 
-export class HistogramPlot extends Base {
+export class HistogramPlot extends BasePlot {
   plot(data, x_axis, width, height, margin, noAxes, svg, xScale) {
     const bins = d3
       .bin()
@@ -37,8 +37,8 @@ export class HistogramPlot extends Base {
     if (!noAxes) this.plotAxes(SVG, X, Y, x_axis);
   }
 
-  replot(data, x_axis, width, height, margin, noAxes, svg, xScale){
-    this.clear()
-    this.plot(data, x_axis, width, height, margin, noAxes, svg, xScale)
+  replot(data, x_axis, width, height, margin, noAxes, svg, xScale) {
+    this.clear();
+    this.plot(data, x_axis, width, height, margin, noAxes, svg, xScale);
   }
 }

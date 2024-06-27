@@ -1,8 +1,8 @@
 import * as d3 from "d3";
 import { lasso } from "../tools/lasso";
-import { Base } from "./base";
+import { BasePlot } from "./baseplot";
 
-export class ScatterPlot extends Base {
+export class ScatterPlot extends BasePlot {
   plot(
     data,
     x_value,

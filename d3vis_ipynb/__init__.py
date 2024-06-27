@@ -2,9 +2,10 @@ import sys
 
 from ._version import __version__
 from .custom import CustomWidget
-from .embedding import Embedding
+from .graphs import *
+from .layouts import MatrixLayout
+from .medias import *
 from .widgets import *
-from .media import *
 
 if "google.colab.output" in sys.modules:
     sys.modules["google.colab.output"].enable_custom_widget_manager()

@@ -1,5 +1,4 @@
 import mimetypes
-import time
 
 import ipywidgets as widgets
 from traitlets import Bool, Float, Int, TraitType, Unicode
