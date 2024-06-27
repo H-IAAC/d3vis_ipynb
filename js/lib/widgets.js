@@ -506,12 +506,21 @@ export class VideoModel extends DOMWidgetModel {
       _model_module_version: VideoModel.model_module_version,
       _view_module_version: VideoModel.view_module_version,
 
-      value: String,
+      value: new DataView(new ArrayBuffer()),
       format: "mp4",
       width: Number,
       height: Number,
     };
   }
+
+  static serializers = {
+    ...DOMWidgetModel.serializers,
+    value: {
+      serialize: (value) => {
+        return new DataView(value.buffer.slice(0));
+      },
+    },
+  };
 
   static model_name = "VideoModel";
   static model_module = packageData.name;
@@ -522,6 +531,13 @@ export class VideoModel extends DOMWidgetModel {
 }
 
 export class VideoView extends DOMWidgetView {
+  remove() {
+    if (this.src) {
+      URL.revokeObjectURL(this.src);
+    }
+    super.remove();
+  }
+
   render() {
     plotAfterInterval(this);
 
@@ -543,25 +559,33 @@ export class VideoView extends DOMWidgetView {
     if (modelWidth) this.width = modelWidth;
     if (modelHeight) this.height = modelHeight;
 
-    const node = document.createElement("div");
     const video = document.createElement("video");
     const source = document.createElement("source");
 
-    source.setAttribute("src", value);
-    source.setAttribute("type", "video/" + format);
+    const type = `video/${format}`;
+    const blob = new Blob([value], {
+      type: type,
+    });
+    const url = URL.createObjectURL(blob);
+
+    const oldurl = this.src;
+    this.src = url;
+    if (oldurl) {
+      URL.revokeObjectURL(oldurl);
+    }
+
+    source.setAttribute("src", this.src);
+    source.setAttribute("type", type);
 
     video.appendChild(source);
     video.setAttribute("controls", "");
-    video.style.maxWidth = "100%";
-    video.style.maxHeight = "100%";
     video.style.margin = "auto";
     video.style.display = "block";
 
-    node.style.width = this.width + "px";
-    node.style.height = this.height + "px";
-    node.appendChild(video);
+    video.style.width = this.width + "px";
+    video.style.height = this.height + "px";
 
-    getElement(this).appendChild(node);
+    getElement(this).appendChild(video);
   }
 }
 
@@ -592,6 +616,13 @@ export class ImageModel extends DOMWidgetModel {
 }
 
 export class ImageView extends DOMWidgetView {
+  remove() {
+    if (this.src) {
+      URL.revokeObjectURL(this.src);
+    }
+    super.remove();
+  }
+
   render() {
     plotAfterInterval(this);
 
@@ -604,6 +635,7 @@ export class ImageView extends DOMWidgetView {
   plot() {
     this.el.innerHTML = "";
     let value = this.model.get("value");
+    let format = this.model.get("format");
     let modelWidth = this.model.get("width");
     let modelHeight = this.model.get("height");
 
@@ -614,7 +646,20 @@ export class ImageView extends DOMWidgetView {
     const node = document.createElement("div");
     const image = document.createElement("img");
 
-    image.setAttribute("src", value);
+    const type = `image/${format}`;
+    const blob = new Blob([value], {
+      type: type,
+    });
+    const url = URL.createObjectURL(blob);
+
+    const oldurl = this.src;
+    this.src = url;
+    if (oldurl) {
+      URL.revokeObjectURL(oldurl);
+    }
+
+    image.setAttribute("src", this.src);
+    image.setAttribute("type", type);
     image.style.maxWidth = "100%";
     image.style.maxHeight = "100%";
     image.style.margin = "auto";
