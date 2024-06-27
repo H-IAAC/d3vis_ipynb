@@ -46,11 +46,20 @@ class Video(_Media):
     _view_name = Unicode("VideoView").tag(sync=True)
     _model_name = Unicode("VideoModel").tag(sync=True)
 
+    _play = Bool().tag(sync=True)
+    _pause = Bool().tag(sync=True)
+
     controls = Bool().tag(sync=True)
 
     def __init__(self, file, controls=True, **kwargs):
         self.controls = controls
         super().__init__(file, "video", **kwargs)
+
+    def play(self):
+        self._play = not self._play
+
+    def pause(self):
+        self._pause = not self._pause
 
 
 @widgets.register

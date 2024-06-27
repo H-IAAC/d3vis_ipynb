@@ -539,6 +539,16 @@ export class VideoView extends DOMWidgetView {
     super.remove();
   }
 
+  play(that) {
+    if (!that.video) return;
+    that.video.play();
+  }
+
+  pause(that) {
+    if (!that.video) return;
+    that.video.pause();
+  }
+
   setControls(that) {
     if (!that.video) return;
     let controls = that.model.get("controls");
@@ -553,6 +563,8 @@ export class VideoView extends DOMWidgetView {
     this.model.on("change:width", () => plotAfterInterval(this), this);
     this.model.on("change:height", () => plotAfterInterval(this), this);
     this.model.on("change:controls", () => this.setControls(this), this);
+    this.model.on("change:_play", () => this.play(this), this);
+    this.model.on("change:_pause", () => this.pause(this), this);
     window.addEventListener("resize", () => plotAfterInterval(this));
   }
 
