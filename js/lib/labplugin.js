@@ -2,6 +2,8 @@ import { IJupyterWidgetRegistry } from "@jupyter-widgets/base";
 import {
   BarPlotModel,
   BarPlotView,
+  ButtonModel,
+  ButtonView,
   HistogramPlotModel,
   HistogramPlotView,
   ImageModel,
@@ -37,6 +39,8 @@ export const helloWidgetPlugin = {
       exports: {
         BarPlotModel,
         BarPlotView,
+        ButtonModel,
+        ButtonView,
         HistogramPlotModel,
         HistogramPlotView,
         ImageModel,

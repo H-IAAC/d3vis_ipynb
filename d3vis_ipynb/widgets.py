@@ -13,6 +13,19 @@ class TextBaseWidget(BaseWidget):
 
 
 @widgets.register
+class Button(BaseWidget):
+    _view_name = Unicode("ButtonView").tag(sync=True)
+    _model_name = Unicode("ButtonModel").tag(sync=True)
+
+    description = Unicode().tag(sync=True)
+    disabled = Bool().tag(sync=True)
+    _clicked = Bool().tag(sync=True)
+
+    def on_click(self, callback):
+        self.observe(callback, names=["_clicked"])
+
+
+@widgets.register
 class Input(TextBaseWidget):
     _view_name = Unicode("InputView").tag(sync=True)
     _model_name = Unicode("InputModel").tag(sync=True)

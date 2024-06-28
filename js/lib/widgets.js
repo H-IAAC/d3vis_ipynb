@@ -60,6 +60,60 @@ class TextBaseView extends BaseView {
   }
 }
 
+export class ButtonModel extends BaseModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: ButtonModel.model_name,
+      _view_name: ButtonModel.view_name,
+
+      description: String,
+      disabled: false,
+      _clicked: Boolean,
+      elementId: String,
+    };
+  }
+
+  static model_name = "ButtonModel";
+  static view_name = "ButtonView";
+}
+
+export class ButtonView extends BaseView {
+  setDescription() {
+    const description = this.model.get("description");
+    this.button.setAttribute("title", description);
+    this.button.innerHTML = description;
+  }
+
+  setDisabled() {
+    const disabled = this.model.get("disabled");
+    if (disabled) this.button.setAttribute("disabled", "");
+    else this.button.removeAttribute("disabled");
+  }
+
+  setClicked() {
+    const clicked = this.model.get("_clicked");
+    this.model.set({ _clicked: !clicked });
+    this.model.save_changes();
+  }
+
+  render() {
+    this.plotAfterInterval();
+
+    this.model.on("change:description", () => this.setDescription(), this);
+    this.model.on("change:disabled", () => this.setDisabled(), this);
+    window.addEventListener("resize", () => this.plotAfterInterval());
+  }
+
+  plot() {
+    this.button = document.createElement("button");
+    this.button.addEventListener("click", this.setClicked.bind(this));
+    this.setDescription();
+    this.setDisabled();
+    this.getElement().appendChild(this.button);
+  }
+}
+
 export class InputModel extends TextBaseModel {
   defaults() {
     return {
