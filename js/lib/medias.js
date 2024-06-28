@@ -88,6 +88,7 @@ export class VideoModel extends BaseModel {
       width: Number,
       height: Number,
       controls: true,
+      loop: true,
       _play: Boolean,
       _pause: Boolean,
       _duration: Number,
@@ -132,6 +133,24 @@ export class VideoView extends BaseView {
     else this.video.removeAttribute("controls");
   }
 
+  setLoop() {
+    if (!this.video) return;
+    let loop = this.model.get("loop");
+    this.video.loop = loop;
+  }
+
+  setMuted() {
+    if (!this.video) return;
+    let muted = this.model.get("muted");
+    this.video.muted = muted;
+  }
+
+  setVolume() {
+    if (!this.video) return;
+    let volume = this.model.get("volume");
+    this.video.volume = volume;
+  }
+
   render() {
     this.plotAfterInterval();
 
@@ -139,6 +158,9 @@ export class VideoView extends BaseView {
     this.model.on("change:width", () => this.plotAfterInterval(), this);
     this.model.on("change:height", () => this.plotAfterInterval(), this);
     this.model.on("change:controls", () => this.setControls(), this);
+    this.model.on("change:loop", () => this.setLoop(), this);
+    this.model.on("change:muted", () => this.setMuted(), this);
+    this.model.on("change:volume", () => this.setVolume(), this);
     this.model.on("change:_play", () => this.play(), this);
     this.model.on("change:_pause", () => this.pause(), this);
     window.addEventListener("resize", () => this.plotAfterInterval());
@@ -177,6 +199,9 @@ export class VideoView extends BaseView {
 
     this.video.appendChild(source);
     if (controls) this.video.setAttribute("controls", "");
+    this.setLoop();
+    this.setMuted();
+    this.setVolume();
     this.video.style.margin = "auto";
     this.video.style.display = "block";
 

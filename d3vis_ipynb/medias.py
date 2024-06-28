@@ -51,9 +51,15 @@ class Video(_Media):
     _duration = Float().tag(sync=True)
 
     controls = Bool().tag(sync=True)
+    loop = Bool().tag(sync=True)
+    muted = Bool().tag(sync=True)
+    volume = Float().tag(sync=True)
 
-    def __init__(self, file, controls=True, **kwargs):
+    def __init__(self, file, controls=True, loop=True, muted=False, volume=1, **kwargs):
         self.controls = controls
+        self.loop = loop
+        self.muted = muted
+        self.volume = volume
         super().__init__(file, "video", **kwargs)
 
     def play(self):
