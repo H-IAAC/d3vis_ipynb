@@ -49,7 +49,10 @@ class Video(_Media):
     _play = Bool().tag(sync=True)
     _pause = Bool().tag(sync=True)
     _duration = Float().tag(sync=True)
+    _seekTo = Float().tag(sync=True)
+    _seeked = Bool().tag(sync=True)
 
+    _currentTime = Float().tag(sync=True)
     controls = Bool().tag(sync=True)
     loop = Bool().tag(sync=True)
     muted = Bool().tag(sync=True)
@@ -74,6 +77,14 @@ class Video(_Media):
 
     def on_duration_set(self, callback):
         self.observe(callback, names=["_duration"])
+
+    def seekTo(self, time):
+        self._seekTo = time
+        self._seeked = not self._seeked
+
+    @property
+    def currentTime(self):
+        return self._currentTime
 
 
 @widgets.register
