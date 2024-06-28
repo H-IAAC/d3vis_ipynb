@@ -1,6 +1,97 @@
 import { BaseModel, BaseView, WIDGET_MARGIN } from "./base";
 import { rangeslider } from "./widgets/rangeslider";
 
+class TextBaseModel extends BaseModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+
+      value: String,
+      placeholder: String,
+      description: String,
+      disabled: false,
+      elementId: String,
+    };
+  }
+}
+
+class TextBaseView extends BaseView {
+  setText() {}
+
+  setPlaceholder() {
+    const placeholder = this.model.get("placeholder");
+    this.text.setAttribute("placeholder", placeholder);
+  }
+
+  setDescription() {
+    const description = this.model.get("description");
+    this.getElement().innerHTML = "";
+    if (description) {
+      const label = document.createElement("label");
+      label.setAttribute("title", description);
+      label.innerHTML = description + ": ";
+      label.style.verticalAlign = "top";
+      this.getElement().appendChild(label);
+    }
+    this.getElement().appendChild(this.text);
+  }
+
+  setDisabled() {
+    const disabled = this.model.get("disabled");
+    if (disabled) this.text.setAttribute("disabled", "");
+    else this.text.removeAttribute("disabled");
+  }
+
+  render() {
+    this.plotAfterInterval();
+
+    this.model.on("change:value", () => this.setText(), this);
+    this.model.on("change:placeholder", () => this.setPlaceholder(), this);
+    this.model.on("change:description", () => this.setDescription(), this);
+    this.model.on("change:disabled", () => this.setDisabled(), this);
+    window.addEventListener("resize", () => this.plotAfterInterval());
+  }
+
+  plot() {
+    this.setText();
+    this.setPlaceholder();
+    this.setDescription();
+    this.setDisabled();
+  }
+}
+
+export class InputModel extends TextBaseModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: InputModel.model_name,
+      _view_name: InputModel.view_name,
+    };
+  }
+
+  static model_name = "InputModel";
+  static view_name = "InputView";
+}
+
+export class InputView extends TextBaseView {
+  setText() {
+    const value = this.model.get("value");
+    this.text.value = value;
+  }
+
+  setValue() {
+    const value = this.text.value;
+    this.model.set({ value: value });
+    this.model.save_changes();
+  }
+
+  plot() {
+    this.text = document.createElement("input");
+    this.text.addEventListener("change", this.setValue.bind(this));
+    super.plot();
+  }
+}
+
 export class RangeSliderModel extends BaseModel {
   defaults() {
     return {
@@ -34,21 +125,13 @@ export class RangeSliderView extends BaseView {
   }
 
   plot() {
-    let data = this.model.get("dataRecords");
+    const data = this.model.get("dataRecords");
     let variable = this.model.get("variable");
     let step = this.model.get("step");
     let description = this.model.get("description");
     let elementId = this.model.get("elementId");
     let minValue = this.model.get("minValue");
     let maxValue = this.model.get("maxValue");
-
-    if (typeof data === "function") data = data();
-    if (typeof variable === "function") variable = variable();
-    if (typeof step === "function") step = step();
-    if (typeof description === "function") description = description();
-    if (typeof elementId === "function") elementId = elementId();
-    if (typeof minValue === "function") minValue = minValue();
-    if (typeof maxValue === "function") maxValue = maxValue();
 
     let element = this.el;
     if (elementId) {
@@ -73,5 +156,64 @@ export class RangeSliderView extends BaseView {
     this.model.set({ minValue: min });
     this.model.set({ maxValue: max });
     this.model.save_changes();
+  }
+}
+
+export class TextAreaModel extends TextBaseModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: TextAreaModel.model_name,
+      _view_name: TextAreaModel.view_name,
+    };
+  }
+
+  static model_name = "TextAreaModel";
+  static view_name = "TextAreaView";
+}
+
+export class TextAreaView extends TextBaseView {
+  setText() {
+    const value = this.model.get("value");
+    this.text.value = value;
+  }
+
+  setValue() {
+    const value = this.text.value;
+    this.model.set({ value: value });
+    this.model.save_changes();
+  }
+
+  plot() {
+    this.text = document.createElement("textarea");
+    this.text.addEventListener("change", this.setValue.bind(this));
+    super.plot();
+  }
+}
+
+export class TextModel extends TextBaseModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: TextModel.model_name,
+      _view_name: TextModel.view_name,
+    };
+  }
+
+  static model_name = "TextModel";
+  static view_name = "TextView";
+}
+
+export class TextView extends TextBaseView {
+  setText() {
+    const value = this.model.get("value");
+    this.text.innerHTML = value;
+  }
+
+  plot() {
+    this.text = document.createElement("div");
+    this.text.style.marginLeft = "4px";
+    this.getElement().style.display = "flex";
+    super.plot();
   }
 }

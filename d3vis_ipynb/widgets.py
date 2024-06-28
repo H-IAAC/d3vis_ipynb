@@ -1,8 +1,24 @@
 import ipywidgets as widgets
 import pandas as pd
-from traitlets import Float, List, Unicode
+from traitlets import Float, List, Unicode, Bool
 
 from d3vis_ipynb.base_widget import BaseWidget
+
+
+class TextBaseWidget(BaseWidget):
+    value = Unicode().tag(sync=True)
+    placeholder = Unicode().tag(sync=True)
+    description = Unicode().tag(sync=True)
+    disabled = Bool().tag(sync=True)
+
+
+@widgets.register
+class Input(TextBaseWidget):
+    _view_name = Unicode("InputView").tag(sync=True)
+    _model_name = Unicode("InputModel").tag(sync=True)
+
+    def on_text_changed(self, callback):
+        self.observe(callback, names=["value"])
 
 
 @widgets.register
@@ -31,3 +47,18 @@ class RangeSlider(BaseWidget):
 
     def on_drag(self, callback):
         self.observe(callback, names=["minValue", "maxValue"])
+
+
+@widgets.register
+class TextArea(TextBaseWidget):
+    _view_name = Unicode("TextAreaView").tag(sync=True)
+    _model_name = Unicode("TextAreaModel").tag(sync=True)
+
+    def on_text_changed(self, callback):
+        self.observe(callback, names=["value"])
+
+
+@widgets.register
+class Text(TextBaseWidget):
+    _view_name = Unicode("TextView").tag(sync=True)
+    _model_name = Unicode("TextModel").tag(sync=True)
