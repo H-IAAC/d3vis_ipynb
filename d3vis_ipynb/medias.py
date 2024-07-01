@@ -78,6 +78,9 @@ class Video(_Media):
     def on_duration_set(self, callback):
         self.observe(callback, names=["_duration"])
 
+    def on_current_time_change(self, callback):
+        self.observe(callback, names=["_currentTime"])
+
     def seekTo(self, time):
         self._seekTo = time
         self._seeked = not self._seeked

@@ -87,7 +87,7 @@ export class VideoModel extends BaseModel {
       format: "mp4",
       width: Number,
       height: Number,
-      currentTime:Number,
+      currentTime: Number,
       controls: true,
       loop: true,
       _play: Boolean,
@@ -131,13 +131,11 @@ export class VideoView extends BaseView {
   seekTo() {
     if (!this.video) return;
     const seekTo = this.model.get("_seekTo");
-    console.log("seekTo: " + seekTo)
     this.video.currentTime = seekTo;
   }
 
   setCurrentTime() {
     const currentTime = this.video.currentTime;
-    console.log("setCurrentTime: " + currentTime)
     this.model.set({ _currentTime: currentTime });
     this.model.save_changes();
   }
@@ -224,7 +222,7 @@ export class VideoView extends BaseView {
 
     this.video.style.width = this.width + "px";
     this.video.style.height = this.height + "px";
-    this.video.addEventListener("timeupdate", this.setCurrentTime.bind(this))
+    this.video.addEventListener("timeupdate", this.setCurrentTime.bind(this));
 
     this.getElement().appendChild(this.video);
     setTimeout(() => {
