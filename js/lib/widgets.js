@@ -175,10 +175,13 @@ export class RangeSliderView extends BaseView {
     this.model.on("change:variable", () => this.plotAfterInterval(), this);
     this.model.on("change:step", () => this.plotAfterInterval(), this);
     this.model.on("change:description", () => this.plotAfterInterval(), this);
+    this.model.on("change:minValue", () => this.plotAfterInterval(), this);
+    this.model.on("change:maxValue", () => this.plotAfterInterval(), this);
     window.addEventListener("resize", () => this.plotAfterInterval());
   }
 
   plot() {
+    console.log("PLOT")
     const data = this.model.get("dataRecords");
     let variable = this.model.get("variable");
     let step = this.model.get("step");

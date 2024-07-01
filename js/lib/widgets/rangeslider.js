@@ -59,10 +59,10 @@ export function rangeslider(
     setValues(from, to);
   }
 
-  if (!minValue) {
+  if (!minValue && data.length > 0) {
     minValue = d3.min(data, (d) => d[variable]);
   }
-  if (!maxValue) {
+  if (!maxValue && data.length > 0) {
     maxValue = d3.max(data, (d) => d[variable]);
   }
 
