@@ -184,6 +184,8 @@ export class RangeSliderView extends BaseView {
     let step = this.model.get("step");
     let description = this.model.get("description");
     let elementId = this.model.get("elementId");
+    let fromValue = this.model.get("fromValue");
+    let toValue = this.model.get("toValue");
     let minValue = this.model.get("minValue");
     let maxValue = this.model.get("maxValue");
 
@@ -198,15 +200,24 @@ export class RangeSliderView extends BaseView {
       variable,
       step,
       description,
+      fromValue,
+      toValue,
       minValue,
       maxValue,
-      this.setValues.bind(this),
+      this.setFromTo.bind(this),
+      this.setMinMax.bind(this),
       element,
       margin
     );
   }
 
-  setValues(min, max) {
+  setFromTo(from, to) {
+    this.model.set({ fromValue: from });
+    this.model.set({ toValue: to });
+    this.model.save_changes();
+  }
+
+  setMinMax(min, max) {
     this.model.set({ minValue: min });
     this.model.set({ maxValue: max });
     this.model.save_changes();

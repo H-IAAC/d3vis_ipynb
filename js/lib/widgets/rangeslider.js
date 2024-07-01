@@ -7,7 +7,10 @@ export function rangeslider(
   description,
   fromValue,
   toValue,
+  minValue,
+  maxValue,
   setValues,
+  setMinMax,
   element,
   margin
 ) {
@@ -51,46 +54,56 @@ export function rangeslider(
   toSlider.setAttribute("type", "range");
   slidersControl.appendChild(toSlider);
 
-  function updateValues(min, max) {
-    rangeValue.textContent = min + " - " + max;
-    setValues(min, max);
+  function updateValues(from, to) {
+    rangeValue.textContent = from + " - " + to;
+    setValues(from, to);
   }
 
-  const minValue = d3.min(data, (d) => d[variable]);
-  const maxValue = d3.max(data, (d) => d[variable]);
+  if (!minValue) {
+    minValue = d3.min(data, (d) => d[variable]);
+  }
+  if (!maxValue) {
+    maxValue = d3.max(data, (d) => d[variable]);
+  }
 
   fromSlider.setAttribute("min", minValue);
   fromSlider.setAttribute("max", maxValue);
   toSlider.setAttribute("min", minValue);
   toSlider.setAttribute("max", maxValue);
-  if (fromValue && toValue) {
+  if (fromValue) {
     fromSlider.value = fromValue;
-    toSlider.value = toValue;
   } else {
     fromSlider.value = minValue;
+  }
+  if (toValue) {
+    toSlider.value = toValue;
+  } else {
     toSlider.value = maxValue;
   }
 
-  const min = parseFloat(fromSlider.value);
-  const max = parseFloat(toSlider.value);
-  updateValues(min, max);
+  const from = parseFloat(fromSlider.value);
+  const to = parseFloat(toSlider.value);
+  const min = parseFloat(minValue);
+  const max = parseFloat(maxValue);
+  updateValues(from, to);
+  setMinMax(min, max);
 
   fromSlider.addEventListener("input", () => {
-    const min = parseFloat(fromSlider.value);
-    const max = parseFloat(toSlider.value);
-    if (min > max) {
+    const from = parseFloat(fromSlider.value);
+    const to = parseFloat(toSlider.value);
+    if (from > to) {
       fromSlider.value = toSlider.value;
     }
-    updateValues(min, max);
+    updateValues(from, to);
   });
 
   toSlider.addEventListener("input", () => {
-    const min = parseFloat(fromSlider.value);
-    const max = parseFloat(toSlider.value);
-    if (max < min) {
+    const from = parseFloat(fromSlider.value);
+    const to = parseFloat(toSlider.value);
+    if (to < from) {
       toSlider.value = fromSlider.value;
     }
-    updateValues(min, max);
+    updateValues(from, to);
   });
 
   fromSlider.addEventListener("click", () => {

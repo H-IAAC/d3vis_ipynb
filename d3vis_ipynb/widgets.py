@@ -43,10 +43,12 @@ class RangeSlider(BaseWidget):
     variable = Unicode().tag(sync=True)
     step = Float().tag(sync=True)
     description = Unicode().tag(sync=True)
+    fromValue = Float().tag(sync=True)
+    toValue = Float().tag(sync=True)
     minValue = Float().tag(sync=True)
     maxValue = Float().tag(sync=True)
 
-    def __init__(self, data, **kwargs):
+    def __init__(self, data=pd.DataFrame(), **kwargs):
         self.data = data
         super().__init__(**kwargs)
 
@@ -59,7 +61,7 @@ class RangeSlider(BaseWidget):
         self.dataRecords = val.to_dict(orient="records")
 
     def on_drag(self, callback):
-        self.observe(callback, names=["minValue", "maxValue"])
+        self.observe(callback, names=["fromValue", "toValue"])
 
 
 @widgets.register
