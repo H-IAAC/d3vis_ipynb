@@ -181,7 +181,6 @@ export class RangeSliderView extends BaseView {
   }
 
   plot() {
-    console.log("PLOT")
     const data = this.model.get("dataRecords");
     let variable = this.model.get("variable");
     let step = this.model.get("step");
