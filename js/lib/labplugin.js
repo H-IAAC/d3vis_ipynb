@@ -26,6 +26,8 @@ import {
   TextView,
   VideoModel,
   VideoView,
+  WatterfallPlotModel,
+  WatterfallPlotView,
   version,
 } from "./index";
 
@@ -63,6 +65,8 @@ export const helloWidgetPlugin = {
         TextView,
         VideoModel,
         VideoView,
+        WatterfallPlotModel,
+        WatterfallPlotView,
       },
     });
   },

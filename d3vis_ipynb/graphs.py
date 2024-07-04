@@ -148,3 +148,54 @@ class ScatterPlot(BaseWidget):
 
     def on_click_value(self, callback):
         self.observe(callback, names=["clickedValue"])
+
+
+@widgets.register
+class WatterfallPlot(BaseWidget):
+    _view_name = Unicode("WatterfallPlotView").tag(sync=True)
+    _model_name = Unicode("WatterfallPlotModel").tag(sync=True)
+
+    dataRecords = List([]).tag(sync=True)
+    x = Unicode().tag(sync=True)
+    y = Unicode().tag(sync=True)
+    baseValue = Float().tag(sync=True)
+
+    def __init__(
+        self,
+        data=pd.DataFrame(),
+        x="values",
+        y="feature_names",
+        explanation=None,
+        baseValue=0,
+        **kwargs,
+    ):
+        self.x = x
+        self.y = y
+        self.baseValue = baseValue
+        if explanation != None and not data.empty:
+            raise Exception("Initialize with explanation or data, not both.")
+        elif not data.empty:
+            self.data = data
+        else:
+            self.explanation = explanation
+        super().__init__(**kwargs)
+
+    @property
+    def data(self):
+        return pd.DataFrame.from_records(self.dataRecords)
+
+    @data.setter
+    def data(self, val):
+        self.dataRecords = val.to_dict(orient="records")
+
+    @property
+    def explanation(self):
+        return self.explanation
+
+    @data.setter
+    def explanation(self, val):
+        df = pd.DataFrame()
+        df.insert(0, self.x, val.values)
+        df.insert(0, self.y, val.feature_names)
+        self.baseValue = val.base_values
+        self.data = df

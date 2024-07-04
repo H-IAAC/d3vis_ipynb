@@ -4,6 +4,7 @@ import { HistogramPlot } from "./graphs/histogramplot";
 import { LinearPlot } from "./graphs/linearplot";
 import { RidgelinePlot } from "./graphs/ridgelineplot";
 import { ScatterPlot } from "./graphs/scatterplot";
+import { WatterfallPlot } from "./graphs/waterfall";
 
 export class BarPlotModel extends BaseModel {
   defaults() {
@@ -268,5 +269,58 @@ export class ScatterPlotView extends BaseView {
   setSelectedValues(values) {
     this.model.set({ selectedValuesRecords: values });
     this.model.save_changes();
+  }
+}
+
+export class WatterfallPlotModel extends BaseModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: WatterfallPlotModel.model_name,
+      _view_name: WatterfallPlotModel.view_name,
+
+      dataRecords: [],
+      x: String,
+      y: String,
+      baseValue: Number,
+      elementId: String,
+    };
+  }
+
+  static model_name = "WatterfallPlotModel";
+  static view_name = "WatterfallPlotView";
+}
+
+export class WatterfallPlotView extends BaseView {
+  render() {
+    this.plotAfterInterval();
+
+    this.model.on("change:dataRecords", () => this.plotAfterInterval(), this);
+    this.model.on("change:x", () => this.plotAfterInterval(), this);
+    this.model.on("change:y", () => this.plotAfterInterval(), this);
+    this.model.on("change:baseValue", () => this.plotAfterInterval(), this);
+    window.addEventListener("resize", () => this.plotAfterInterval());
+  }
+
+  plot() {
+    if (!this.watterfall)
+      this.watterfall = new WatterfallPlot(this.getElement());
+    this.setSizes();
+
+    let data = this.model.get("dataRecords");
+    let x = this.model.get("x");
+    let y = this.model.get("y");
+    let baseValue = this.model.get("baseValue");
+
+    this.watterfall.replot(
+      data,
+      x,
+      y,
+      baseValue,
+      this.width,
+      this.height,
+      { top: 20, right: 20, bottom: 30, left: 80 },
+      false
+    );
   }
 }
