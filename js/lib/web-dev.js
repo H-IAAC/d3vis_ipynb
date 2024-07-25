@@ -1,5 +1,5 @@
 import { HistogramPlot } from "./graphs/histogramplot";
-import { WatterfallPlot } from "./graphs/waterfall";
+import { WaterfallPlot } from "./graphs/waterfall";
 
 function addHistogram() {
   const data = [
@@ -37,7 +37,7 @@ function addHistogram() {
   histogramplot.plot(data, x, start, end, "component", that);
 }
 
-function addWatterfall() {
+function addWaterfall() {
   const data = [
     { feature_names: "Age", values: 0.56290748 },
     { feature_names: "Workclass", values: -0.37707573 },
@@ -59,8 +59,8 @@ function addWatterfall() {
   element.style.height = "1000px";
   document.body.appendChild(element);
 
-  const watterfall = new WatterfallPlot(element);
-  watterfall.plot(
+  const waterfall = new WaterfallPlot(element);
+  waterfall.plot(
     data,
     "values",
     "feature_names",
@@ -72,4 +72,4 @@ function addWatterfall() {
   );
 }
 
-addWatterfall();
+addWaterfall();

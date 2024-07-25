@@ -151,9 +151,9 @@ class ScatterPlot(BaseWidget):
 
 
 @widgets.register
-class WatterfallPlot(BaseWidget):
-    _view_name = Unicode("WatterfallPlotView").tag(sync=True)
-    _model_name = Unicode("WatterfallPlotModel").tag(sync=True)
+class WaterfallPlot(BaseWidget):
+    _view_name = Unicode("WaterfallPlotView").tag(sync=True)
+    _model_name = Unicode("WaterfallPlotModel").tag(sync=True)
 
     dataRecords = List([]).tag(sync=True)
     x = Unicode().tag(sync=True)

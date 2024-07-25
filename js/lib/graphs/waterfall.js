@@ -76,7 +76,7 @@ function getColor(xStart, xEnd) {
   return NEGATIVE_COLOR;
 }
 
-export class WatterfallPlot extends BasePlot {
+export class WaterfallPlot extends BasePlot {
   plot(data, x_value, y_value, baseValue, width, height, margin, noAxes) {
     this.baseValue = baseValue;
     data.sort(absoluteSort(x_value, true));

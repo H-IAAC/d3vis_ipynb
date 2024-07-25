@@ -4,7 +4,7 @@ import { HistogramPlot } from "./graphs/histogramplot";
 import { LinearPlot } from "./graphs/linearplot";
 import { RidgelinePlot } from "./graphs/ridgelineplot";
 import { ScatterPlot } from "./graphs/scatterplot";
-import { WatterfallPlot } from "./graphs/waterfall";
+import { WaterfallPlot } from "./graphs/waterfall";
 
 export class BarPlotModel extends BaseModel {
   defaults() {
@@ -272,12 +272,12 @@ export class ScatterPlotView extends BaseView {
   }
 }
 
-export class WatterfallPlotModel extends BaseModel {
+export class WaterfallPlotModel extends BaseModel {
   defaults() {
     return {
       ...super.defaults(),
-      _model_name: WatterfallPlotModel.model_name,
-      _view_name: WatterfallPlotModel.view_name,
+      _model_name: WaterfallPlotModel.model_name,
+      _view_name: WaterfallPlotModel.view_name,
 
       dataRecords: [],
       x: String,
@@ -287,11 +287,11 @@ export class WatterfallPlotModel extends BaseModel {
     };
   }
 
-  static model_name = "WatterfallPlotModel";
-  static view_name = "WatterfallPlotView";
+  static model_name = "WaterfallPlotModel";
+  static view_name = "WaterfallPlotView";
 }
 
-export class WatterfallPlotView extends BaseView {
+export class WaterfallPlotView extends BaseView {
   render() {
     this.plotAfterInterval();
 
@@ -303,8 +303,8 @@ export class WatterfallPlotView extends BaseView {
   }
 
   plot() {
-    if (!this.watterfall)
-      this.watterfall = new WatterfallPlot(this.getElement());
+    if (!this.waterfall)
+      this.waterfall = new WaterfallPlot(this.getElement());
     this.setSizes();
 
     let data = this.model.get("dataRecords");
@@ -312,7 +312,7 @@ export class WatterfallPlotView extends BaseView {
     let y = this.model.get("y");
     let baseValue = this.model.get("baseValue");
 
-    this.watterfall.replot(
+    this.waterfall.replot(
       data,
       x,
       y,
