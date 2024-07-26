@@ -26,6 +26,35 @@ class Button(BaseWidget):
 
 
 @widgets.register
+class Dropdown(BaseWidget):
+    _view_name = Unicode("DropdownView").tag(sync=True)
+    _model_name = Unicode("DropdownModel").tag(sync=True)
+
+    dataRecords = List([]).tag(sync=True)
+    variable = Unicode().tag(sync=True)
+    description = Unicode().tag(sync=True)
+    options = List().tag(sync=True)
+    value = Unicode().tag(sync=True)
+    disabled = Bool().tag(sync=True)
+    _clicked = Bool().tag(sync=True)
+
+    def __init__(self, data=pd.DataFrame(), **kwargs):
+        self.data = data
+        super().__init__(**kwargs)
+
+    @property
+    def data(self):
+        return pd.DataFrame.from_records(self.dataRecords)
+
+    @data.setter
+    def data(self, val):
+        self.dataRecords = val.to_dict(orient="records")
+
+    def on_select(self, callback):
+        self.observe(callback, names=["value"])
+
+
+@widgets.register
 class Input(TextBaseWidget):
     _view_name = Unicode("InputView").tag(sync=True)
     _model_name = Unicode("InputModel").tag(sync=True)
