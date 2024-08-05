@@ -1,3 +1,4 @@
+import { DecisionPlot } from "./graphs/decision";
 import { HistogramPlot } from "./graphs/histogramplot";
 import { WaterfallPlot } from "./graphs/waterfall";
 
@@ -68,8 +69,37 @@ function addWaterfall() {
     800,
     600,
     { top: 20, right: 20, bottom: 30, left: 80 },
-    -false
+    false
   );
 }
 
-addWaterfall();
+function addDecision() {
+  const data = [
+    { feature_names: "one", values: [1, -9, 3] },
+    { feature_names: "two", values: [2, 4, -5] },
+    { feature_names: "three", values: [3, 7, 2] },
+    { feature_names: "four", values: [4, 5, -7] },
+    { feature_names: "five", values: [5, -4, -3] },
+  ];
+  const base_value = 6
+
+  const element = document.createElement("div");
+  element.id = "component";
+  element.style.width = "1000px";
+  element.style.height = "1000px";
+  document.body.appendChild(element);
+
+  const decision = new DecisionPlot(element);
+  decision.plot(
+    data,
+    "values",
+    "feature_names",
+    base_value,
+    800,
+    600,
+    { top: 40, right: 20, bottom: 30, left: 80 },
+    false
+  );
+}
+
+addDecision();

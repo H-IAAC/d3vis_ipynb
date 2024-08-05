@@ -1,4 +1,5 @@
 import ipywidgets as widgets
+import numpy as np
 import pandas as pd
 from traitlets import Float, List, Unicode
 
@@ -26,6 +27,38 @@ class BarPlot(BaseWidget):
     @data.setter
     def data(self, val):
         self.dataRecords = val.to_dict(orient="records")
+
+
+@widgets.register
+class DecisionPlot(BaseWidget):
+    _view_name = Unicode("DecisionPlotView").tag(sync=True)
+    _model_name = Unicode("DecisionPlotModel").tag(sync=True)
+
+    dataRecords = List([]).tag(sync=True)
+    baseValue = Float().tag(sync=True)
+
+    def __init__(
+        self,
+        explanation,
+        **kwargs,
+    ):
+        self.explanation = explanation
+        super().__init__(**kwargs)
+
+    @property
+    def explanation(self):
+        return self.explanation
+
+    @explanation.setter
+    def explanation(self, val):
+        valuesArray = np.transpose(val.values).tolist()
+        records = []
+        for i in range(len(val.feature_names)):
+            records.append(
+                {"feature_names": val.feature_names[i], "values": valuesArray[i]}
+            )
+        self.baseValue = val.base_values[0]
+        self.dataRecords = records
 
 
 @widgets.register
@@ -192,7 +225,7 @@ class WaterfallPlot(BaseWidget):
     def explanation(self):
         return self.explanation
 
-    @data.setter
+    @explanation.setter
     def explanation(self, val):
         df = pd.DataFrame()
         df.insert(0, self.x, val.values)

@@ -1,5 +1,6 @@
 import { BaseModel, BaseView } from "./base";
 import { BarPlot } from "./graphs/barplot";
+import { DecisionPlot } from "./graphs/decision";
 import { HistogramPlot } from "./graphs/histogramplot";
 import { LinearPlot } from "./graphs/linearplot";
 import { RidgelinePlot } from "./graphs/ridgelineplot";
@@ -46,6 +47,53 @@ export class BarPlotView extends BaseView {
     const hue = this.model.get("hue");
 
     this.barplot.plot(data, x, y, hue, this.width, this.height, this.margin);
+  }
+}
+
+export class DecisionPlotModel extends BaseModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: DecisionPlotModel.model_name,
+      _view_name: DecisionPlotModel.view_name,
+
+      dataRecords: [],
+      baseValue: Number,
+      elementId: String,
+    };
+  }
+
+  static model_name = "DecisionPlotModel";
+  static view_name = "DecisionPlotView";
+}
+
+export class DecisionPlotView extends BaseView {
+  render() {
+    this.plotAfterInterval();
+
+    this.model.on("change:dataRecords", () => this.plotAfterInterval(), this);
+    this.model.on("change:baseValue", () => this.plotAfterInterval(), this);
+    window.addEventListener("resize", () => this.plotAfterInterval());
+  }
+
+  plot() {
+    if (!this.decisionPlot)
+      this.decisionPlot = new DecisionPlot(this.getElement());
+    this.setSizes();
+
+    let data = this.model.get("dataRecords");
+    let baseValue = this.model.get("baseValue");
+
+    this.decisionPlot.replot(
+      data,
+      "values",
+      "feature_names",
+      baseValue,
+      this.width,
+      this.height,
+      { top: 20, right: 20, bottom: 30, left: 80 },
+      false
+    );
   }
 }
 
@@ -303,8 +351,7 @@ export class WaterfallPlotView extends BaseView {
   }
 
   plot() {
-    if (!this.waterfall)
-      this.waterfall = new WaterfallPlot(this.getElement());
+    if (!this.waterfall) this.waterfall = new WaterfallPlot(this.getElement());
     this.setSizes();
 
     let data = this.model.get("dataRecords");
