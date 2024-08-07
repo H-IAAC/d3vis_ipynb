@@ -23,15 +23,17 @@ export class ScatterPlot extends BasePlot {
       Math.random() * Date.now() * 10000
     ).toString(36);
 
-    const SVG = this.getSvg(width, height, margin);
+    this.svg = this.getSvg(width, height, margin);
     const xDomain = d3.extent(data, function (d) {
       return d[x_value];
     });
-    const X = this.getXLinearScale(xDomain, width, margin);
+    this.xScale = this.getXLinearScale(xDomain, width, margin);
+    let X = this.xScale;
     const yDomain = d3.extent(data, function (d) {
       return d[y_value];
     });
-    const Y = this.getYLinearScale(yDomain, height, margin);
+    this.yScale = this.getYLinearScale(yDomain, height, margin);
+    let Y = this.yScale;
 
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -68,7 +70,8 @@ export class ScatterPlot extends BasePlot {
       }
     }
 
-    SVG.selectAll(".dot")
+    this.svg
+      .selectAll(".dot")
       .data(data)
       .enter()
       .append("circle")
@@ -90,10 +93,11 @@ export class ScatterPlot extends BasePlot {
       .on("mouseout", mouseout)
       .on("click", mouseClick);
 
-    if (!noAxes) this.plotAxes(SVG, X, Y, x_value, y_value);
+    if (!noAxes) this.plotAxes(this.svg, X, Y, x_value, y_value);
 
     function resetColor() {
-      SVG.selectAll(".dot")
+      this.svg
+        .selectAll(".dot")
         .data(data)
         .attr("r", 3.5)
         .style("fill", function (d) {
@@ -121,7 +125,8 @@ export class ScatterPlot extends BasePlot {
     );
 
     if (hue) {
-      const legend = SVG.selectAll(".legend")
+      const legend = this.svg
+        .selectAll(".legend")
         .data(color.domain())
         .enter()
         .append("g")
@@ -148,7 +153,8 @@ export class ScatterPlot extends BasePlot {
         });
     }
 
-    const focus = SVG.append("g")
+    const focus = this.svg
+      .append("g")
       .append("rect")
       .style("fill", "none")
       .attr("width", 160)
@@ -157,7 +163,8 @@ export class ScatterPlot extends BasePlot {
       .attr("stroke-width", 4)
       .style("opacity", 0);
 
-    const focusText = SVG.append("g")
+    const focusText = this.svg
+      .append("g")
       .append("text")
       .style("opacity", 0)
       .attr("text-anchor", "left")
@@ -189,5 +196,33 @@ export class ScatterPlot extends BasePlot {
       margin,
       noAxes
     );
+  }
+
+  plotLines(lines) {
+    let X = this.xScale;
+    let Y = this.yScale;
+
+    this.svg
+      .selectAll("path.reference_line")
+      .data(Object.values(lines))
+      .join("path")
+      .attr("class", "reference_line")
+      .attr("stroke", (d) => d.color)
+      .attr("stroke-dasharray", (d) => {
+        if (d.dashed) return "2,2";
+      })
+      .transition()
+      .attr("d", function (d) {
+        if (d.direction === "horizontal")
+          return d3.line()([
+            [X.range()[0], Y(d.position)],
+            [X.range()[1], Y(d.position)],
+          ]);
+
+        return d3.line()([
+          [X(d.position), Y.range()[0]],
+          [X(d.position), Y.range()[1]],
+        ]);
+      });
   }
 }

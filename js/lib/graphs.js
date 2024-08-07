@@ -267,6 +267,7 @@ export class ScatterPlotModel extends BaseModel {
       elementId: String,
       clickedValue: String,
       selectedValuesRecords: [],
+      lines: {},
     };
   }
 
@@ -282,6 +283,7 @@ export class ScatterPlotView extends BaseView {
     this.model.on("change:x", () => this.plotAfterInterval(), this);
     this.model.on("change:y", () => this.plotAfterInterval(), this);
     this.model.on("change:hue", () => this.plotAfterInterval(), this);
+    this.model.on("change:lines", () => this.setLines(), this);
     window.addEventListener("resize", () => this.plotAfterInterval());
   }
 
@@ -307,6 +309,8 @@ export class ScatterPlotView extends BaseView {
       this.margin,
       false
     );
+
+    this.setLines();
   }
 
   setValue(text) {
@@ -317,6 +321,11 @@ export class ScatterPlotView extends BaseView {
   setSelectedValues(values) {
     this.model.set({ selectedValuesRecords: values });
     this.model.save_changes();
+  }
+
+  setLines() {
+    let lines = this.model.get("lines");
+    this.scatterplot.plotLines(lines);
   }
 }
 

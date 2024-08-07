@@ -1,7 +1,8 @@
 import ipywidgets as widgets
 import numpy as np
 import pandas as pd
-from traitlets import Float, List, Unicode
+import copy
+from traitlets import Dict, Float, List, Unicode
 
 from d3vis_ipynb.base_widget import BaseWidget
 
@@ -154,6 +155,7 @@ class ScatterPlot(BaseWidget):
     hue = Unicode().tag(sync=True)
     clickedValue = Unicode().tag(sync=True)
     selectedValuesRecords = List([]).tag(sync=True)
+    lines = Dict([]).tag(sync=True)
 
     def __init__(self, data, **kwargs):
         self.data = data
@@ -181,6 +183,45 @@ class ScatterPlot(BaseWidget):
 
     def on_click_value(self, callback):
         self.observe(callback, names=["clickedValue"])
+
+    def createLine(
+        self, id, position=0, color="blue", dashed=True, direction="vertical"
+    ):
+        if direction != "horizontal" and direction != "vertical":
+            raise Exception('Type must be "horizontal" or "vertical".')
+
+        newLine = {
+            "position": position,
+            "color": color,
+            "dashed": dashed,
+            "direction": direction,
+        }
+        lines = copy.deepcopy(self.lines)
+        lines[id] = newLine
+        self.lines = lines
+
+    def updateLine(self, id, position=None, color=None, dashed=None, direction=None):
+        if direction and direction != "horizontal" and direction != "vertical":
+            raise Exception('Type must be "horizontal" or "vertical".')
+
+        oldLine = self.lines[id]
+        newLine = {
+            "position": position if position else oldLine["position"],
+            "color": color if color else oldLine["color"],
+            "dashed": dashed if dashed else oldLine["dashed"],
+            "direction": direction if direction else oldLine["direction"],
+        }
+        lines = copy.deepcopy(self.lines)
+        lines[id] = newLine
+        self.lines = lines
+
+    def removeLine(self, id):
+        lines = copy.deepcopy(self.lines)
+        lines.pop(id)
+        self.lines = lines
+
+    def removeAllLines(self):
+        self.lines = {}
 
 
 @widgets.register
