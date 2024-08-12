@@ -1,6 +1,67 @@
+import { BarPlot } from "./graphs/barplot";
 import { DecisionPlot } from "./graphs/decision";
 import { HistogramPlot } from "./graphs/histogramplot";
 import { WaterfallPlot } from "./graphs/waterfall";
+
+function addBarplot() {
+  const data = [
+    { x_axis: 5.2, y_axis: 7, hue: "one" },
+    { x_axis: 6, y_axis: 4, hue: "one" },
+    { x_axis: 5.2, y_axis: 3, hue: "one" },
+    { x_axis: 5.2, y_axis: 2, hue: "one" },
+    { x_axis: 4, y_axis: 6, hue: "one" },
+    { x_axis: 4, y_axis: 8, hue: "one" },
+    { x_axis: 4, y_axis: 5, hue: "one" },
+    { x_axis: 2, y_axis: 3.1, hue: "two" },
+    { x_axis: 2, y_axis: 3.8, hue: "two" },
+    { x_axis: 4, y_axis: 4, hue: "two" },
+    { x_axis: 2, y_axis: 4, hue: "two" },
+    { x_axis: 3, y_axis: 4, hue: "two" },
+    { x_axis: 6, y_axis: 7, hue: "two" },
+    { x_axis: 5, y_axis: 7, hue: "two" },
+    { x_axis: 5, y_axis: 7, hue: "two" },
+    { x_axis: 5, y_axis: 7, hue: "two" },
+    { x_axis: 4.5, y_axis: 2.5, hue: "three" },
+    { x_axis: 4.5, y_axis: 4, hue: "three" },
+    { x_axis: 4.5, y_axis: 5, hue: "three" },
+    { x_axis: 4, y_axis: 5, hue: "three" },
+    { x_axis: 4, y_axis: 6, hue: "three" },
+    { x_axis: 4, y_axis: 7, hue: "three" },
+    { x_axis: 2, y_axis: 3, hue: "three" },
+    { x_axis: 2, y_axis: 3.5, hue: "three" },
+    { x_axis: 6, y_axis: 4, hue: "three" },
+  ];
+  const element = document.createElement("div");
+  element.id = "component";
+  element.style.width = "1000px";
+  element.style.height = "1000px";
+  document.body.appendChild(element);
+
+  const that = this;
+  const x = "x_axis";
+  const y = "y_axis";
+  const hue = "hue"
+
+  const start = false;
+  const end = false;
+
+  const barplot = new BarPlot(element);
+  barplot.plot(
+    data,
+    x,
+    y,
+    hue,
+    800,
+    600,
+    {
+      top: 40,
+      right: 20,
+      bottom: 30,
+      left: 80,
+    },
+    false
+  );
+}
 
 function addHistogram() {
   const data = [
@@ -81,7 +142,7 @@ function addDecision() {
     { feature_names: "four", values: [4, 5, -7] },
     { feature_names: "five", values: [5, -4, -3] },
   ];
-  const base_value = 6
+  const base_value = 6;
 
   const element = document.createElement("div");
   element.id = "component";
@@ -102,4 +163,4 @@ function addDecision() {
   );
 }
 
-addDecision();
+addBarplot();

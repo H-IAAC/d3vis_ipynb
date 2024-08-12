@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import { BasePlot } from "./baseplot";
 
 function standardDeviationPerSquareRootedSize(array, mean) {
   let sd = 0;
@@ -13,24 +14,18 @@ function getCI(array) {
   return [mean - complement, mean + complement];
 }
 
-export class BarPlot {
-  constructor(element) {
-    this.element = element;
-  }
-
-  plot(data, x_axis, y_axis, hue_axis, width, height, margin) {
-    const innerWidth = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
-
-    d3.select(this.element).selectAll("*").remove();
-
-    const svg = d3
-      .select(this.element)
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+export class BarPlot extends BasePlot {
+  plot(
+    data,
+    x_axis,
+    y_axis,
+    hue_axis,
+    width,
+    height,
+    margin,
+    noAxes
+  ) {
+    this.svg = this.getSvg(width, height, margin);
 
     if (!hue_axis) hue_axis = x_axis;
 
@@ -45,12 +40,12 @@ export class BarPlot {
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     if (hue_axis == x_axis) {
-      createSingleBars();
+      createSingleBars(this);
     } else {
-      createGroupBars();
+      createGroupBars(this);
     }
 
-    function createSingleBars() {
+    function createSingleBars(that) {
       let result = data.reduce((res, row) => {
         const x = row[x_axis];
         const y = row[y_axis];
@@ -88,7 +83,7 @@ export class BarPlot {
         values[key]["max"] = max;
       });
 
-      const groups = result.map((r) => r[x_axis]);
+      const groups = result.map((r) => r[x_axis]).sort();
 
       const y_domain = [];
       const all_min_max = Object.keys(values).map((key) => values[key]);
@@ -97,31 +92,26 @@ export class BarPlot {
       if (y_domain[0] > 0 && y_domain[1] > 0) y_domain[0] = 0;
       else if (y_domain[0] < 0 && y_domain[1] < 0) y_domain[1] = 0;
 
-      const y = d3.scaleLinear().domain(y_domain).range([innerHeight, 0]);
+      const Y = that.getYLinearScale(y_domain, height, margin);
+      const X = that.getXBandScale(groups, width, margin, [0.2]);
 
-      svg.append("g").call(d3.axisLeft(y));
+      if (!noAxes) that.plotAxes(that.svg, X, Y, x_axis, y_axis);
 
-      const x = d3
-        .scaleBand()
-        .domain(groups)
-        .range([0, innerWidth])
-        .padding([0.2]);
-
-      svg
+      that.svg
         .append("g")
         .selectAll("g")
         .data(result)
         .enter()
         .append("rect")
         .attr("x", function (d) {
-          return x(d[x_axis]);
+          return X(d[x_axis]);
         })
         .attr("y", function (d) {
-          return y(d[y_axis]) < y(0) ? y(d[y_axis]) : y(0);
+          return Y(d[y_axis]) < Y(0) ? Y(d[y_axis]) : Y(0);
         })
-        .attr("width", x.bandwidth())
+        .attr("width", X.bandwidth())
         .attr("height", function (d) {
-          return Math.abs(y(0) - y(d[y_axis]));
+          return Math.abs(Y(0) - Y(d[y_axis]));
         })
         .data(allHues)
         .attr("fill", function (d) {
@@ -136,31 +126,25 @@ export class BarPlot {
         return newRow;
       });
 
-      svg
+      that.svg
         .append("g")
         .selectAll("g")
         .data(itrValues)
         .enter()
         .append("rect")
         .attr("x", function (d) {
-          return x(d[x_axis]) + x.bandwidth() / 2 - 1;
+          return X(d[x_axis]) + X.bandwidth() / 2 - 1;
         })
         .attr("y", function (d) {
-          return y(d["max"]);
+          return Y(d["max"]);
         })
         .attr("width", 2)
         .attr("height", function (d) {
-          return y(d["min"]) - y(d["max"]);
+          return Y(d["min"]) - Y(d["max"]);
         });
-
-      svg
-        .append("g")
-        .style("font", "18px times")
-        .attr("transform", "translate(0," + y(0) + ")")
-        .call(d3.axisBottom(x).tickSize(0));
     }
 
-    function createGroupBars() {
+    function createGroupBars(that) {
       let result = data.reduce((res, row) => {
         const x = row[x_axis];
         const y = row[y_axis];
@@ -221,7 +205,7 @@ export class BarPlot {
       });
 
       const subgroups = allHues.map((value) => y_axis + "-" + value);
-      const groups = result.map((r) => r[x_axis]);
+      const groups = result.map((r) => r[x_axis]).sort();
 
       const all_min_max = [];
       Object.keys(values).map((key) => {
@@ -234,30 +218,25 @@ export class BarPlot {
       if (y_domain[0] > 0 && y_domain[1] > 0) y_domain[0] = 0;
       else if (y_domain[0] < 0 && y_domain[1] < 0) y_domain[1] = 0;
 
-      const y = d3.scaleLinear().domain(y_domain).range([innerHeight, 0]);
+      const X = that.getXBandScale(groups, width, margin, [0.2]);
+      const Y = that.getYLinearScale(y_domain, height, margin);
 
-      svg.append("g").call(d3.axisLeft(y));
-
-      const x = d3
-        .scaleBand()
-        .domain(groups)
-        .range([0, innerWidth])
-        .padding([0.2]);
+      if (!noAxes) that.plotAxes(that.svg, X, Y, x_axis, y_axis);
 
       const xSubgroup = d3
         .scaleBand()
         .domain(subgroups)
-        .range([0, x.bandwidth()])
+        .range([0, X.bandwidth()])
         .padding([0.05]);
 
-      svg
+      that.svg
         .append("g")
         .selectAll("g")
         .data(result)
         .enter()
         .append("g")
         .attr("transform", function (d) {
-          return "translate(" + x(d[x_axis]) + ",0)";
+          return "translate(" + X(d[x_axis]) + ",0)";
         })
         .selectAll("rect")
         .data(function (d) {
@@ -271,11 +250,11 @@ export class BarPlot {
           return xSubgroup(d.key);
         })
         .attr("y", function (d) {
-          return y(d.value) < y(0) ? y(d.value) : y(0);
+          return Y(d.value) < Y(0) ? Y(d.value) : Y(0);
         })
         .attr("width", xSubgroup.bandwidth())
         .attr("height", function (d) {
-          return Math.abs(y(0) - y(d.value));
+          return Math.abs(Y(0) - Y(d.value));
         })
         .data(allHues)
         .attr("fill", function (d) {
@@ -289,14 +268,14 @@ export class BarPlot {
         return newRow;
       });
 
-      svg
+      that.svg
         .append("g")
         .selectAll("g")
         .data(itrValues)
         .enter()
         .append("g")
         .attr("transform", function (d) {
-          return "translate(" + x(d[x_axis]) + ",0)";
+          return "translate(" + X(d[x_axis]) + ",0)";
         })
         .selectAll("rect")
         .data(function (d) {
@@ -311,15 +290,15 @@ export class BarPlot {
         })
         .attr("y", function (d) {
           if (!d.value.max) return 0;
-          return y(d.value["max"]);
+          return Y(d.value["max"]);
         })
         .attr("width", 2)
         .attr("height", function (d) {
           if (!d.value.min || !d.value.max) return 0;
-          return y(d.value["min"]) - y(d.value["max"]);
+          return Y(d.value["min"]) - Y(d.value["max"]);
         });
 
-      const legend = svg
+      const legend = that.svg
         .selectAll(".legend")
         .data(color.domain())
         .enter()
@@ -345,12 +324,11 @@ export class BarPlot {
         .text(function (d) {
           return d;
         });
-
-      svg
-        .append("g")
-        .style("font", "18px times")
-        .attr("transform", "translate(0," + y(0) + ")")
-        .call(d3.axisBottom(x).tickSize(0));
     }
+  }
+
+  replot(data, x_axis, y_axis, hue_axis, width, height, margin) {
+    this.clear();
+    this.plot(data, x_axis, y_axis, hue_axis, width, height, margin);
   }
 }
