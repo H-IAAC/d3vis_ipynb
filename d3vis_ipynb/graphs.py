@@ -13,12 +13,14 @@ class BarPlot(BaseWidget):
     _model_name = Unicode("BarPlotModel").tag(sync=True)
 
     dataRecords = List([]).tag(sync=True)
+    direction = Unicode().tag(sync=True)
     x = Unicode().tag(sync=True)
     y = Unicode().tag(sync=True)
     hue = Unicode().tag(sync=True)
 
-    def __init__(self, data, **kwargs):
+    def __init__(self, data, direction="vertical", **kwargs):
         self.data = data
+        self.direction = direction
         super().__init__(**kwargs)
 
     @property

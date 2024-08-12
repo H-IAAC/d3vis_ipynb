@@ -5,7 +5,7 @@ import { WaterfallPlot } from "./graphs/waterfall";
 
 function addBarplot() {
   const data = [
-    { x_axis: 5.2, y_axis: 7, hue: "one" },
+    { x_axis: 5.2, y_axis: 4, hue: "one" },
     { x_axis: 6, y_axis: 4, hue: "one" },
     { x_axis: 5.2, y_axis: 3, hue: "one" },
     { x_axis: 5.2, y_axis: 2, hue: "one" },
@@ -38,9 +38,15 @@ function addBarplot() {
   document.body.appendChild(element);
 
   const that = this;
-  const x = "x_axis";
-  const y = "y_axis";
-  const hue = "hue"
+  let direction = "horizontal";
+  let x = "x_axis";
+  let y = "y_axis";
+  if (direction === "horizontal") {
+    x = "y_axis";
+    y = "x_axis";
+  }
+
+  const hue = "hue";
 
   const start = false;
   const end = false;
@@ -51,6 +57,7 @@ function addBarplot() {
     x,
     y,
     hue,
+    direction,
     800,
     600,
     {

@@ -15,9 +15,11 @@ export class BarPlotModel extends BaseModel {
       _view_name: BarPlotModel.view_name,
 
       dataRecords: [],
+      direction: String,
       x: String,
       y: String,
       hue: String,
+      direction: Boolean,
       elementId: String,
     };
   }
@@ -34,6 +36,7 @@ export class BarPlotView extends BaseView {
     this.model.on("change:x", () => this.plotAfterInterval(), this);
     this.model.on("change:y", () => this.plotAfterInterval(), this);
     this.model.on("change:hue", () => this.plotAfterInterval(), this);
+    this.model.on("change:direction", () => this.plotAfterInterval(), this);
     window.addEventListener("resize", () => this.plotAfterInterval());
   }
 
@@ -45,8 +48,9 @@ export class BarPlotView extends BaseView {
     const x = this.model.get("x");
     const y = this.model.get("y");
     const hue = this.model.get("hue");
+    const direction = this.model.get("direction");
 
-    this.barplot.plot(data, x, y, hue, this.width, this.height, this.margin);
+    this.barplot.replot(data, x, y, hue, direction, this.width, this.height, this.margin, false);
   }
 }
 

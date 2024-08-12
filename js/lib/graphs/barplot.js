@@ -15,23 +15,23 @@ function getCI(array) {
 }
 
 export class BarPlot extends BasePlot {
-  plot(
-    data,
-    x_axis,
-    y_axis,
-    hue_axis,
-    width,
-    height,
-    margin,
-    noAxes
-  ) {
+  plot(data, x_value, y_value, hue, direction, width, height, margin, noAxes) {
     this.svg = this.getSvg(width, height, margin);
 
-    if (!hue_axis) hue_axis = x_axis;
+    let base_value, side_value;
+    if (direction === "vertical") {
+      base_value = x_value;
+      side_value = y_value;
+    } else {
+      base_value = y_value;
+      side_value = x_value;
+    }
+
+    if (!hue) hue = base_value;
 
     const allHues = data.reduce((all, row) => {
-      if (all && all.indexOf(row[hue_axis]) === -1) {
-        all.push(row[hue_axis]);
+      if (all && all.indexOf(row[hue]) === -1) {
+        all.push(row[hue]);
       }
       return all;
     }, []);
@@ -39,7 +39,7 @@ export class BarPlot extends BasePlot {
 
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-    if (hue_axis == x_axis) {
+    if (hue == base_value) {
       createSingleBars(this);
     } else {
       createGroupBars(this);
@@ -47,18 +47,18 @@ export class BarPlot extends BasePlot {
 
     function createSingleBars(that) {
       let result = data.reduce((res, row) => {
-        const x = row[x_axis];
-        const y = row[y_axis];
+        const x = row[base_value];
+        const y = row[side_value];
 
         if (x in res) {
           res[x] += y;
           values[x]["qt"] += 1;
-          values[x][y_axis].push(y);
+          values[x][side_value].push(y);
         } else {
           const newValues = {};
           newValues["qt"] = 1;
-          newValues[y_axis] = [];
-          newValues[y_axis].push(y);
+          newValues[side_value] = [];
+          newValues[side_value].push(y);
           values[x] = newValues;
           res[x] = y;
         }
@@ -68,34 +68,63 @@ export class BarPlot extends BasePlot {
 
       result = Object.keys(result).map((key) => {
         const newRow = {};
-        newRow[x_axis] = key;
-        newRow[y_axis] = result[key];
+        newRow[base_value] = key;
+        newRow[side_value] = result[key];
         if (values[key]["qt"] != 0) {
-          newRow[y_axis] = newRow[y_axis] / values[key]["qt"];
+          newRow[side_value] = newRow[side_value] / values[key]["qt"];
         }
         return newRow;
       });
 
       Object.keys(values).forEach((key) => {
-        const array = values[key][y_axis];
+        const array = values[key][side_value];
         const [min, max] = getCI(array);
         values[key]["min"] = min;
         values[key]["max"] = max;
       });
 
-      const groups = result.map((r) => r[x_axis]).sort();
+      const groups = result.map((r) => r[base_value]).sort();
 
-      const y_domain = [];
+      const side_domain = [];
       const all_min_max = Object.keys(values).map((key) => values[key]);
-      y_domain.push(d3.min(all_min_max, (v) => v.min));
-      y_domain.push(d3.max(all_min_max, (v) => v.max));
-      if (y_domain[0] > 0 && y_domain[1] > 0) y_domain[0] = 0;
-      else if (y_domain[0] < 0 && y_domain[1] < 0) y_domain[1] = 0;
+      side_domain.push(d3.min(all_min_max, (v) => v.min));
+      side_domain.push(d3.max(all_min_max, (v) => v.max));
+      if (side_domain[0] > 0 && side_domain[1] > 0) side_domain[0] = 0;
+      else if (side_domain[0] < 0 && side_domain[1] < 0) side_domain[1] = 0;
 
-      const Y = that.getYLinearScale(y_domain, height, margin);
-      const X = that.getXBandScale(groups, width, margin, [0.2]);
+      let X,
+        Y,
+        baseScale,
+        sideScale,
+        baseAxis,
+        sideAxis,
+        baseLenght,
+        sideLenght;
+      if (direction === "vertical") {
+        X = that.getXBandScale(groups, width, margin, [0.2]);
+        Y = that.getYLinearScale(side_domain, height, margin);
+        [baseScale, sideScale, baseAxis, sideAxis, baseLenght, sideLenght] = [
+          X,
+          Y,
+          "x",
+          "y",
+          "width",
+          "height",
+        ];
+      } else {
+        X = that.getXLinearScale(side_domain, width, margin);
+        Y = that.getYBandScale(groups, height, margin, [0.2]);
+        [baseScale, sideScale, baseAxis, sideAxis, baseLenght, sideLenght] = [
+          Y,
+          X,
+          "y",
+          "x",
+          "height",
+          "width",
+        ];
+      }
 
-      if (!noAxes) that.plotAxes(that.svg, X, Y, x_axis, y_axis);
+      if (!noAxes) that.plotAxes(that.svg, X, Y, base_value, side_value);
 
       that.svg
         .append("g")
@@ -103,15 +132,17 @@ export class BarPlot extends BasePlot {
         .data(result)
         .enter()
         .append("rect")
-        .attr("x", function (d) {
-          return X(d[x_axis]);
+        .attr(baseAxis, function (d) {
+          return baseScale(d[base_value]);
         })
-        .attr("y", function (d) {
-          return Y(d[y_axis]) < Y(0) ? Y(d[y_axis]) : Y(0);
+        .attr(sideAxis, function (d) {
+          return sideScale(d[side_value]) < sideScale(0)
+            ? sideScale(d[side_value])
+            : sideScale(0);
         })
-        .attr("width", X.bandwidth())
-        .attr("height", function (d) {
-          return Math.abs(Y(0) - Y(d[y_axis]));
+        .attr(baseLenght, baseScale.bandwidth())
+        .attr(sideLenght, function (d) {
+          return Math.abs(sideScale(0) - sideScale(d[side_value]));
         })
         .data(allHues)
         .attr("fill", function (d) {
@@ -120,62 +151,67 @@ export class BarPlot extends BasePlot {
 
       const itrValues = Object.keys(values).map((key) => {
         const newRow = {};
-        newRow[x_axis] = key;
+        newRow[base_value] = key;
         newRow["min"] = values[key]["min"];
         newRow["max"] = values[key]["max"];
         return newRow;
       });
 
       that.svg
-        .append("g")
-        .selectAll("g")
+        .selectAll()
         .data(itrValues)
         .enter()
-        .append("rect")
-        .attr("x", function (d) {
-          return X(d[x_axis]) + X.bandwidth() / 2 - 1;
-        })
-        .attr("y", function (d) {
-          return Y(d["max"]);
-        })
-        .attr("width", 2)
-        .attr("height", function (d) {
-          return Y(d["min"]) - Y(d["max"]);
+        .append("path")
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", 2)
+        .attr("d", function (d) {
+          const base = baseScale(d[base_value]) + baseScale.bandwidth() / 2;
+          if (direction === "vertical") {
+            return d3.line()([
+              [base, sideScale(d["min"])],
+              [base, sideScale(d["max"])],
+            ]);
+          }
+          return d3.line()([
+            [sideScale(d["min"]), base],
+            [sideScale(d["max"]), base],
+          ]);
         });
     }
 
     function createGroupBars(that) {
       let result = data.reduce((res, row) => {
-        const x = row[x_axis];
-        const y = row[y_axis];
-        const hue = row[hue_axis];
+        const x = row[base_value];
+        const y = row[side_value];
+        const hueRow = row[hue];
 
         if (x in res) {
-          values[x]["qt"][y_axis + "-" + hue] += 1;
-          values[x][hue][y_axis].push(y);
+          values[x]["qt"][side_value + "-" + hueRow] += 1;
+          values[x][hueRow][side_value].push(y);
           for (const h of allHues) {
-            if (hue == h) res[x][y_axis + "-" + h] += y;
+            if (hueRow == h) res[x][side_value + "-" + h] += y;
           }
         } else {
           const newValues = {};
-          allHues.forEach((hue) => {
-            newValues[hue] = {};
-            newValues[hue][y_axis] = [];
+          allHues.forEach((h) => {
+            newValues[h] = {};
+            newValues[h][side_value] = [];
           });
 
           const qt = {};
           for (const h of allHues) {
-            qt[y_axis + "-" + h] = 0;
+            qt[side_value + "-" + h] = 0;
           }
-          qt[y_axis + "-" + hue] = 1;
+          qt[side_value + "-" + hueRow] = 1;
 
           newValues["qt"] = qt;
-          newValues[hue][y_axis].push(y);
+          newValues[hueRow][side_value].push(y);
           values[x] = newValues;
           const newRow = {};
           for (const h of allHues) {
-            if (hue == h) newRow[y_axis + "-" + h] = y;
-            else newRow[y_axis + "-" + h] = 0;
+            if (hueRow == h) newRow[side_value + "-" + h] = y;
+            else newRow[side_value + "-" + h] = 0;
           }
           res[x] = newRow;
         }
@@ -185,7 +221,7 @@ export class BarPlot extends BasePlot {
 
       result = Object.keys(result).map((key) => {
         let newRow = {};
-        newRow[x_axis] = key;
+        newRow[base_value] = key;
         for (const i of Object.keys(result[key])) {
           if (values[key]["qt"][i] != 0) {
             result[key][i] = result[key][i] / values[key]["qt"][i];
@@ -197,36 +233,65 @@ export class BarPlot extends BasePlot {
 
       Object.keys(values).forEach((key) => {
         allHues.forEach((h) => {
-          const array = values[key][h][y_axis];
+          const array = values[key][h][side_value];
           const [min, max] = getCI(array);
           values[key][h]["min"] = min;
           values[key][h]["max"] = max;
         });
       });
 
-      const subgroups = allHues.map((value) => y_axis + "-" + value);
-      const groups = result.map((r) => r[x_axis]).sort();
+      const subgroups = allHues.map((value) => side_value + "-" + value);
+      const groups = result.map((r) => r[base_value]).sort();
 
       const all_min_max = [];
       Object.keys(values).map((key) => {
         allHues.forEach((h) => all_min_max.push(values[key][h]));
       });
 
-      const y_domain = [];
-      y_domain.push(d3.min(all_min_max, (v) => v.min));
-      y_domain.push(d3.max(all_min_max, (v) => v.max));
-      if (y_domain[0] > 0 && y_domain[1] > 0) y_domain[0] = 0;
-      else if (y_domain[0] < 0 && y_domain[1] < 0) y_domain[1] = 0;
+      const side_domain = [];
+      side_domain.push(d3.min(all_min_max, (v) => v.min));
+      side_domain.push(d3.max(all_min_max, (v) => v.max));
+      if (side_domain[0] > 0 && side_domain[1] > 0) side_domain[0] = 0;
+      else if (side_domain[0] < 0 && side_domain[1] < 0) side_domain[1] = 0;
 
-      const X = that.getXBandScale(groups, width, margin, [0.2]);
-      const Y = that.getYLinearScale(y_domain, height, margin);
+      let X,
+        Y,
+        baseScale,
+        sideScale,
+        baseAxis,
+        sideAxis,
+        baseLenght,
+        sideLenght;
+      if (direction === "vertical") {
+        X = that.getXBandScale(groups, width, margin, [0.2]);
+        Y = that.getYLinearScale(side_domain, height, margin);
+        [baseScale, sideScale, baseAxis, sideAxis, baseLenght, sideLenght] = [
+          X,
+          Y,
+          "x",
+          "y",
+          "width",
+          "height",
+        ];
+      } else {
+        X = that.getXLinearScale(side_domain, width, margin);
+        Y = that.getYBandScale(groups, height, margin, [0.2]);
+        [baseScale, sideScale, baseAxis, sideAxis, baseLenght, sideLenght] = [
+          Y,
+          X,
+          "y",
+          "x",
+          "height",
+          "width",
+        ];
+      }
 
-      if (!noAxes) that.plotAxes(that.svg, X, Y, x_axis, y_axis);
+      if (!noAxes) that.plotAxes(that.svg, X, Y, base_value, side_value);
 
       const xSubgroup = d3
         .scaleBand()
         .domain(subgroups)
-        .range([0, X.bandwidth()])
+        .range([0, baseScale.bandwidth()])
         .padding([0.05]);
 
       that.svg
@@ -236,7 +301,10 @@ export class BarPlot extends BasePlot {
         .enter()
         .append("g")
         .attr("transform", function (d) {
-          return "translate(" + X(d[x_axis]) + ",0)";
+          if (direction === "vertical") {
+            return "translate(" + baseScale(d[base_value]) + ",0)";
+          }
+          return "translate(0," + baseScale(d[base_value]) + ")";
         })
         .selectAll("rect")
         .data(function (d) {
@@ -246,15 +314,17 @@ export class BarPlot extends BasePlot {
         })
         .enter()
         .append("rect")
-        .attr("x", function (d) {
+        .attr(baseAxis, function (d) {
           return xSubgroup(d.key);
         })
-        .attr("y", function (d) {
-          return Y(d.value) < Y(0) ? Y(d.value) : Y(0);
+        .attr(sideAxis, function (d) {
+          return sideScale(d.value) < sideScale(0)
+            ? sideScale(d.value)
+            : sideScale(0);
         })
-        .attr("width", xSubgroup.bandwidth())
-        .attr("height", function (d) {
-          return Math.abs(Y(0) - Y(d.value));
+        .attr(baseLenght, xSubgroup.bandwidth())
+        .attr(sideLenght, function (d) {
+          return Math.abs(sideScale(0) - sideScale(d.value));
         })
         .data(allHues)
         .attr("fill", function (d) {
@@ -263,7 +333,7 @@ export class BarPlot extends BasePlot {
 
       const itrValues = Object.keys(values).map((key) => {
         let newRow = {};
-        newRow[x_axis] = key;
+        newRow[base_value] = key;
         newRow = { ...newRow, ...values[key] };
         return newRow;
       });
@@ -275,27 +345,34 @@ export class BarPlot extends BasePlot {
         .enter()
         .append("g")
         .attr("transform", function (d) {
-          return "translate(" + X(d[x_axis]) + ",0)";
+          if (direction === "vertical") {
+            return "translate(" + baseScale(d[base_value]) + ",0)";
+          }
+          return "translate(0," + baseScale(d[base_value]) + ")";
         })
         .selectAll("rect")
         .data(function (d) {
           return allHues.map(function (key) {
-            return { key: y_axis + "-" + key, value: d[key] };
+            return { key: side_value + "-" + key, value: d[key] };
           });
         })
         .enter()
-        .append("rect")
-        .attr("x", function (d) {
-          return xSubgroup(d.key) + xSubgroup.bandwidth() / 2 - 1;
-        })
-        .attr("y", function (d) {
-          if (!d.value.max) return 0;
-          return Y(d.value["max"]);
-        })
-        .attr("width", 2)
-        .attr("height", function (d) {
-          if (!d.value.min || !d.value.max) return 0;
-          return Y(d.value["min"]) - Y(d.value["max"]);
+        .append("path")
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", 2)
+        .attr("d", function (d) {
+          const base = xSubgroup(d.key) + xSubgroup.bandwidth() / 2;
+          if (direction === "vertical") {
+            return d3.line()([
+              [base, sideScale(d.value["min"])],
+              [base, sideScale(d.value["max"])],
+            ]);
+          }
+          return d3.line()([
+            [sideScale(d.value["min"]), base],
+            [sideScale(d.value["max"]), base],
+          ]);
         });
 
       const legend = that.svg
@@ -310,14 +387,14 @@ export class BarPlot extends BasePlot {
 
       legend
         .append("rect")
-        .attr("x", innerWidth - 18)
+        .attr("x", width - margin.left - margin.right - 18)
         .attr("width", 18)
         .attr("height", 18)
         .style("fill", color);
 
       legend
         .append("text")
-        .attr("x", innerWidth - 24)
+        .attr("x", width - margin.left - margin.right - 24)
         .attr("y", 9)
         .attr("dy", ".35em")
         .style("text-anchor", "end")
@@ -327,8 +404,8 @@ export class BarPlot extends BasePlot {
     }
   }
 
-  replot(data, x_axis, y_axis, hue_axis, width, height, margin) {
+  replot(data, x_axis, y_axis, hue_axis, direction, width, height, margin) {
     this.clear();
-    this.plot(data, x_axis, y_axis, hue_axis, width, height, margin);
+    this.plot(data, x_axis, y_axis, hue_axis, direction, width, height, margin);
   }
 }
