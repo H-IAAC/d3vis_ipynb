@@ -1,6 +1,6 @@
 import * as d3 from "d3";
-import { getDataMeans, groupArrayBy } from "../tools/group_data";
-import { lasso } from "../tools/lasso";
+import { getDataMeans, groupArrayBy } from "./tools/group_data";
+import { lasso } from "./tools/lasso";
 import { BasePlot } from "./baseplot";
 
 export class LinearPlot extends BasePlot {

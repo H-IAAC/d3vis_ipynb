@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { lasso } from "../tools/lasso";
+import { lasso } from "./tools/lasso";
 import { BasePlot } from "./baseplot";
 
 export class ScatterPlot extends BasePlot {
@@ -24,6 +24,9 @@ export class ScatterPlot extends BasePlot {
     ).toString(36);
 
     this.svg = this.getSvg(width, height, margin);
+
+    const SVG = this.svg;
+
     const xDomain = d3.extent(data, function (d) {
       return d[x_value];
     });
@@ -70,8 +73,7 @@ export class ScatterPlot extends BasePlot {
       }
     }
 
-    this.svg
-      .selectAll(".dot")
+    SVG.selectAll(".dot")
       .data(data)
       .enter()
       .append("circle")
@@ -93,11 +95,10 @@ export class ScatterPlot extends BasePlot {
       .on("mouseout", mouseout)
       .on("click", mouseClick);
 
-    if (!noAxes) this.plotAxes(this.svg, X, Y, x_value, y_value);
+    if (!noAxes) this.plotAxes(SVG, X, Y, x_value, y_value);
 
     function resetColor() {
-      this.svg
-        .selectAll(".dot")
+      SVG.selectAll(".dot")
         .data(data)
         .attr("r", 3.5)
         .style("fill", function (d) {
@@ -125,8 +126,7 @@ export class ScatterPlot extends BasePlot {
     );
 
     if (hue) {
-      const legend = this.svg
-        .selectAll(".legend")
+      const legend = SVG.selectAll(".legend")
         .data(color.domain())
         .enter()
         .append("g")
@@ -153,8 +153,7 @@ export class ScatterPlot extends BasePlot {
         });
     }
 
-    const focus = this.svg
-      .append("g")
+    const focus = SVG.append("g")
       .append("rect")
       .style("fill", "none")
       .attr("width", 160)
@@ -163,8 +162,7 @@ export class ScatterPlot extends BasePlot {
       .attr("stroke-width", 4)
       .style("opacity", 0);
 
-    const focusText = this.svg
-      .append("g")
+    const focusText = SVG.append("g")
       .append("text")
       .style("opacity", 0)
       .attr("text-anchor", "left")

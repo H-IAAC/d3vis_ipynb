@@ -53,7 +53,10 @@ export function lasso(
   function dragStart() {
     coords = [];
     resetColor();
-    d3.select(that.element).select("svg").append("path").attr("id", "lasso" + randomString);
+    d3.select(that.element)
+      .select("svg")
+      .append("path")
+      .attr("id", "lasso" + randomString);
   }
 
   function dragMove(event) {
