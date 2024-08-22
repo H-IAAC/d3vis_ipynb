@@ -1,6 +1,11 @@
 import * as d3 from "d3";
-import { lasso } from "./tools/lasso";
 import { BasePlot } from "./baseplot";
+import { BoxSelectButton } from "./tools/button_box_select";
+import { ClickSelectButton } from "./tools/button_click_select";
+import { DeselectAllButton } from "./tools/button_deselect_all";
+import { LassoSelectButton } from "./tools/button_lasso_select";
+import { lasso } from "./tools/lasso";
+import { SIDE_BAR_WIDTH, addSideBar } from "./tools/side_bar";
 
 export class ScatterPlot extends BasePlot {
   plot(
@@ -13,8 +18,24 @@ export class ScatterPlot extends BasePlot {
     width,
     height,
     margin,
-    noAxes
+    noAxes,
+    noSideBar
   ) {
+    if (!noSideBar) {
+      width = width - SIDE_BAR_WIDTH;
+      let clickSelectButton = new ClickSelectButton();
+      let boxSelectButton = new BoxSelectButton();
+      let lassoSelectButton = new LassoSelectButton();
+      let deselectAllButton = new DeselectAllButton();
+      addSideBar(
+        this.element,
+        clickSelectButton,
+        boxSelectButton,
+        lassoSelectButton,
+        deselectAllButton
+      );
+    }
+
     for (let i = 0; i < data.length; i++) {
       data[i]["id"] = i;
     }
@@ -137,14 +158,14 @@ export class ScatterPlot extends BasePlot {
 
       legend
         .append("rect")
-        .attr("x", innerWidth - 18)
+        .attr("x", width - margin.left - margin.right - 18)
         .attr("width", 18)
         .attr("height", 18)
         .style("fill", color);
 
       legend
         .append("text")
-        .attr("x", innerWidth - 24)
+        .attr("x", width - margin.left - margin.right - 24)
         .attr("y", 9)
         .attr("dy", ".35em")
         .style("text-anchor", "end")

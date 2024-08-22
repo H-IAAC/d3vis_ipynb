@@ -1,7 +1,9 @@
 import { BarPlot } from "./graphs/barplot";
 import { DecisionPlot } from "./graphs/decision";
 import { HistogramPlot } from "./graphs/histogramplot";
+import { ScatterPlot } from "./graphs/scatterplot";
 import { WaterfallPlot } from "./graphs/waterfall";
+import "../css/widget.css";
 
 function addBarplot() {
   const data = [
@@ -106,6 +108,65 @@ function addHistogram() {
   histogramplot.plot(data, x, start, end, "component", that);
 }
 
+function addScatterplot() {
+  const data = [
+    { x_axis: 5.2, y_axis: 4, hue: "one" },
+    { x_axis: 6, y_axis: 4, hue: "one" },
+    { x_axis: 5.2, y_axis: 3, hue: "one" },
+    { x_axis: 5.2, y_axis: 2, hue: "one" },
+    { x_axis: 4.1, y_axis: 6, hue: "one" },
+    { x_axis: 4.3, y_axis: 8, hue: "one" },
+    { x_axis: 4.4, y_axis: 5, hue: "one" },
+    { x_axis: 2.2, y_axis: 3.1, hue: "two" },
+    { x_axis: 2.5, y_axis: 3.8, hue: "two" },
+    { x_axis: 4, y_axis: 4.1, hue: "two" },
+    { x_axis: 2, y_axis: 4.4, hue: "two" },
+    { x_axis: 3, y_axis: 4, hue: "two" },
+    { x_axis: 6, y_axis: 7, hue: "two" },
+    { x_axis: 5.2, y_axis: 7, hue: "two" },
+    { x_axis: 5, y_axis: 7, hue: "two" },
+    { x_axis: 5, y_axis: 7, hue: "two" },
+    { x_axis: 4.4, y_axis: 2.5, hue: "three" },
+    { x_axis: 4.5, y_axis: 4, hue: "three" },
+    { x_axis: 4.5, y_axis: 5, hue: "three" },
+    { x_axis: 4, y_axis: 5, hue: "three" },
+    { x_axis: 4, y_axis: 6, hue: "three" },
+    { x_axis: 4, y_axis: 7, hue: "three" },
+    { x_axis: 2.8, y_axis: 3, hue: "three" },
+    { x_axis: 2, y_axis: 3.5, hue: "three" },
+    { x_axis: 6, y_axis: 4, hue: "three" },
+  ];
+  const element = document.createElement("div");
+  element.id = "component";
+  element.style.width = "800px";
+  element.style.height = "600px";
+  document.body.appendChild(element);
+
+  let x = "x_axis";
+  let y = "y_axis";
+  const hue = "hue";
+
+  const scatterplot = new ScatterPlot(element);
+  scatterplot.plot(
+    data,
+    x,
+    y,
+    hue,
+    null,
+    null,
+    800,
+    600,
+    {
+      top: 40,
+      right: 20,
+      bottom: 30,
+      left: 80,
+    },
+    false,
+    false
+  );
+}
+
 function addWaterfall() {
   const data = [
     { feature_names: "Age", values: 0.56290748 },
@@ -170,4 +231,4 @@ function addDecision() {
   );
 }
 
-addBarplot();
+addScatterplot();

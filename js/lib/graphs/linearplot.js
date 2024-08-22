@@ -160,14 +160,14 @@ export class LinearPlot extends BasePlot {
 
       legend
         .append("rect")
-        .attr("x", innerWidth - 18)
+        .attr("x", width - margin.left - margin.right - 18)
         .attr("width", 18)
         .attr("height", 18)
         .style("fill", color);
 
       legend
         .append("text")
-        .attr("x", innerWidth - 24)
+        .attr("x", width - margin.left - margin.right - 24)
         .attr("y", 9)
         .attr("dy", ".35em")
         .style("text-anchor", "end")

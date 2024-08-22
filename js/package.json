@@ -41,7 +41,8 @@
   },
   "dependencies": {
     "@jupyter-widgets/base": "^1.1 || ^2 || ^3 || ^4 || ^6",
-    "d3": "^7.9.0"
+    "d3": "^7.9.0",
+    "lucide": "^0.429.0"
   },
   "jupyterlab": {
     "extension": "lib/labplugin",

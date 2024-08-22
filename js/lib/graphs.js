@@ -50,7 +50,17 @@ export class BarPlotView extends BaseView {
     const hue = this.model.get("hue");
     const direction = this.model.get("direction");
 
-    this.barplot.replot(data, x, y, hue, direction, this.width, this.height, this.margin, false);
+    this.barplot.replot(
+      data,
+      x,
+      y,
+      hue,
+      direction,
+      this.width,
+      this.height,
+      this.margin,
+      false
+    );
   }
 }
 
@@ -311,6 +321,7 @@ export class ScatterPlotView extends BaseView {
       this.width,
       this.height,
       this.margin,
+      false,
       false
     );
 
