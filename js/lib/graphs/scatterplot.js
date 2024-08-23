@@ -36,7 +36,7 @@ export class ScatterPlot extends BasePlot {
         deselectAllButton
       );
     }
-    this.informationCard = new InformationCard(this.element);
+    const informationCard = new InformationCard(this.element);
 
     for (let i = 0; i < data.length; i++) {
       data[i]["id"] = i;
@@ -64,18 +64,20 @@ export class ScatterPlot extends BasePlot {
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     function mouseover(event, d) {
+      d3.select(this).style("opacity", 1)
       const text =
         "x: " +
-        Math.round(d[x_value] * 10) / 10 +
+        Math.round(d[x_value] * 100) / 100 +
         "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
         "y: " +
-        Math.round(d[y_value] * 10) / 10;
+        Math.round(d[y_value] * 100) / 100;
 
-      this.informationCard.showText(text, event.offsetX, event.offsetY);
+      informationCard.showText(text, event.offsetX, event.offsetY);
     }
 
     function mouseout() {
-      this.informationCard.hide();
+      d3.select(this).style("opacity", 0.5)
+      informationCard.hide();
     }
 
     function mouseClick(event, d) {
@@ -98,7 +100,7 @@ export class ScatterPlot extends BasePlot {
         return "dot-" + randomString + d.id;
       })
       .attr("class", "dot")
-      .attr("r", 3.5)
+      .attr("r", 5)
       .attr("cx", function (d) {
         return X(d[x_value]);
       })
@@ -108,8 +110,9 @@ export class ScatterPlot extends BasePlot {
       .style("fill", function (d) {
         return color(d[hue]);
       })
-      .on("mouseover", mouseover.bind(this))
-      .on("mouseout", mouseout.bind(this))
+      .style("opacity", 0.5)
+      .on("mouseover", mouseover)
+      .on("mouseout", mouseout)
       .on("click", mouseClick);
 
     if (!noAxes) this.plotAxes(SVG, X, Y, x_value, y_value);
@@ -117,7 +120,6 @@ export class ScatterPlot extends BasePlot {
     function resetColor() {
       SVG.selectAll(".dot")
         .data(data)
-        .attr("r", 3.5)
         .style("fill", function (d) {
           return color(d[hue]);
         });
