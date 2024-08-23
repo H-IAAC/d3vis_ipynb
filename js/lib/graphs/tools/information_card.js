@@ -17,7 +17,11 @@ export class InformationCard {
     this.timeout = setTimeout(() => {
       this.card.style.visibility = "visible";
       this.card.style.left = x + 5 - this.card.clientWidth / 2 + "px";
-      this.card.style.top = y - 50 + "px";
+      if (y < 80) {
+        this.card.style.top = y + 20 + "px";
+      } else {
+        this.card.style.top = y - 40 - this.card.clientHeight / 2 + "px";
+      }
     }, 10);
   }
 
