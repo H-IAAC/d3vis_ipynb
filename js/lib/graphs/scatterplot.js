@@ -6,6 +6,7 @@ import { DeselectAllButton } from "./tools/button_deselect_all";
 import { LassoSelectButton } from "./tools/button_lasso_select";
 import { lasso } from "./tools/lasso";
 import { SideBar } from "./tools/side_bar";
+import { InformationCard } from "./tools/information_card";
 
 export class ScatterPlot extends BasePlot {
   plot(
@@ -35,6 +36,7 @@ export class ScatterPlot extends BasePlot {
         deselectAllButton
       );
     }
+    this.informationCard = new InformationCard(this.element);
 
     for (let i = 0; i < data.length; i++) {
       data[i]["id"] = i;
@@ -62,24 +64,18 @@ export class ScatterPlot extends BasePlot {
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     function mouseover(event, d) {
-      focus.style("opacity", 1);
-      focusText.style("opacity", 1);
-      focus.attr("x", event.offsetX - 30).attr("y", event.offsetY - 40);
-      focusText
-        .html(
-          "x: " +
-            Math.round(d[x_value] * 10) / 10 +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
-            "y: " +
-            Math.round(d[y_value] * 10) / 10
-        )
-        .attr("x", event.offsetX - 15)
-        .attr("y", event.offsetY - 20);
+      const text =
+        "x: " +
+        Math.round(d[x_value] * 10) / 10 +
+        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+        "y: " +
+        Math.round(d[y_value] * 10) / 10;
+
+      this.informationCard.showText(text, event.offsetX, event.offsetY);
     }
 
     function mouseout() {
-      focus.style("opacity", 0);
-      focusText.style("opacity", 0);
+      this.informationCard.hide();
     }
 
     function mouseClick(event, d) {
@@ -112,8 +108,8 @@ export class ScatterPlot extends BasePlot {
       .style("fill", function (d) {
         return color(d[hue]);
       })
-      .on("mouseover", mouseover)
-      .on("mouseout", mouseout)
+      .on("mouseover", mouseover.bind(this))
+      .on("mouseout", mouseout.bind(this))
       .on("click", mouseClick);
 
     if (!noAxes) this.plotAxes(SVG, X, Y, x_value, y_value);
@@ -173,21 +169,6 @@ export class ScatterPlot extends BasePlot {
           return d;
         });
     }
-
-    const focus = SVG.append("g")
-      .append("rect")
-      .style("fill", "none")
-      .attr("width", 160)
-      .attr("height", 40)
-      .attr("stroke", "#69b3a2")
-      .attr("stroke-width", 4)
-      .style("opacity", 0);
-
-    const focusText = SVG.append("g")
-      .append("text")
-      .style("opacity", 0)
-      .attr("text-anchor", "left")
-      .attr("alignment-baseline", "middle");
   }
 
   replot(
