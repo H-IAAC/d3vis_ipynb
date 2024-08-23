@@ -1,10 +1,8 @@
-import { createElement, X } from "lucide";
+import { X } from "lucide";
+import { BaseButton } from "./button_base";
 
-export class DeselectAllButton {
+export class DeselectAllButton extends BaseButton {
   createButton() {
-    const button = document.createElement("button");
-    const icon = createElement(X);
-    button.appendChild(icon);
-    return button;
+    return super.createButton(X);
   }
 }

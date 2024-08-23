@@ -1,16 +1,25 @@
-import { createElement, Menu } from "lucide";
-export const SIDE_BAR_WIDTH = 32;
+export class SideBar {
+  static SIDE_BAR_WIDTH = 32;
 
-export function addSideBar(element, ...buttons) {
-  const sideBar = document.createElement("div");
-  sideBar.style.width = SIDE_BAR_WIDTH + "px"
-  sideBar.className = "side_bar";
-  sideBar.setAttribute("display", "flex");
-  sideBar.setAttribute("flex-direction", "column");
-  sideBar.setAttribute("justify-content", "flex-start");
-  element.appendChild(sideBar);
-  for (let b of buttons) {
-    const button = b.createButton();
-    sideBar.appendChild(button);
+  constructor(element, ...buttons) {
+    this.buttons = buttons
+    this.sideBar = document.createElement("div");
+    this.sideBar.style.width = SideBar.SIDE_BAR_WIDTH + "px";
+    this.sideBar.className = "side_bar";
+    this.sideBar.setAttribute("display", "flex");
+    this.sideBar.setAttribute("flex-direction", "column");
+    this.sideBar.setAttribute("justify-content", "flex-start");
+    element.appendChild(this.sideBar);
+    for (let b of buttons) {
+      const button = b.createButton();
+      b.addClickNotification(this.notifyOtherButtons.bind(this));
+      this.sideBar.appendChild(button);
+    }
+  }
+
+  notifyOtherButtons(button) {
+    for (let b of this.buttons) {
+      if (b != button) b.notified();
+    }
   }
 }

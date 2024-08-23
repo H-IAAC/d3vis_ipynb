@@ -1,10 +1,8 @@
-import { createElement, Lasso } from "lucide";
+import { Lasso } from "lucide";
+import { BaseButton } from "./button_base";
 
-export class LassoSelectButton {
+export class LassoSelectButton extends BaseButton {
   createButton() {
-    const button = document.createElement("button");
-    const icon = createElement(Lasso);
-    button.appendChild(icon);
-    return button;
+    return super.createButton(Lasso);
   }
 }

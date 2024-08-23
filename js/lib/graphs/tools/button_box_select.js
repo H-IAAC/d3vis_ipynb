@@ -1,10 +1,8 @@
-import { createElement, BoxSelect } from "lucide";
+import { BoxSelect } from "lucide";
+import { BaseButton } from "./button_base";
 
-export class BoxSelectButton {
+export class BoxSelectButton extends BaseButton {
   createButton() {
-    const button = document.createElement("button");
-    const icon = createElement(BoxSelect);
-    button.appendChild(icon);
-    return button;
+    return super.createButton(BoxSelect);
   }
 }

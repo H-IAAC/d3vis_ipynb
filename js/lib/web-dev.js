@@ -152,8 +152,8 @@ function addScatterplot() {
     x,
     y,
     hue,
-    null,
-    null,
+    () => {},
+    () => {},
     800,
     600,
     {

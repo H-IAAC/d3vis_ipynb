@@ -124,7 +124,16 @@ input[type="range"] {
   border-radius: 4px;
   color: white;
   margin: 4px 4px 0px 4px;
-  padding: 2px;
+  padding: 4px 2px 2px 2px;
+}
+
+.side_bar button:hover {
+  background-color: darkgrey;
+  cursor: pointer;
+}
+
+.side_bar button.is_selected {
+  background-color: darkgrey;
 }
 
 .side_bar button svg {

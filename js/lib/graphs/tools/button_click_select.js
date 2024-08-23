@@ -1,10 +1,8 @@
-import { createElement, MousePointer } from "lucide";
+import { MousePointer } from "lucide";
+import { BaseButton } from "./button_base";
 
-export class ClickSelectButton {
+export class ClickSelectButton extends BaseButton {
   createButton() {
-    const button = document.createElement("button");
-    const icon = createElement(MousePointer);
-    button.appendChild(icon);
-    return button;
+    return super.createButton(MousePointer);
   }
 }

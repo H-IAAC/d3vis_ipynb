@@ -5,7 +5,7 @@ import { ClickSelectButton } from "./tools/button_click_select";
 import { DeselectAllButton } from "./tools/button_deselect_all";
 import { LassoSelectButton } from "./tools/button_lasso_select";
 import { lasso } from "./tools/lasso";
-import { SIDE_BAR_WIDTH, addSideBar } from "./tools/side_bar";
+import { SideBar } from "./tools/side_bar";
 
 export class ScatterPlot extends BasePlot {
   plot(
@@ -22,12 +22,12 @@ export class ScatterPlot extends BasePlot {
     noSideBar
   ) {
     if (!noSideBar) {
-      width = width - SIDE_BAR_WIDTH;
-      let clickSelectButton = new ClickSelectButton();
+      width = width - SideBar.SIDE_BAR_WIDTH;
+      let clickSelectButton = new ClickSelectButton(true);
       let boxSelectButton = new BoxSelectButton();
       let lassoSelectButton = new LassoSelectButton();
       let deselectAllButton = new DeselectAllButton();
-      addSideBar(
+      const sideBar = new SideBar(
         this.element,
         clickSelectButton,
         boxSelectButton,
