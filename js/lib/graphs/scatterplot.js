@@ -46,9 +46,30 @@ export class ScatterPlot extends BasePlot {
       Math.random() * Date.now() * 10000
     ).toString(36);
 
+    var zoom = d3
+      .zoom()
+      .scaleExtent([1, 50])
+      .extent([
+        [0, 0],
+        [width, height],
+      ])
+      .translateExtent([
+        [0, 0],
+        [width, height],
+      ])
+      .on("zoom", onZoom);
+
     this.svg = this.getSvg(width, height, margin);
 
     const SVG = this.svg;
+
+    SVG.append("rect")
+      .attr("width", width)
+      .attr("height", height)
+      .style("fill", "none")
+      .style("pointer-events", "all")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+      .call(zoom);
 
     const xDomain = d3.extent(data, function (d) {
       return d[x_value];
@@ -64,7 +85,7 @@ export class ScatterPlot extends BasePlot {
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     function mouseover(event, d) {
-      d3.select(this).style("opacity", 1)
+      d3.select(this).style("opacity", 1);
       const text =
         "x: " +
         Math.round(d[x_value] * 100) / 100 +
@@ -76,7 +97,7 @@ export class ScatterPlot extends BasePlot {
     }
 
     function mouseout() {
-      d3.select(this).style("opacity", 0.5)
+      d3.select(this).style("opacity", 0.5);
       informationCard.hide();
     }
 
@@ -115,7 +136,28 @@ export class ScatterPlot extends BasePlot {
       .on("mouseout", mouseout)
       .on("click", mouseClick);
 
-    if (!noAxes) this.plotAxes(SVG, X, Y, x_value, y_value);
+    let xAxis, yAxis;
+    if (!noAxes) {
+      [xAxis, yAxis] = this.plotAxes(SVG, X, Y, x_value, y_value);
+    }
+
+    function onZoom(event) {
+      var newX = event.transform.rescaleX(X);
+      var newY = event.transform.rescaleY(Y);
+
+      if (!noAxes) {
+        xAxis.call(d3.axisBottom(newX));
+        yAxis.call(d3.axisLeft(newY));
+      }
+
+      SVG.selectAll(".dot")
+        .attr("cx", function (d) {
+          return newX(d[x_value]);
+        })
+        .attr("cy", function (d) {
+          return newY(d[y_value]);
+        });
+    }
 
     function resetColor() {
       SVG.selectAll(".dot")

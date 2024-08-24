@@ -55,16 +55,16 @@ export class BasePlot {
   }
 
   plotAxes(svg, xScale, yScale, xLabel, yLabel) {
-    const xAxis = d3.axisBottom(xScale);
-    const yAxis = d3.axisLeft(yScale);
     const width = xScale.range()[1];
     const height = yScale.range()[0];
 
-    svg
+    const xAxis = svg
       .append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
-      .call(xAxis)
+      .call(d3.axisBottom(xScale));
+
+    xAxis
       .append("text")
       .attr("class", "label")
       .attr("x", width)
@@ -73,10 +73,12 @@ export class BasePlot {
       .attr("fill", "black")
       .text(xLabel);
 
-    svg
+    const yAxis = svg
       .append("g")
       .attr("class", "y axis")
-      .call(yAxis)
+      .call(d3.axisLeft(yScale));
+
+    yAxis
       .append("text")
       .attr("class", "label")
       .attr("transform", "rotate(-90)")
@@ -85,5 +87,7 @@ export class BasePlot {
       .style("text-anchor", "end")
       .attr("fill", "black")
       .text(yLabel);
+
+    return [xAxis, yAxis];
   }
 }
