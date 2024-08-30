@@ -11,13 +11,15 @@ export class BasePlot {
     d3.select(this.element).selectAll("*").remove();
   }
 
-  getSvg(width, height, margin) {
-    return d3
+  init(width, height, margin) {
+    this.svg = d3
       .select(this.element)
       .append("svg")
       .attr("width", width - 2)
       .attr("height", height)
-      .attr("class", "graph")
+      .attr("class", "graph");
+
+    this.gGrid = this.svg
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
   }

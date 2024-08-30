@@ -1,6 +1,14 @@
 import { createElement } from "lucide";
 
 export class BaseButton {
+  addWhenSelectedCallback(whenSelectedCallback) {
+    this.whenSelectedCallback = whenSelectedCallback;
+  }
+
+  addWhenUnselectedCallback(whenUnselectedCallback) {
+    this.whenUnselectedCallback = whenUnselectedCallback;
+  }
+
   constructor(selected = false) {
     this.isSelected = selected;
   }
@@ -16,11 +24,13 @@ export class BaseButton {
   select() {
     this.isSelected = true;
     this.button.classList.add("is_selected");
+    if (this.whenSelectedCallback) this.whenSelectedCallback();
   }
 
   unselect() {
     this.isSelected = false;
     this.button.classList.remove("is_selected");
+    if (this.whenUnselectedCallback) this.whenUnselectedCallback();
   }
 
   createButton(icon) {

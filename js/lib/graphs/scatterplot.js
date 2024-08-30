@@ -4,7 +4,6 @@ import { BoxSelectButton } from "./tools/button_box_select";
 import { ClickSelectButton } from "./tools/button_click_select";
 import { DeselectAllButton } from "./tools/button_deselect_all";
 import { LassoSelectButton } from "./tools/button_lasso_select";
-import { lasso } from "./tools/lasso";
 import { SideBar } from "./tools/side_bar";
 import { InformationCard } from "./tools/information_card";
 
@@ -22,21 +21,9 @@ export class ScatterPlot extends BasePlot {
     noAxes,
     noSideBar
   ) {
-    if (!noSideBar) {
-      width = width - SideBar.SIDE_BAR_WIDTH;
-      let clickSelectButton = new ClickSelectButton(true);
-      let boxSelectButton = new BoxSelectButton();
-      let lassoSelectButton = new LassoSelectButton();
-      let deselectAllButton = new DeselectAllButton();
-      const sideBar = new SideBar(
-        this.element,
-        clickSelectButton,
-        boxSelectButton,
-        lassoSelectButton,
-        deselectAllButton
-      );
-    }
     const informationCard = new InformationCard(this.element);
+
+    if (!noSideBar) width = width - SideBar.SIDE_BAR_WIDTH;
 
     for (let i = 0; i < data.length; i++) {
       data[i]["id"] = i;
@@ -59,17 +46,12 @@ export class ScatterPlot extends BasePlot {
       ])
       .on("zoom", onZoom);
 
-    this.svg = this.getSvg(width, height, margin);
+    this.init(width, height, margin);
 
     const SVG = this.svg;
+    const GG = this.gGrid;
 
-    SVG.append("rect")
-      .attr("width", width)
-      .attr("height", height)
-      .style("fill", "none")
-      .style("pointer-events", "all")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-      .call(zoom);
+    this.svg.call(zoom);
 
     const xDomain = d3.extent(data, function (d) {
       return d[x_value];
@@ -113,10 +95,8 @@ export class ScatterPlot extends BasePlot {
       }
     }
 
-    SVG.selectAll(".dot")
-      .data(data)
-      .enter()
-      .append("circle")
+    const dots = GG.selectAll(".dot").data(data).enter().append("circle");
+    dots
       .attr("id", function (d, i) {
         return "dot-" + randomString + d.id;
       })
@@ -138,56 +118,17 @@ export class ScatterPlot extends BasePlot {
 
     let xAxis, yAxis;
     if (!noAxes) {
-      [xAxis, yAxis] = this.plotAxes(SVG, X, Y, x_value, y_value);
+      [xAxis, yAxis] = this.plotAxes(GG, X, Y, x_value, y_value);
     }
 
-    function onZoom(event) {
-      var newX = event.transform.rescaleX(X);
-      var newY = event.transform.rescaleY(Y);
-
-      if (!noAxes) {
-        xAxis.call(d3.axisBottom(newX));
-        yAxis.call(d3.axisLeft(newY));
-      }
-
-      SVG.selectAll(".dot")
-        .attr("cx", function (d) {
-          return newX(d[x_value]);
-        })
-        .attr("cy", function (d) {
-          return newY(d[y_value]);
-        });
-    }
-
-    function resetColor() {
-      SVG.selectAll(".dot")
-        .data(data)
-        .style("fill", function (d) {
-          return color(d[hue]);
-        });
-    }
-
-    function setLassoValues(values) {
-      if (setSelectedValues !== undefined) {
-        setSelectedValues(values);
+    function callUpdateSelected() {
+      if (setSelectedValues) {
+        setSelectedValues(GG.selectAll(".dot.selected").data());
       }
     }
-
-    lasso(
-      this,
-      X,
-      Y,
-      x_value,
-      y_value,
-      margin.left,
-      margin.top,
-      resetColor,
-      setLassoValues,
-      randomString
-    );
 
     if (hue) {
-      const legend = SVG.selectAll(".legend")
+      const legend = GG.selectAll(".legend")
         .data(color.domain())
         .enter()
         .append("g")
@@ -211,6 +152,64 @@ export class ScatterPlot extends BasePlot {
         .style("text-anchor", "end")
         .text(function (d) {
           return d;
+        });
+    }
+
+    function activateZoom() {
+      SVG.call(zoom);
+    }
+
+    function deactivatePan() {
+      SVG.on("mousedown.zoom", null);
+    }
+
+    const Element = this.element;
+    let lassoSelectButton;
+    if (!noSideBar) {
+      let clickSelectButton = new ClickSelectButton(true);
+      clickSelectButton.addWhenSelectedCallback(activateZoom);
+      let boxSelectButton = new BoxSelectButton();
+      lassoSelectButton = new LassoSelectButton(
+        X,
+        Y,
+        x_value,
+        y_value,
+        margin.left,
+        margin.top,
+        dots,
+        callUpdateSelected,
+        SVG
+      );
+      lassoSelectButton.addWhenSelectedCallback(deactivatePan);
+      let deselectAllButton = new DeselectAllButton();
+      const sideBar = new SideBar(
+        this.element,
+        clickSelectButton,
+        boxSelectButton,
+        lassoSelectButton,
+        deselectAllButton
+      );
+    }
+
+    function onZoom(event) {
+      var newX = event.transform.rescaleX(X);
+      var newY = event.transform.rescaleY(Y);
+
+      if (!noAxes) {
+        xAxis.call(d3.axisBottom(newX));
+        yAxis.call(d3.axisLeft(newY));
+      }
+
+      if (!noSideBar) {
+        lassoSelectButton.updateScales(newX, newY);
+      }
+
+      GG.selectAll(".dot")
+        .attr("cx", function (d) {
+          return newX(d[x_value]);
+        })
+        .attr("cy", function (d) {
+          return newY(d[y_value]);
         });
     }
   }
@@ -246,7 +245,7 @@ export class ScatterPlot extends BasePlot {
     let X = this.xScale;
     let Y = this.yScale;
 
-    this.svg
+    this.gGrid
       .selectAll("path.reference_line")
       .data(Object.values(lines))
       .join("path")

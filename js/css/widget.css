@@ -153,3 +153,9 @@ input[type="range"] {
   width: 16px;
   height: 16px;
 }
+
+/***** SCATTERPLOT *****/
+.dot.selected {
+  fill: blue !important;
+  r: 6 !important;
+}
