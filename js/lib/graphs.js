@@ -207,6 +207,7 @@ export class LinearPlotView extends BaseView {
       this.width,
       this.height,
       this.margin,
+      false,
       false
     );
   }

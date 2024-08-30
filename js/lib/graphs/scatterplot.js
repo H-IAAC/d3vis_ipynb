@@ -56,13 +56,11 @@ export class ScatterPlot extends BasePlot {
     const xDomain = d3.extent(data, function (d) {
       return d[x_value];
     });
-    this.xScale = this.getXLinearScale(xDomain, width, margin);
-    let X = this.xScale;
+    const X = this.getXLinearScale(xDomain, width, margin);
     const yDomain = d3.extent(data, function (d) {
       return d[y_value];
     });
-    this.yScale = this.getYLinearScale(yDomain, height, margin);
-    let Y = this.yScale;
+    const Y = this.getYLinearScale(yDomain, height, margin);
 
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 

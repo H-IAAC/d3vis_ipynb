@@ -4,6 +4,7 @@ import { HistogramPlot } from "./graphs/histogramplot";
 import { ScatterPlot } from "./graphs/scatterplot";
 import { WaterfallPlot } from "./graphs/waterfall";
 import "../css/widget.css";
+import { LinearPlot } from "./graphs/linearplot";
 
 function addBarplot() {
   const data = [
@@ -106,6 +107,69 @@ function addHistogram() {
 
   const histogramplot = HistogramPlot(element);
   histogramplot.plot(data, x, start, end, "component", that);
+}
+
+function addLinearplot() {
+  const data = [
+    { x_axis: 5.2, y_axis: 4, hue: "one" },
+    { x_axis: 6, y_axis: 4, hue: "one" },
+    { x_axis: 5.2, y_axis: 3, hue: "one" },
+    { x_axis: 5.2, y_axis: 2, hue: "one" },
+    { x_axis: 4.1, y_axis: 6, hue: "one" },
+    { x_axis: 4.13, y_axis: 6.02, hue: "one" },
+    { x_axis: 4.14, y_axis: 6, hue: "two" },
+    { x_axis: 4.17, y_axis: 5.98, hue: "three" },
+    { x_axis: 4.2, y_axis: 6, hue: "one" },
+    { x_axis: 4.3, y_axis: 8, hue: "one" },
+    { x_axis: 4.4, y_axis: 5, hue: "one" },
+    { x_axis: 2.2, y_axis: 3.1, hue: "two" },
+    { x_axis: 2.5, y_axis: 3.8, hue: "two" },
+    { x_axis: 4, y_axis: 4.1, hue: "two" },
+    { x_axis: 2, y_axis: 4.4, hue: "two" },
+    { x_axis: 3, y_axis: 4, hue: "two" },
+    { x_axis: 6, y_axis: 7, hue: "two" },
+    { x_axis: 5.2, y_axis: 7, hue: "two" },
+    { x_axis: 5, y_axis: 7.05, hue: "two" },
+    { x_axis: 5, y_axis: 7, hue: "two" },
+    { x_axis: 4.4, y_axis: 2.5, hue: "three" },
+    { x_axis: 4.5, y_axis: 4, hue: "three" },
+    { x_axis: 4.5, y_axis: 5, hue: "three" },
+    { x_axis: 4, y_axis: 5, hue: "three" },
+    { x_axis: 4, y_axis: 6, hue: "three" },
+    { x_axis: 4, y_axis: 7, hue: "three" },
+    { x_axis: 2.8, y_axis: 3, hue: "three" },
+    { x_axis: 2, y_axis: 3.5, hue: "three" },
+    { x_axis: 6, y_axis: 4, hue: "three" },
+  ];
+  const element = document.createElement("div");
+  element.id = "component";
+  element.style.width = "800px";
+  element.style.height = "600px";
+  document.body.appendChild(element);
+
+  let x = "x_axis";
+  let y = "y_axis";
+  const hue = "hue";
+
+  const linearplot = new LinearPlot(element);
+  linearplot.plot(
+    data,
+    x,
+    y,
+    hue,
+    () => {},
+    () => {},
+    800,
+    600,
+    {
+      top: 40,
+      right: 20,
+      bottom: 30,
+      left: 80,
+    },
+    false,
+    false
+  );
 }
 
 function addScatterplot() {
@@ -235,4 +299,4 @@ function addDecision() {
   );
 }
 
-addScatterplot();
+addLinearplot();

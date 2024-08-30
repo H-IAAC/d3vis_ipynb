@@ -16,7 +16,10 @@ function getCI(array) {
 
 export class BarPlot extends BasePlot {
   plot(data, x_value, y_value, hue, direction, width, height, margin, noAxes) {
-    this.svg = this.getSvg(width, height, margin);
+
+    this.init(width, height, margin);
+
+    const GG = this.gGrid;
 
     let base_value, side_value;
     if (direction === "vertical") {
@@ -124,9 +127,9 @@ export class BarPlot extends BasePlot {
         ];
       }
 
-      if (!noAxes) that.plotAxes(that.svg, X, Y, base_value, side_value);
+      if (!noAxes) that.plotAxes(GG, X, Y, base_value, side_value);
 
-      that.svg
+      GG
         .append("g")
         .selectAll("g")
         .data(result)
@@ -157,7 +160,7 @@ export class BarPlot extends BasePlot {
         return newRow;
       });
 
-      that.svg
+      GG
         .selectAll()
         .data(itrValues)
         .enter()
@@ -286,7 +289,7 @@ export class BarPlot extends BasePlot {
         ];
       }
 
-      if (!noAxes) that.plotAxes(that.svg, X, Y, base_value, side_value);
+      if (!noAxes) that.plotAxes(GG, X, Y, base_value, side_value);
 
       const xSubgroup = d3
         .scaleBand()
@@ -294,7 +297,7 @@ export class BarPlot extends BasePlot {
         .range([0, baseScale.bandwidth()])
         .padding([0.05]);
 
-      that.svg
+      GG
         .append("g")
         .selectAll("g")
         .data(result)
@@ -338,7 +341,7 @@ export class BarPlot extends BasePlot {
         return newRow;
       });
 
-      that.svg
+      GG
         .append("g")
         .selectAll("g")
         .data(itrValues)
@@ -375,7 +378,7 @@ export class BarPlot extends BasePlot {
           ]);
         });
 
-      const legend = that.svg
+      const legend = GG
         .selectAll(".legend")
         .data(color.domain())
         .enter()

@@ -74,7 +74,9 @@ export class DecisionPlot extends BasePlot {
   plot(data, x_value, y_value, baseValue, width, height, margin, noAxes) {
     this.baseValue = baseValue;
     data.sort(absoluteSort(x_value, true));
-    const SVG = this.getSvg(width, height, margin);
+    this.init(width, height, margin);
+
+    const GG = this.gGrid;
 
     const xDomain = getDomain(data, x_value, baseValue);
     const X = this.getXLinearScale(xDomain, width, margin);
@@ -85,11 +87,11 @@ export class DecisionPlot extends BasePlot {
       0
     );
 
-    if (!noAxes) this.plotAxes(SVG, X, Y, x_value, y_value);
+    if (!noAxes) this.plotAxes(GG, X, Y, x_value, y_value);
 
     const numLines = data[0][x_value].length;
 
-    SVG.selectAll()
+    GG.selectAll()
       .data(data)
       .enter()
       .append("path")
@@ -102,7 +104,7 @@ export class DecisionPlot extends BasePlot {
         ]);
       });
 
-    SVG.append("path")
+    GG.append("path")
       .attr("fill", "none")
       .attr("stroke", "grey")
       .attr("stroke-width", 2)
@@ -136,7 +138,7 @@ export class DecisionPlot extends BasePlot {
         ")",
       ].join("");
 
-      SVG.append("path")
+      GG.append("path")
         .datum(datum)
         .attr("fill", "none")
         .attr("stroke", lineColorRGB)
@@ -158,7 +160,7 @@ export class DecisionPlot extends BasePlot {
       addPath(data, i);
     }
 
-    let grad = SVG.append("defs")
+    let grad = GG.append("defs")
       .append("linearGradient")
       .attr("id", "grad")
       .attr("x1", "0%")
@@ -178,7 +180,7 @@ export class DecisionPlot extends BasePlot {
         return 100 * (i / (colors.length - 1)) + "%";
       });
 
-    SVG.append("rect")
+    GG.append("rect")
       .attr("x", X.range()[0])
       .attr("y", -20)
       .attr("width", X.range()[1])

@@ -2,15 +2,17 @@ import * as d3 from "d3";
 import { BasePlot } from "./baseplot";
 
 export class HistogramPlot extends BasePlot {
-  plot(data, x_axis, width, height, margin, noAxes, svg, xScale) {
+  plot(data, x_axis, width, height, margin, noAxes, gGrid, xScale) {
     const bins = d3
       .bin()
       .thresholds(40)
       .value((d) => Math.round(d[x_axis] * 10) / 10)(data);
 
-    let SVG;
-    if (svg) SVG = svg;
-    else SVG = this.getSvg(width, height, margin);
+    let GG;
+    if (gGrid) GG = gGrid;
+    else {
+      this.init(width, height, margin);
+    GG = this.gGrid;}
 
     let X;
     if (xScale) X = xScale;
@@ -24,7 +26,7 @@ export class HistogramPlot extends BasePlot {
     const yDomain = [0, d3.max(bins, (d) => d.length)];
     const Y = this.getYLinearScale(yDomain, height, margin);
 
-    SVG.append("g")
+    GG.append("g")
       .attr("fill", "steelblue")
       .selectAll()
       .data(bins)
@@ -34,11 +36,11 @@ export class HistogramPlot extends BasePlot {
       .attr("y", (d) => Y(d.length))
       .attr("height", (d) => Y(0) - Y(d.length));
 
-    if (!noAxes) this.plotAxes(SVG, X, Y, x_axis);
+    if (!noAxes) this.plotAxes(GG, X, Y, x_axis);
   }
 
-  replot(data, x_axis, width, height, margin, noAxes, svg, xScale) {
+  replot(data, x_axis, width, height, margin, noAxes, gGrid, xScale) {
     this.clear();
-    this.plot(data, x_axis, width, height, margin, noAxes, svg, xScale);
+    this.plot(data, x_axis, width, height, margin, noAxes, gGrid, xScale);
   }
 }

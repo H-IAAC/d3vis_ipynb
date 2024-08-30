@@ -1,7 +1,12 @@
 import * as d3 from "d3";
-import { getDataMeans, groupArrayBy } from "./tools/group_data";
-import { lasso } from "./tools/lasso";
 import { BasePlot } from "./baseplot";
+import { BoxSelectButton } from "./tools/button_box_select";
+import { ClickSelectButton } from "./tools/button_click_select";
+import { DeselectAllButton } from "./tools/button_deselect_all";
+import { LassoSelectButton } from "./tools/button_lasso_select";
+import { getDataMeans, groupArrayBy } from "./tools/group_data";
+import { InformationCard } from "./tools/information_card";
+import { SideBar } from "./tools/side_bar";
 
 export class LinearPlot extends BasePlot {
   plot(
@@ -14,9 +19,13 @@ export class LinearPlot extends BasePlot {
     width,
     height,
     margin,
-    noAxes
+    noAxes,
+    noSideBar
   ) {
     data = getDataMeans(data, x_value, [y_value], hue);
+    const informationCard = new InformationCard(this.element);
+
+    if (!noSideBar) width = width - SideBar.SIDE_BAR_WIDTH;
 
     for (let i = 0; i < data.length; i++) {
       data[i]["id"] = i;
@@ -26,7 +35,26 @@ export class LinearPlot extends BasePlot {
       Math.random() * Date.now() * 10000
     ).toString(36);
 
-    const SVG = this.getSvg(width, height, margin);
+    var zoom = d3
+      .zoom()
+      .scaleExtent([1, 50])
+      .extent([
+        [0, 0],
+        [width, height],
+      ])
+      .translateExtent([
+        [0, 0],
+        [width, height],
+      ])
+      .on("zoom", onZoom);
+
+    this.init(width, height, margin);
+
+    const SVG = this.svg;
+    const GG = this.gGrid;
+
+    this.svg.call(zoom);
+
     const xDomain = d3.extent(data, function (d) {
       return d[x_value];
     });
@@ -39,24 +67,20 @@ export class LinearPlot extends BasePlot {
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     function mouseover(event, d) {
-      focus.style("opacity", 1);
-      focusText.style("opacity", 1);
-      focus.attr("x", event.offsetX - 30).attr("y", event.offsetY - 40);
-      focusText
-        .html(
-          "x: " +
-            Math.round(d[x_value] * 10) / 10 +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
-            "y: " +
-            Math.round(d[y_value] * 10) / 10
-        )
-        .attr("x", event.offsetX - 15)
-        .attr("y", event.offsetY - 20);
+      d3.select(this).style("opacity", 1).attr("r", 5);
+      const text =
+        "x: " +
+        Math.round(d[x_value] * 100) / 100 +
+        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+        "y: " +
+        Math.round(d[y_value] * 100) / 100;
+
+      informationCard.showText(text, event.offsetX, event.offsetY);
     }
 
     function mouseout() {
-      focus.style("opacity", 0);
-      focusText.style("opacity", 0);
+      d3.select(this).style("opacity", 0.2).attr("r", 3);
+      informationCard.hide();
     }
 
     function mouseClick(event, d) {
@@ -72,7 +96,8 @@ export class LinearPlot extends BasePlot {
     }
 
     function addPath(datum, colorSelector) {
-      SVG.append("path")
+      GG.append("path")
+        .attr("class", "line-path")
         .datum(datum)
         .attr("fill", "none")
         .attr("stroke", color(colorSelector))
@@ -95,15 +120,10 @@ export class LinearPlot extends BasePlot {
       });
     }
 
-    SVG.selectAll(".dot")
-      .data(data)
-      .enter()
-      .append("circle")
-      .attr("id", function (d, i) {
-        return "dot-" + randomString + d.id;
-      })
-      .attr("class", "dot")
-      .attr("r", 3.5)
+    const dots = GG.selectAll(".line-dot").data(data).enter().append("circle");
+    dots
+      .attr("class", "line-dot")
+      .attr("r", 3)
       .attr("cx", function (d) {
         return X(d[x_value]);
       })
@@ -113,43 +133,24 @@ export class LinearPlot extends BasePlot {
       .style("fill", function (d) {
         return color(d[hue]);
       })
+      .style("opacity", 0.2)
       .on("mouseover", mouseover)
       .on("mouseout", mouseout)
       .on("click", mouseClick);
 
-    if (!noAxes) this.plotAxes(SVG, X, Y, x_value, y_value);
-
-    function resetColor() {
-      SVG.selectAll(".dot")
-        .data(data)
-        .attr("r", 3.5)
-        .style("fill", function (d) {
-          return color(d[hue]);
-        });
+    let xAxis, yAxis;
+    if (!noAxes) {
+      [xAxis, yAxis] = this.plotAxes(GG, X, Y, x_value, y_value);
     }
 
-    function setLassoValues(values) {
-      if (setSelectedValues !== undefined) {
-        setSelectedValues(values);
-        setSelectedValues(values);
+    function callUpdateSelected() {
+      if (setSelectedValues) {
+        setSelectedValues(GG.selectAll(".line-dot.selected").data());
       }
     }
 
-    lasso(
-      this,
-      X,
-      Y,
-      x_value,
-      y_value,
-      margin.left,
-      margin.top,
-      resetColor,
-      setLassoValues,
-      randomString
-    );
-
     if (hue) {
-      const legend = SVG.selectAll(".legend")
+      const legend = GG.selectAll(".legend")
         .data(color.domain())
         .enter()
         .append("g")
@@ -176,20 +177,71 @@ export class LinearPlot extends BasePlot {
         });
     }
 
-    const focus = SVG.append("g")
-      .append("rect")
-      .style("fill", "none")
-      .attr("width", 160)
-      .attr("height", 40)
-      .attr("stroke", "#69b3a2")
-      .attr("stroke-width", 4)
-      .style("opacity", 0);
+    function activateZoom() {
+      SVG.call(zoom);
+    }
 
-    const focusText = SVG.append("g")
-      .append("text")
-      .style("opacity", 0)
-      .attr("text-anchor", "left")
-      .attr("alignment-baseline", "middle");
+    function deactivatePan() {
+      SVG.on("mousedown.zoom", null);
+    }
+
+    const Element = this.element;
+    let lassoSelectButton;
+    if (!noSideBar) {
+      let clickSelectButton = new ClickSelectButton(true);
+      clickSelectButton.addWhenSelectedCallback(activateZoom);
+      let boxSelectButton = new BoxSelectButton();
+      lassoSelectButton = new LassoSelectButton(
+        X,
+        Y,
+        x_value,
+        y_value,
+        margin.left,
+        margin.top,
+        dots,
+        callUpdateSelected,
+        SVG
+      );
+      lassoSelectButton.addWhenSelectedCallback(deactivatePan);
+      let deselectAllButton = new DeselectAllButton();
+      const sideBar = new SideBar(
+        this.element,
+        clickSelectButton,
+        boxSelectButton,
+        lassoSelectButton,
+        deselectAllButton
+      );
+    }
+
+    function onZoom(event) {
+      var newX = event.transform.rescaleX(X);
+      var newY = event.transform.rescaleY(Y);
+
+      if (!noAxes) {
+        xAxis.call(d3.axisBottom(newX));
+        yAxis.call(d3.axisLeft(newY));
+      }
+
+      if (!noSideBar) {
+        lassoSelectButton.updateScales(newX, newY);
+      }
+
+      GG.selectAll(".line-path").attr(
+        "d",
+        d3
+          .line()
+          .x((d) => newX(d[x_value]))
+          .y((d) => newY(d[y_value]))
+      );
+
+      GG.selectAll(".line-dot")
+        .attr("cx", function (d) {
+          return newX(d[x_value]);
+        })
+        .attr("cy", function (d) {
+          return newY(d[y_value]);
+        });
+    }
   }
 
   replot(

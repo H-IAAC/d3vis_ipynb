@@ -80,7 +80,9 @@ export class WaterfallPlot extends BasePlot {
   plot(data, x_value, y_value, baseValue, width, height, margin, noAxes) {
     this.baseValue = baseValue;
     data.sort(absoluteSort(x_value, true));
-    const SVG = this.getSvg(width, height, margin);
+    this.init(width, height, margin);
+
+    const GG = this.gGrid;
 
     const xDomain = getDomain(data, x_value, baseValue);
     const X = this.getXLinearScale(xDomain, width, margin);
@@ -89,10 +91,10 @@ export class WaterfallPlot extends BasePlot {
     });
     const Y = this.getYBandScale(yDomain, height, margin, [0.2]);
 
-    if (!noAxes) this.plotAxes(SVG, X, Y, x_value, y_value);
+    if (!noAxes) this.plotAxes(GG, X, Y, x_value, y_value);
 
     let startingPoint = baseValue;
-    SVG.selectAll()
+    GG.selectAll()
       .data(data)
       .enter()
       .append("polygon")
@@ -108,7 +110,7 @@ export class WaterfallPlot extends BasePlot {
       .attr("fill", (d) => getColor(0, d[x_value]));
 
     startingPoint = baseValue;
-    SVG.selectAll()
+    GG.selectAll()
       .data(data)
       .enter()
       .append("path")
@@ -124,7 +126,7 @@ export class WaterfallPlot extends BasePlot {
 
     const textMaxWidth = 50;
     startingPoint = baseValue;
-    const legend = SVG.selectAll()
+    const legend = GG.selectAll()
       .data(data)
       .enter()
       .append("g")

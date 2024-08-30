@@ -23,13 +23,16 @@ export class RidgelinePlot extends BasePlot {
     const numAxes = x_axes.length;
     const histHeight = height / numAxes;
 
-    const SVG = this.getSvg(width, height, margin);
+    this.init(width, height, margin);
+
+    const SVG = this.svg;
+    const GG = this.gGrid;
 
     const xDomain = this.getXDomain(data, x_axes);
     const X = this.getXLinearScale(xDomain, width, margin);
     const Y = this.getYBandScale(x_axes, height, margin, [0.2]);
 
-    if (!noAxes) this.plotAxes(SVG, X, Y);
+    if (!noAxes) this.plotAxes(GG, X, Y);
 
     this.histList = [];
     for (let i = 0; i < numAxes; i++) {
@@ -39,11 +42,11 @@ export class RidgelinePlot extends BasePlot {
       const histMargin = structuredClone(margin);
       histMargin.bottom = margin.bottom + i * histHeight;
       histMargin.top = margin.top + (numAxes - i - 1) * histHeight;
-      const newSvg = SVG.append("g").attr(
+      const newGG = GG.append("g").attr(
         "transform",
         "translate(0," + (histMargin.top - margin.top) + ")"
       );
-      histPlot.plot(data, x_axis, width, height, histMargin, true, newSvg, X);
+      histPlot.plot(data, x_axis, width, height, histMargin, true, newGG, X);
     }
   }
 }

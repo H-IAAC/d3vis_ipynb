@@ -159,3 +159,10 @@ input[type="range"] {
   fill: blue !important;
   r: 6 !important;
 }
+
+/***** LINEARPLOT *****/
+.line-dot.selected {
+  fill: blue !important;
+  r: 6 !important;
+  opacity: 0.5 !important;
+}
