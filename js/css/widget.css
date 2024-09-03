@@ -149,6 +149,10 @@ input[type="range"] {
   background-color: darkgrey;
 }
 
+.side_bar button.is_selected.mode_negative {
+  background-color: rgb(255, 119, 119);
+}
+
 .side_bar button svg {
   width: 16px;
   height: 16px;
@@ -165,4 +169,19 @@ input[type="range"] {
   fill: blue !important;
   r: 6 !important;
   opacity: 0.5 !important;
+}
+
+/***** SELECTION BUTTONS *****/
+.selection_line {
+  stroke: lightgrey;
+  stroke-dasharray: 2, 2;
+  stroke-width: 1;
+  fill: #f0f0f054;
+}
+
+.negative_selection_line {
+  stroke: rgb(255, 119, 119);
+  stroke-dasharray: 2, 2;
+  stroke-width: 1;
+  fill: #ffafaf54;
 }

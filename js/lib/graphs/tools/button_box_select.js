@@ -93,10 +93,8 @@ export class BoxSelectButton extends BaseButton {
 
   drawPath() {
     d3.select("#lasso" + this.randomString)
-      .style("stroke", PATH_COLOR)
-      .attr("stroke-dasharray", "2,2")
-      .style("stroke-width", 1)
-      .style("fill", PATH_BACKGROUND_COLOR)
+      .classed("selection_line", this.mode)
+      .classed("negative_selection_line", !this.mode)
       .attr("d", d3.line()(this.coords));
   }
 
@@ -138,8 +136,20 @@ export class BoxSelectButton extends BaseButton {
 
     this.selectables.classed("selected", (d) => {
       let point = [X(d[xV]) + xT, Y(d[yV]) + yT];
-      if (pointInPolygon(point, Coords) || selectedDots.find((e) => e === d)) {
-        return true;
+      if (this.mode) {
+        if (
+          pointInPolygon(point, Coords) ||
+          selectedDots.find((e) => e === d)
+        ) {
+          return true;
+        }
+      } else {
+        if (
+          !pointInPolygon(point, Coords) &&
+          selectedDots.find((e) => e === d)
+        ) {
+          return true;
+        }
       }
     });
 
