@@ -14,7 +14,6 @@ export class LinearPlot extends BasePlot {
     x_value,
     y_value,
     hue,
-    setValue,
     setSelectedValues,
     width,
     height,
@@ -83,6 +82,7 @@ export class LinearPlot extends BasePlot {
       informationCard.hide();
     }
 
+    let clickSelectButton;
     function mouseClick(event, d) {
       const text =
         "x:" +
@@ -90,8 +90,9 @@ export class LinearPlot extends BasePlot {
         "    " +
         "y:" +
         Math.round(d[y_value] * 10) / 10;
-      if (setValue !== undefined) {
-        setValue(text);
+      if (clickSelectButton) {
+        clickSelectButton.selectionClickEffect(d3.select(this));
+        callUpdateSelected();
       }
     }
 
@@ -185,12 +186,22 @@ export class LinearPlot extends BasePlot {
       SVG.on("mousedown.zoom", null);
     }
 
-    const Element = this.element;
     let lassoSelectButton;
     if (!noSideBar) {
-      let clickSelectButton = new ClickSelectButton(true);
+      clickSelectButton = new ClickSelectButton(true);
       clickSelectButton.addWhenSelectedCallback(activateZoom);
-      let boxSelectButton = new BoxSelectButton();
+      let boxSelectButton = new BoxSelectButton(
+        X,
+        Y,
+        x_value,
+        y_value,
+        margin.left,
+        margin.top,
+        dots,
+        callUpdateSelected,
+        SVG
+      );
+      boxSelectButton.addWhenSelectedCallback(deactivatePan);
       lassoSelectButton = new LassoSelectButton(
         X,
         Y,
@@ -203,7 +214,7 @@ export class LinearPlot extends BasePlot {
         SVG
       );
       lassoSelectButton.addWhenSelectedCallback(deactivatePan);
-      let deselectAllButton = new DeselectAllButton();
+      let deselectAllButton = new DeselectAllButton(dots, callUpdateSelected);
       const sideBar = new SideBar(
         this.element,
         clickSelectButton,

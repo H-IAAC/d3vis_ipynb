@@ -94,7 +94,6 @@ class LinearPlot(BaseWidget):
     x = Unicode().tag(sync=True)
     y = Unicode().tag(sync=True)
     hue = Unicode().tag(sync=True)
-    clickedValue = Unicode().tag(sync=True)
     selectedValuesRecords = List([]).tag(sync=True)
 
     def __init__(self, data, **kwargs):
@@ -120,9 +119,6 @@ class LinearPlot(BaseWidget):
 
     def on_select_values(self, callback):
         self.observe(callback, names=["selectedValuesRecords"])
-
-    def on_click_value(self, callback):
-        self.observe(callback, names=["clickedValue"])
 
 
 @widgets.register
@@ -155,7 +151,6 @@ class ScatterPlot(BaseWidget):
     x = Unicode().tag(sync=True)
     y = Unicode().tag(sync=True)
     hue = Unicode().tag(sync=True)
-    clickedValue = Unicode().tag(sync=True)
     selectedValuesRecords = List([]).tag(sync=True)
     lines = Dict([]).tag(sync=True)
 
@@ -182,9 +177,6 @@ class ScatterPlot(BaseWidget):
 
     def on_select_values(self, callback):
         self.observe(callback, names=["selectedValuesRecords"])
-
-    def on_click_value(self, callback):
-        self.observe(callback, names=["clickedValue"])
 
     def createLine(
         self, id, position=0, color="blue", dashed=True, direction="vertical"

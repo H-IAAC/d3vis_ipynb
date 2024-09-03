@@ -168,7 +168,6 @@ export class LinearPlotModel extends BaseModel {
       y: String,
       hue: String,
       elementId: String,
-      clickedValue: String,
       selectedValuesRecords: [],
     };
   }
@@ -202,7 +201,6 @@ export class LinearPlotView extends BaseView {
       x,
       y,
       hue,
-      this.setValue.bind(this),
       this.setSelectedValues.bind(this),
       this.width,
       this.height,
@@ -210,11 +208,6 @@ export class LinearPlotView extends BaseView {
       false,
       false
     );
-  }
-
-  setValue(text) {
-    this.model.set({ clickedValue: text });
-    this.model.save_changes();
   }
 
   setSelectedValues(values) {
@@ -280,7 +273,6 @@ export class ScatterPlotModel extends BaseModel {
       y: String,
       hue: String,
       elementId: String,
-      clickedValue: String,
       selectedValuesRecords: [],
       lines: {},
     };
@@ -317,7 +309,6 @@ export class ScatterPlotView extends BaseView {
       x,
       y,
       hue,
-      this.setValue.bind(this),
       this.setSelectedValues.bind(this),
       this.width,
       this.height,
@@ -327,11 +318,6 @@ export class ScatterPlotView extends BaseView {
     );
 
     this.setLines();
-  }
-
-  setValue(text) {
-    this.model.set({ clickedValue: text });
-    this.model.save_changes();
   }
 
   setSelectedValues(values) {

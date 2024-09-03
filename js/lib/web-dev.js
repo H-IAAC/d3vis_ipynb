@@ -158,7 +158,6 @@ function addLinearplot() {
     y,
     hue,
     () => {},
-    () => {},
     800,
     600,
     {
@@ -220,7 +219,6 @@ function addScatterplot() {
     x,
     y,
     hue,
-    () => {},
     () => {},
     800,
     600,
@@ -299,4 +297,4 @@ function addDecision() {
   );
 }
 
-addScatterplot();
+addLinearplot();

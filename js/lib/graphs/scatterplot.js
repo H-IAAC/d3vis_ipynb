@@ -13,7 +13,6 @@ export class ScatterPlot extends BasePlot {
     x_value,
     y_value,
     hue,
-    setValue,
     setSelectedValues,
     width,
     height,
@@ -81,6 +80,7 @@ export class ScatterPlot extends BasePlot {
       informationCard.hide();
     }
 
+    let clickSelectButton;
     function mouseClick(event, d) {
       const text =
         "x:" +
@@ -88,8 +88,9 @@ export class ScatterPlot extends BasePlot {
         "    " +
         "y:" +
         Math.round(d[y_value] * 10) / 10;
-      if (setValue !== undefined) {
-        setValue(text);
+      if (clickSelectButton) {
+        clickSelectButton.selectionClickEffect(d3.select(this));
+        callUpdateSelected();
       }
     }
 
@@ -163,7 +164,7 @@ export class ScatterPlot extends BasePlot {
 
     let lassoSelectButton;
     if (!noSideBar) {
-      let clickSelectButton = new ClickSelectButton(true);
+      clickSelectButton = new ClickSelectButton(true);
       clickSelectButton.addWhenSelectedCallback(activateZoom);
       let boxSelectButton = new BoxSelectButton(
         X,
@@ -189,7 +190,7 @@ export class ScatterPlot extends BasePlot {
         SVG
       );
       lassoSelectButton.addWhenSelectedCallback(deactivatePan);
-      let deselectAllButton = new DeselectAllButton(dots);
+      let deselectAllButton = new DeselectAllButton(dots, callUpdateSelected);
       const sideBar = new SideBar(
         this.element,
         clickSelectButton,
