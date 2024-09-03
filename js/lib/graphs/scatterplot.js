@@ -189,7 +189,7 @@ export class ScatterPlot extends BasePlot {
         SVG
       );
       lassoSelectButton.addWhenSelectedCallback(deactivatePan);
-      let deselectAllButton = new DeselectAllButton();
+      let deselectAllButton = new DeselectAllButton(dots);
       const sideBar = new SideBar(
         this.element,
         clickSelectButton,

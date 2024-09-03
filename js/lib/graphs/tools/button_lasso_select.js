@@ -107,6 +107,7 @@ export class LassoSelectButton extends BaseButton {
     let mouseY = event.sourceEvent.offsetY;
     const point = [mouseX, mouseY];
     this.coords.push(point);
+    this.coords.push(point);
     this.interationRect.append("path").attr("id", "lasso" + this.randomString);
   }
 
