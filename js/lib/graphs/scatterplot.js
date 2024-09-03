@@ -4,8 +4,8 @@ import { BoxSelectButton } from "./tools/button_box_select";
 import { ClickSelectButton } from "./tools/button_click_select";
 import { DeselectAllButton } from "./tools/button_deselect_all";
 import { LassoSelectButton } from "./tools/button_lasso_select";
-import { SideBar } from "./tools/side_bar";
 import { InformationCard } from "./tools/information_card";
+import { SideBar } from "./tools/side_bar";
 
 export class ScatterPlot extends BasePlot {
   plot(
@@ -161,12 +161,22 @@ export class ScatterPlot extends BasePlot {
       SVG.on("mousedown.zoom", null);
     }
 
-    const Element = this.element;
     let lassoSelectButton;
     if (!noSideBar) {
       let clickSelectButton = new ClickSelectButton(true);
       clickSelectButton.addWhenSelectedCallback(activateZoom);
-      let boxSelectButton = new BoxSelectButton();
+      let boxSelectButton = new BoxSelectButton(
+        X,
+        Y,
+        x_value,
+        y_value,
+        margin.left,
+        margin.top,
+        dots,
+        callUpdateSelected,
+        SVG
+      );
+      boxSelectButton.addWhenSelectedCallback(deactivatePan);
       lassoSelectButton = new LassoSelectButton(
         X,
         Y,

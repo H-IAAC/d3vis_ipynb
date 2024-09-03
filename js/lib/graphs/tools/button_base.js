@@ -45,7 +45,7 @@ export class BaseButton {
   on_click() {
     if (this.isSelected) return;
 
-    this.select();
     this.clickNotify(this);
+    this.select();
   }
 }

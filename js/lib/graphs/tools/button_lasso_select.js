@@ -63,6 +63,35 @@ export class LassoSelectButton extends BaseButton {
     this.yScale = yScale;
   }
 
+  select() {
+    super.select();
+    this.mode = true;
+    this.button.classList.add("mode_positive");
+    this.button.classList.remove("mode_negative");
+    this.interationRect.call(this.drag);
+  }
+
+  unselect() {
+    super.unselect();
+    this.interationRect.on(".drag", null);
+  }
+
+  on_click() {
+    if (this.isSelected) this.changeMode();
+    super.on_click();
+  }
+
+  changeMode() {
+    this.mode = !this.mode;
+    if (this.mode) {
+      this.button.classList.add("mode_positive");
+      this.button.classList.remove("mode_negative");
+    } else {
+      this.button.classList.add("mode_negative");
+      this.button.classList.remove("mode_positive");
+    }
+  }
+
   drawPath() {
     d3.select("#lasso" + this.randomString)
       .style("stroke", PATH_COLOR)

@@ -299,4 +299,4 @@ function addDecision() {
   );
 }
 
-addLinearplot();
+addScatterplot();
