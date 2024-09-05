@@ -5,6 +5,7 @@ import { ScatterPlot } from "./graphs/scatterplot";
 import { WaterfallPlot } from "./graphs/waterfall";
 import "../css/widget.css";
 import { LinearPlot } from "./graphs/linearplot";
+import { Force } from "./graphs/force";
 
 function addBarplot() {
   const data = [
@@ -71,6 +72,37 @@ function addBarplot() {
     },
     false
   );
+}
+
+function addForce() {
+  const data = [
+    { feature_names: "Age", values: 0.56290748 },
+    { feature_names: "Workclass", values: -0.37707573 },
+    { feature_names: "Education-Num", values: 2.36556202 },
+    { feature_names: "Marital Status", values: -0.46884385 },
+    { feature_names: "Occupation", values: -0.35107816 },
+    { feature_names: "Relationship", values: -0.64769396 },
+    { feature_names: "Race", values: 0.01916319 },
+    { feature_names: "Sex", values: 0.32815658 },
+    { feature_names: "Capital Gain", values: -3.65317098 },
+    { feature_names: "Capital Loss", values: -0.08319319 },
+    { feature_names: "Hours per week", values: -0.27460556 },
+    { feature_names: "Country", values: 0.03407126 },
+  ];
+
+  const element = document.createElement("div");
+  element.id = "component";
+  element.style.width = "1000px";
+  element.style.height = "1000px";
+  document.body.appendChild(element);
+
+  const force = new Force(element);
+  force.plot(data, "values", "feature_names", -2.5312646028291264, 800, 200, {
+    top: 20,
+    right: 20,
+    bottom: 30,
+    left: 20,
+  });
 }
 
 function addHistogram() {
@@ -297,4 +329,4 @@ function addDecision() {
   );
 }
 
-addLinearplot();
+addForce();
