@@ -1,8 +1,11 @@
 import * as d3 from "d3";
 import { BasePlot } from "./baseplot";
+import { InformationCard } from "./tools/information_card";
 
 const NEGATIVE_COLOR = "#33AFFF";
+const NEGATIVE_SELECTED_COLOR = "#039AFC";
 const POSITIVE_COLOR = "#FF335B";
+const POSITIVE_SELECTED_COLOR = "#FF0334";
 const GRAPH_Y = 100;
 const GRAPH_HEIGHT = 40;
 
@@ -124,6 +127,8 @@ function getColor(xStart, xEnd) {
 
 export class Force extends BasePlot {
   plot(data, x_value, y_value, baseValue, width, height, margin) {
+    const informationCard = new InformationCard(this.element);
+
     this.baseValue = baseValue;
     data.sort(invertedSort(x_value));
     this.init(width, height, margin);
@@ -150,10 +155,27 @@ export class Force extends BasePlot {
     let startingPoint = xDomain[0];
     let lastValue = 0;
     let transition = false;
-    GG.selectAll()
-      .data(data)
-      .enter()
-      .append("polygon")
+
+    function mouseover(event, d) {
+      if (d[x_value] >= 0)
+        d3.select(this).attr("fill", POSITIVE_SELECTED_COLOR);
+      else d3.select(this).attr("fill", NEGATIVE_SELECTED_COLOR);
+
+      const text = d[y_value];
+      informationCard.showText(text, event.offsetX, event.offsetY);
+    }
+
+    function mouseout(event, d) {
+      if (d[x_value] >= 0) d3.select(this).attr("fill", POSITIVE_COLOR);
+      else d3.select(this).attr("fill", NEGATIVE_COLOR);
+      informationCard.hide();
+    }
+
+    function mouseClick(event, d) {}
+
+    const arrows = GG.selectAll().data(data).enter().append("polygon");
+
+    arrows
       .attr("points", function (d) {
         const xStart = startingPoint;
         startingPoint = startingPoint + Math.abs(d[x_value]);
@@ -166,6 +188,11 @@ export class Force extends BasePlot {
         );
       })
       .attr("fill", (d) => getColor(0, d[x_value]));
+
+    arrows
+      .on("mouseover", mouseover)
+      .on("mouseout", mouseout)
+      .on("click", mouseClick);
 
     startingPoint = xDomain[0];
     GG.selectAll()
