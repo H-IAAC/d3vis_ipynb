@@ -133,7 +133,21 @@ export class Force extends BasePlot {
     data.sort(invertedSort(x_value));
     this.init(width, height, margin);
 
+    var zoom = d3
+      .zoom()
+      .scaleExtent([1, 50])
+      .extent([
+        [0, 0],
+        [width, height],
+      ])
+      .translateExtent([
+        [0, 0],
+        [width, height],
+      ])
+      .on("zoom", onZoom);
+
     const GG = this.gGrid;
+    this.svg.call(zoom);
 
     const xDomain = getDomain(data, x_value, baseValue);
     const X = this.getXLinearScale(xDomain, width, margin);
@@ -195,10 +209,10 @@ export class Force extends BasePlot {
       .on("click", mouseClick);
 
     startingPoint = xDomain[0];
-    GG.selectAll()
-      .data(data)
-      .enter()
-      .append("polygon")
+
+    const whiteArrows = GG.selectAll().data(data).enter().append("polygon");
+
+    whiteArrows
       .attr("points", function (d) {
         const xStart = startingPoint;
         startingPoint = startingPoint + Math.abs(d[x_value]);
@@ -210,7 +224,7 @@ export class Force extends BasePlot {
       })
       .attr("fill", "white");
 
-    GG.append("path")
+    const baseValueLine = GG.append("path")
       .attr("stroke", "grey")
       .attr("stroke-dasharray", "2,2")
       .attr(
@@ -266,6 +280,66 @@ export class Force extends BasePlot {
       .attr("text-anchor", "middle")
       .attr("fill", "black")
       .text(Math.round(resultValue * 1000) / 1000);
+
+    function onZoom(event) {
+      var newX = event.transform.rescaleX(X);
+
+      xAxis.call(d3.axisBottom(newX));
+
+      let startingPoint = xDomain[0];
+      arrows
+        .attr("points", function (d) {
+          const xStart = startingPoint;
+          startingPoint = startingPoint + Math.abs(d[x_value]);
+          transition = lastValue >= 0 && d[x_value] < 0;
+          lastValue = d[x_value];
+          return [getScaledPolygon(xStart, d[x_value], newX, transition)].map(
+            function (d) {
+              return d.map((d) => [d.x, d.y].join(",")).join(" ");
+            }
+          );
+        })
+        .attr("fill", (d) => getColor(0, d[x_value]));
+
+      startingPoint = xDomain[0];
+      whiteArrows
+        .attr("points", function (d) {
+          const xStart = startingPoint;
+          startingPoint = startingPoint + Math.abs(d[x_value]);
+          return [
+            getPolygon(newX(xStart), newX(startingPoint), 3, d[x_value]),
+          ].map(function (d) {
+            return d.map((d) => [d.x, d.y].join(",")).join(" ");
+          });
+        })
+        .attr("fill", "white");
+
+      baseValueLine.attr(
+        "d",
+        d3.line()([
+          [newX(baseValue), GRAPH_Y - GRAPH_HEIGHT],
+          [newX(baseValue), GRAPH_Y + GRAPH_HEIGHT],
+        ])
+      );
+
+      baseValueText.attr(
+        "transform",
+        "translate(" +
+          (newX(baseValue) - 40) +
+          ", " +
+          (GRAPH_Y - 2 * GRAPH_HEIGHT) +
+          ")"
+      );
+
+      resultValueText.attr(
+        "transform",
+        "translate(" +
+          (newX(resultValue) - 40) +
+          ", " +
+          (GRAPH_Y - 2 * GRAPH_HEIGHT + 20) +
+          ")"
+      );
+    }
   }
 
   replot(data, x_value, y_value, baseValue, width, height, margin, noAxes) {
