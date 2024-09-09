@@ -1,6 +1,7 @@
 import { BaseModel, BaseView } from "./base";
 import { BarPlot } from "./graphs/barplot";
 import { DecisionPlot } from "./graphs/decision";
+import { ForcePlot } from "./graphs/force";
 import { HistogramPlot } from "./graphs/histogramplot";
 import { LinearPlot } from "./graphs/linearplot";
 import { RidgelinePlot } from "./graphs/ridgelineplot";
@@ -106,6 +107,58 @@ export class DecisionPlotView extends BaseView {
       this.width,
       this.height,
       { top: 20, right: 20, bottom: 30, left: 80 },
+      false
+    );
+  }
+}
+
+export class ForcePlotModel extends BaseModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: ForcePlotModel.model_name,
+      _view_name: ForcePlotModel.view_name,
+
+      dataRecords: [],
+      x: String,
+      y: String,
+      baseValue: Number,
+      elementId: String,
+    };
+  }
+
+  static model_name = "ForcePlotModel";
+  static view_name = "ForcePlotView";
+}
+
+export class ForcePlotView extends BaseView {
+  render() {
+    this.plotAfterInterval();
+
+    this.model.on("change:dataRecords", () => this.plotAfterInterval(), this);
+    this.model.on("change:x", () => this.plotAfterInterval(), this);
+    this.model.on("change:y", () => this.plotAfterInterval(), this);
+    this.model.on("change:baseValue", () => this.plotAfterInterval(), this);
+    window.addEventListener("resize", () => this.plotAfterInterval());
+  }
+
+  plot() {
+    if (!this.force) this.force = new ForcePlot(this.getElement());
+    this.setSizes();
+
+    let data = this.model.get("dataRecords");
+    let x = this.model.get("x");
+    let y = this.model.get("y");
+    let baseValue = this.model.get("baseValue");
+
+    this.force.replot(
+      data,
+      x,
+      y,
+      baseValue,
+      this.width,
+      200,
+      { top: 20, right: 20, bottom: 30, left: 20 },
       false
     );
   }

@@ -1,7 +1,8 @@
+import copy
+
 import ipywidgets as widgets
 import numpy as np
 import pandas as pd
-import copy
 from traitlets import Dict, Float, List, Unicode
 
 from d3vis_ipynb.base_widget import BaseWidget
@@ -62,6 +63,57 @@ class DecisionPlot(BaseWidget):
             )
         self.baseValue = val.base_values[0]
         self.dataRecords = records
+
+
+@widgets.register
+class ForcePlot(BaseWidget):
+    _view_name = Unicode("ForcePlotView").tag(sync=True)
+    _model_name = Unicode("ForcePlotModel").tag(sync=True)
+
+    dataRecords = List([]).tag(sync=True)
+    x = Unicode().tag(sync=True)
+    y = Unicode().tag(sync=True)
+    baseValue = Float().tag(sync=True)
+
+    def __init__(
+        self,
+        data=pd.DataFrame(),
+        x="values",
+        y="feature_names",
+        explanation=None,
+        baseValue=0,
+        **kwargs,
+    ):
+        self.x = x
+        self.y = y
+        self.baseValue = baseValue
+        if explanation != None and not data.empty:
+            raise Exception("Initialize with explanation or data, not both.")
+        elif not data.empty:
+            self.data = data
+        else:
+            self.explanation = explanation
+        super().__init__(**kwargs)
+
+    @property
+    def data(self):
+        return pd.DataFrame.from_records(self.dataRecords)
+
+    @data.setter
+    def data(self, val):
+        self.dataRecords = val.to_dict(orient="records")
+
+    @property
+    def explanation(self):
+        return self.explanation
+
+    @explanation.setter
+    def explanation(self, val):
+        df = pd.DataFrame()
+        df.insert(0, self.x, val.values)
+        df.insert(0, self.y, val.feature_names)
+        self.baseValue = val.base_values
+        self.data = df
 
 
 @widgets.register

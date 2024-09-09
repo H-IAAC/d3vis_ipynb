@@ -5,7 +5,7 @@ import { ScatterPlot } from "./graphs/scatterplot";
 import { WaterfallPlot } from "./graphs/waterfall";
 import "../css/widget.css";
 import { LinearPlot } from "./graphs/linearplot";
-import { Force } from "./graphs/force";
+import { ForcePlot } from "./graphs/force";
 
 function addBarplot() {
   const data = [
@@ -96,7 +96,7 @@ function addForce() {
   element.style.height = "1000px";
   document.body.appendChild(element);
 
-  const force = new Force(element);
+  const force = new ForcePlot(element);
   force.plot(data, "values", "feature_names", -2.5312646028291264, 800, 200, {
     top: 20,
     right: 20,
@@ -205,6 +205,12 @@ function addLinearplot() {
 
 function addScatterplot() {
   const data = [
+    { x_axis: 3.13, y_axis: 7.02, hue: "one" },
+    { x_axis: 3.14, y_axis: 5, hue: "two" },
+    { x_axis: 3.17, y_axis: 4.98, hue: "three" },
+    { x_axis: 3.43, y_axis: 6.02, hue: "one" },
+    { x_axis: 3.54, y_axis: 6, hue: "two" },
+    { x_axis: 3.67, y_axis: 5.98, hue: "three" },
     { x_axis: 5.2, y_axis: 4, hue: "one" },
     { x_axis: 6, y_axis: 4, hue: "one" },
     { x_axis: 5.2, y_axis: 3, hue: "one" },

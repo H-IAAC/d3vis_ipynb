@@ -125,7 +125,7 @@ function getColor(xStart, xEnd) {
   return NEGATIVE_COLOR;
 }
 
-export class Force extends BasePlot {
+export class ForcePlot extends BasePlot {
   plot(data, x_value, y_value, baseValue, width, height, margin) {
     const informationCard = new InformationCard(this.element);
 
