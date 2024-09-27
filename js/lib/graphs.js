@@ -2,6 +2,7 @@ import { BaseModel, BaseView } from "./base";
 import { BarPlot } from "./graphs/barplot";
 import { DecisionPlot } from "./graphs/decision";
 import { ForcePlot } from "./graphs/force";
+import { HeatmapPlot } from "./graphs/heatmap";
 import { HistogramPlot } from "./graphs/histogramplot";
 import { LinearPlot } from "./graphs/linearplot";
 import { RidgelinePlot } from "./graphs/ridgelineplot";
@@ -160,6 +161,60 @@ export class ForcePlotView extends BaseView {
       200,
       { top: 20, right: 20, bottom: 30, left: 20 },
       false
+    );
+  }
+}
+
+export class HeatmapPlotModel extends BaseModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: HeatmapPlotModel.model_name,
+      _view_name: HeatmapPlotModel.view_name,
+
+      dataRecords: [],
+      x_value: String,
+      y_value: String,
+      xValues: [],
+      yValues: [],
+      elementId: String,
+    };
+  }
+
+  static model_name = "HeatmapPlotModel";
+  static view_name = "HeatmapPlotView";
+}
+
+export class HeatmapPlotView extends BaseView {
+  render() {
+    this.plotAfterInterval();
+
+    this.model.on("change:dataRecords", () => this.plotAfterInterval(), this);
+    window.addEventListener("resize", () => this.plotAfterInterval());
+  }
+
+  plot() {
+    if (!this.heatmap) this.heatmap = new HeatmapPlot(this.getElement());
+    this.setSizes();
+
+    const data = this.model.get("dataRecords");
+    const x_value = this.model.get("x_value");
+    const y_value = this.model.get("y_value");
+    const xValues = this.model.get("xValues");
+    const yValues = this.model.get("yValues");
+
+    this.heatmap.replot(
+      data,
+      x_value,
+      y_value,
+      "hueValue",
+      xValues,
+      yValues,
+      null,
+      0,
+      this.width,
+      this.height,
+      { top: 20, right: 20, bottom: 30, left: 80 }
     );
   }
 }

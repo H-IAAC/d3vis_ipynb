@@ -1,11 +1,13 @@
+import "../css/widget.css";
 import { BarPlot } from "./graphs/barplot";
 import { DecisionPlot } from "./graphs/decision";
+import { ForcePlot } from "./graphs/force";
+import { HeatmapPlot } from "./graphs/heatmap";
 import { HistogramPlot } from "./graphs/histogramplot";
+import { LinearPlot } from "./graphs/linearplot";
 import { ScatterPlot } from "./graphs/scatterplot";
 import { WaterfallPlot } from "./graphs/waterfall";
-import "../css/widget.css";
-import { LinearPlot } from "./graphs/linearplot";
-import { ForcePlot } from "./graphs/force";
+import { heatmapData } from "./web-dev-data";
 
 function addBarplot() {
   const data = [
@@ -103,6 +105,40 @@ function addForce() {
     bottom: 30,
     left: 20,
   });
+}
+
+function addHeatmapPlot() {
+  const data = heatmapData;
+  const element = document.createElement("div");
+  element.id = "component";
+  element.style.width = "800px";
+  element.style.height = "600px";
+  document.body.appendChild(element);
+
+  let x = "group";
+  let y = "variable";
+  const hue = "value";
+
+  const heatmapPlot = new HeatmapPlot(element);
+  heatmapPlot.plot(
+    data,
+    x,
+    y,
+    hue,
+    null,
+    null,
+    null,
+    0,
+    1000,
+    600,
+    {
+      top: 40,
+      right: 20,
+      bottom: 30,
+      left: 80,
+    },
+    false
+  );
 }
 
 function addHistogram() {
@@ -335,4 +371,4 @@ function addDecision() {
   );
 }
 
-addForce();
+addHeatmapPlot();

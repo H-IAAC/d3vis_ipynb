@@ -117,6 +117,38 @@ class ForcePlot(BaseWidget):
 
 
 @widgets.register
+class HeatmapPlot(BaseWidget):
+    _view_name = Unicode("HeatmapPlotView").tag(sync=True)
+    _model_name = Unicode("HeatmapPlotModel").tag(sync=True)
+
+    dataRecords = List([]).tag(sync=True)
+    x_value = Unicode().tag(sync=True)
+    y_value = Unicode().tag(sync=True)
+    xValues = List([]).tag(sync=True)
+    yValues = List([]).tag(sync=True)
+
+    def __init__(self, data, **kwargs):
+        self.data = data
+        super().__init__(**kwargs)
+
+    @property
+    def data(self):
+        return pd.DataFrame.from_records(self.dataRecords)
+
+    @data.setter
+    def data(self, val):
+        self.x_value = val.columns.name
+        self.y_value = val.index.name
+        self.xValues = val.columns.tolist()
+        self.yValues = val.index.tolist()
+
+        data_reset = val.reset_index()
+        self.dataRecords = data_reset.melt(
+            id_vars=self.y_value, var_name=self.x_value, value_name="hueValue"
+        ).to_dict(orient="records")
+
+
+@widgets.register
 class HistogramPlot(BaseWidget):
     _view_name = Unicode("HistogramPlotView").tag(sync=True)
     _model_name = Unicode("HistogramPlotModel").tag(sync=True)
