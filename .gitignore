@@ -16,3 +16,6 @@ d3vis_ipynb/labextension/
 js/yarn-error.log
 js/yarn.lock
 js/package-lock.json
+
+examples/temp/
+examples/videos/
