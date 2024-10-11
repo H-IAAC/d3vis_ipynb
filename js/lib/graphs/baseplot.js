@@ -7,8 +7,14 @@ export class BasePlot {
     this.element = element;
   }
 
-  clear() {
-    d3.select(this.element).selectAll("*").remove();
+  replot(params) {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    this.timeout = setTimeout(() => {
+      d3.select(this.element).selectAll("*").remove();
+      this.plot(...params);
+    }, 100);
   }
 
   init(width, height, margin) {

@@ -38,9 +38,4 @@ export class HistogramPlot extends BasePlot {
 
     if (!noAxes) this.plotAxes(GG, X, Y, x_axis);
   }
-
-  replot(data, x_axis, width, height, margin, noAxes, gGrid, xScale) {
-    this.clear();
-    this.plot(data, x_axis, width, height, margin, noAxes, gGrid, xScale);
-  }
 }

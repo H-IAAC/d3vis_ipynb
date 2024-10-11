@@ -341,9 +341,4 @@ export class ForcePlot extends BasePlot {
       );
     }
   }
-
-  replot(data, x_value, y_value, baseValue, width, height, margin, noAxes) {
-    this.clear();
-    this.plot(data, x_value, y_value, baseValue, width, height, margin, noAxes);
-  }
 }

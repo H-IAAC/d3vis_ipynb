@@ -56,10 +56,12 @@ export class ScatterPlot extends BasePlot {
       return d[x_value];
     });
     const X = this.getXLinearScale(xDomain, width, margin);
+    this.xScale = X;
     const yDomain = d3.extent(data, function (d) {
       return d[y_value];
     });
     const Y = this.getYLinearScale(yDomain, height, margin);
+    this.yScale = Y;
 
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -223,36 +225,9 @@ export class ScatterPlot extends BasePlot {
     }
   }
 
-  replot(
-    data,
-    x_value,
-    y_value,
-    hue,
-    setValue,
-    setSelectedValues,
-    width,
-    height,
-    margin,
-    noAxes
-  ) {
-    this.clear();
-    this.plot(
-      data,
-      x_value,
-      y_value,
-      hue,
-      setValue,
-      setSelectedValues,
-      width,
-      height,
-      margin,
-      noAxes
-    );
-  }
-
   plotLines(lines) {
-    let X = this.xScale;
-    let Y = this.yScale;
+    const X = this.xScale;
+    const Y = this.yScale;
 
     this.gGrid
       .selectAll("path.reference_line")

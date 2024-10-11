@@ -254,31 +254,4 @@ export class LinearPlot extends BasePlot {
         });
     }
   }
-
-  replot(
-    data,
-    x_value,
-    y_value,
-    hue,
-    setValue,
-    setSelectedValues,
-    width,
-    height,
-    margin,
-    noAxes
-  ) {
-    this.clear();
-    this.plot(
-      data,
-      x_value,
-      y_value,
-      hue,
-      setValue,
-      setSelectedValues,
-      width,
-      height,
-      margin,
-      noAxes
-    );
-  }
 }

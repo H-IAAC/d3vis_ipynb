@@ -1,5 +1,10 @@
 import { BaseModel, BaseView, WIDGET_MARGIN } from "./base";
-import { rangeslider } from "./widgets/rangeslider";
+import { Button } from "./widgets/button";
+import { Dropdown } from "./widgets/dropdown";
+import { Input } from "./widgets/input";
+import { RangeSlider } from "./widgets/rangeslider";
+import { Text } from "./widgets/text";
+import { TextArea } from "./widgets/textarea";
 
 class TextBaseModel extends BaseModel {
   defaults() {
@@ -20,43 +25,34 @@ class TextBaseView extends BaseView {
 
   setPlaceholder() {
     const placeholder = this.model.get("placeholder");
-    this.text.setAttribute("placeholder", placeholder);
+    this.widget.onPlacehoderChanged(placeholder);
   }
 
   setDescription() {
     const description = this.model.get("description");
-    this.getElement().innerHTML = "";
-    if (description) {
-      const label = document.createElement("label");
-      label.setAttribute("title", description);
-      label.innerHTML = description + ": ";
-      label.style.verticalAlign = "top";
-      this.getElement().appendChild(label);
-    }
-    this.getElement().appendChild(this.text);
+    this.widget.onDescriptionChanged(description);
   }
 
   setDisabled() {
     const disabled = this.model.get("disabled");
-    if (disabled) this.text.setAttribute("disabled", "");
-    else this.text.removeAttribute("disabled");
+    this.widget.onDisabledChanged(disabled);
   }
 
-  render() {
-    this.plotAfterInterval();
+  params() {
+    const value = this.model.get("value");
+    const placeholder = this.model.get("placeholder");
+    const description = this.model.get("description");
+    const disabled = this.model.get("disabled");
 
+    return [value, placeholder, description, disabled];
+  }
+
+  plot() {
     this.model.on("change:value", () => this.setText(), this);
     this.model.on("change:placeholder", () => this.setPlaceholder(), this);
     this.model.on("change:description", () => this.setDescription(), this);
     this.model.on("change:disabled", () => this.setDisabled(), this);
-    window.addEventListener("resize", () => this.plotAfterInterval());
-  }
-
-  plot() {
-    this.setText();
-    this.setPlaceholder();
-    this.setDescription();
-    this.setDisabled();
+    window.addEventListener("resize", () => this.replot());
   }
 }
 
@@ -81,14 +77,12 @@ export class ButtonModel extends BaseModel {
 export class ButtonView extends BaseView {
   setDescription() {
     const description = this.model.get("description");
-    this.button.setAttribute("title", description);
-    this.button.innerHTML = description;
+    this.widget.onDescriptionChanged(description);
   }
 
   setDisabled() {
     const disabled = this.model.get("disabled");
-    if (disabled) this.button.setAttribute("disabled", "");
-    else this.button.removeAttribute("disabled");
+    this.widget.onDisabledChanged(disabled);
   }
 
   setClicked() {
@@ -97,20 +91,20 @@ export class ButtonView extends BaseView {
     this.model.save_changes();
   }
 
-  render() {
-    this.plotAfterInterval();
+  params() {
+    const description = this.model.get("description");
+    const disabled = this.model.get("disabled");
+
+    return [description, disabled, this.setClicked.bind(this)];
+  }
+
+  plot(element) {
+    this.widget = new Button(element);
 
     this.model.on("change:description", () => this.setDescription(), this);
     this.model.on("change:disabled", () => this.setDisabled(), this);
-    window.addEventListener("resize", () => this.plotAfterInterval());
-  }
 
-  plot() {
-    this.button = document.createElement("button");
-    this.button.addEventListener("click", this.setClicked.bind(this));
-    this.setDescription();
-    this.setDisabled();
-    this.getElement().appendChild(this.button);
+    this.widget.plot(...this.params());
   }
 }
 
@@ -138,75 +132,56 @@ export class DropdownModel extends BaseModel {
 export class DropdownView extends BaseView {
   setDescription() {
     const description = this.model.get("description");
-    this.label.innerHTML = description + ": ";
+    this.widget.onDescriptionChanged(description);
   }
 
   setDisabled() {
     const disabled = this.model.get("disabled");
-    if (disabled) this.select.setAttribute("disabled", "");
-    else this.select.removeAttribute("disabled");
+    this.widget.onDisabledChanged(disabled);
   }
 
   setOptions() {
     const data = this.model.get("dataRecords");
     const variable = this.model.get("variable");
-    let options = this.model.get("options");
+    const options = this.model.get("options");
 
-    if (options.length === 0 && data.length > 0) {
-      options = [...new Set(data.map((d) => d[variable]))].sort();
-    }
-
-    this.select.innerHTML = "";
-    for (const option of options) {
-      const optionElement = document.createElement("option");
-      optionElement.setAttribute("value", option);
-      optionElement.innerHTML = option;
-      this.select.appendChild(optionElement);
-    }
+    this.widget.onOptionsChanged(data, variable, options);
   }
 
-  setValue() {
-    this.model.set({ value: this.select.value });
+  setValue(value) {
+    this.model.set({ value: value });
     this.model.save_changes();
   }
 
-  render() {
-    this.plotAfterInterval();
+  params() {
+    const data = this.model.get("dataRecords");
+    const variable = this.model.get("variable");
+    const description = this.model.get("description");
+    const options = this.model.get("options");
+    const value = this.model.get("value");
+    const disabled = this.model.get("disabled");
 
-    this.model.on("change:dataRecords", () => this.plotAfterInterval(), this);
-    this.model.on("change:variable", () => this.plotAfterInterval(), this);
+    return [
+      data,
+      variable,
+      description,
+      options,
+      value,
+      disabled,
+      this.setValue.bind(this),
+    ];
+  }
+
+  plot(element) {
+    this.widget = new Dropdown(element);
+
+    this.model.on("change:dataRecords", () => this.setOptions(), this);
+    this.model.on("change:variable", () => this.setOptions(), this);
     this.model.on("change:description", () => this.setDescription(), this);
     this.model.on("change:options", () => this.setOptions(), this);
     this.model.on("change:disabled", () => this.setDisabled(), this);
-    window.addEventListener("resize", () => this.plotAfterInterval());
-  }
 
-  plot() {
-    this.getElement().innerHTML = "";
-
-    const randomString = Math.floor(
-      Math.random() * Date.now() * 10000
-    ).toString(36);
-
-    this.dropdown = document.createElement("div");
-    this.label = document.createElement("label");
-    this.label.setAttribute("for", randomString);
-    this.setDescription();
-
-    this.select = document.createElement("select");
-    this.select.setAttribute("id", randomString);
-    this.select.addEventListener("change", this.setValue.bind(this));
-    this.setDisabled();
-
-    this.dropdown.appendChild(this.label);
-    this.dropdown.appendChild(this.select);
-
-    this.setOptions();
-
-    const value = this.model.get("value");
-    if (value) this.select.value = value;
-
-    this.getElement().appendChild(this.dropdown);
+    this.widget.plot(...this.params());
   }
 }
 
@@ -224,21 +199,24 @@ export class InputModel extends TextBaseModel {
 }
 
 export class InputView extends TextBaseView {
-  setText() {
-    const value = this.model.get("value");
-    this.text.value = value;
+  params() {
+    return [...super.params(), this.setValue.bind(this)];
   }
 
-  setValue() {
-    const value = this.text.value;
+  setText() {
+    const value = this.model.get("value");
+    this.widget.onTextChanged(value);
+  }
+
+  setValue(value) {
     this.model.set({ value: value });
     this.model.save_changes();
   }
 
-  plot() {
-    this.text = document.createElement("input");
-    this.text.addEventListener("change", this.setValue.bind(this));
+  plot(element) {
+    this.widget = new Input(element);
     super.plot();
+    this.widget.plot(...this.params());
   }
 }
 
@@ -264,36 +242,18 @@ export class RangeSliderModel extends BaseModel {
 }
 
 export class RangeSliderView extends BaseView {
-  render() {
-    this.plotAfterInterval();
-
-    this.model.on("change:dataRecords", () => this.plotAfterInterval(), this);
-    this.model.on("change:variable", () => this.plotAfterInterval(), this);
-    this.model.on("change:step", () => this.plotAfterInterval(), this);
-    this.model.on("change:description", () => this.plotAfterInterval(), this);
-    this.model.on("change:minValue", () => this.plotAfterInterval(), this);
-    this.model.on("change:maxValue", () => this.plotAfterInterval(), this);
-    window.addEventListener("resize", () => this.plotAfterInterval());
-  }
-
-  plot() {
+  params() {
     const data = this.model.get("dataRecords");
-    let variable = this.model.get("variable");
-    let step = this.model.get("step");
-    let description = this.model.get("description");
-    let elementId = this.model.get("elementId");
-    let fromValue = this.model.get("fromValue");
-    let toValue = this.model.get("toValue");
-    let minValue = this.model.get("minValue");
-    let maxValue = this.model.get("maxValue");
-
-    let element = this.el;
-    if (elementId) {
-      element = document.getElementById(elementId);
-    }
+    const variable = this.model.get("variable");
+    const step = this.model.get("step");
+    const description = this.model.get("description");
+    const fromValue = this.model.get("fromValue");
+    const toValue = this.model.get("toValue");
+    const minValue = this.model.get("minValue");
+    const maxValue = this.model.get("maxValue");
     const margin = WIDGET_MARGIN;
 
-    rangeslider(
+    return [
       data,
       variable,
       step,
@@ -304,9 +264,22 @@ export class RangeSliderView extends BaseView {
       maxValue,
       this.setFromTo.bind(this),
       this.setMinMax.bind(this),
-      element,
-      margin
-    );
+      margin,
+    ];
+  }
+
+  plot(element) {
+    this.widget = new RangeSlider(element);
+
+    this.model.on("change:dataRecords", () => this.replot(), this);
+    this.model.on("change:variable", () => this.replot(), this);
+    this.model.on("change:step", () => this.replot(), this);
+    this.model.on("change:description", () => this.replot(), this);
+    this.model.on("change:minValue", () => this.replot(), this);
+    this.model.on("change:maxValue", () => this.replot(), this);
+    window.addEventListener("resize", () => this.replot());
+
+    this.widget.plot(...this.params());
   }
 
   setFromTo(from, to) {
@@ -336,21 +309,24 @@ export class TextAreaModel extends TextBaseModel {
 }
 
 export class TextAreaView extends TextBaseView {
-  setText() {
-    const value = this.model.get("value");
-    this.text.value = value;
+  params() {
+    return [...super.params(), this.setValue.bind(this)];
   }
 
-  setValue() {
-    const value = this.text.value;
+  setText() {
+    const value = this.model.get("value");
+    this.widget.onTextChanged(value);
+  }
+
+  setValue(value) {
     this.model.set({ value: value });
     this.model.save_changes();
   }
 
-  plot() {
-    this.text = document.createElement("textarea");
-    this.text.addEventListener("change", this.setValue.bind(this));
+  plot(element) {
+    this.widget = new TextArea(element);
     super.plot();
+    this.widget.plot(...this.params());
   }
 }
 
@@ -370,13 +346,12 @@ export class TextModel extends TextBaseModel {
 export class TextView extends TextBaseView {
   setText() {
     const value = this.model.get("value");
-    this.text.innerHTML = value;
+    this.widget.onTextChanged(value);
   }
 
-  plot() {
-    this.text = document.createElement("div");
-    this.text.style.marginLeft = "4px";
-    this.getElement().style.display = "flex";
+  plot(element) {
+    this.widget = new Text(element);
     super.plot();
+    this.widget.plot(...this.params());
   }
 }

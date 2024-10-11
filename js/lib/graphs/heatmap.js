@@ -118,10 +118,10 @@ export class HeatmapPlot extends BasePlot {
       .attr("y2", "0%");
 
     const grad_data = myColor.range().map((value, index, element) => {
-      const size = element.length - 1
-      const position = index / size * 100 + "%"
-      return [value, position]
-    })
+      const size = element.length - 1;
+      const position = (index / size) * 100 + "%";
+      return [value, position];
+    });
 
     grad
       .selectAll("stop")
@@ -147,34 +147,5 @@ export class HeatmapPlot extends BasePlot {
       .attr("x", X.range()[1] + 80)
       .attr("y", Y.range()[0] + 2)
       .text(color_domain[0]);
-  }
-
-  replot(
-    data,
-    x_value,
-    y_value,
-    rect_value,
-    xValues,
-    yValues,
-    color_domain,
-    color_scheme,
-    width,
-    height,
-    margin
-  ) {
-    this.clear();
-    this.plot(
-      data,
-      x_value,
-      y_value,
-      rect_value,
-      xValues,
-      yValues,
-      color_domain,
-      color_scheme,
-      width,
-      height,
-      margin
-    );
   }
 }

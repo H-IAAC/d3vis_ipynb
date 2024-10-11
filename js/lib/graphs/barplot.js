@@ -16,7 +16,6 @@ function getCI(array) {
 
 export class BarPlot extends BasePlot {
   plot(data, x_value, y_value, hue, direction, width, height, margin, noAxes) {
-
     this.init(width, height, margin);
 
     const GG = this.gGrid;
@@ -129,8 +128,7 @@ export class BarPlot extends BasePlot {
 
       if (!noAxes) that.plotAxes(GG, X, Y, base_value, side_value);
 
-      GG
-        .append("g")
+      GG.append("g")
         .selectAll("g")
         .data(result)
         .enter()
@@ -160,8 +158,7 @@ export class BarPlot extends BasePlot {
         return newRow;
       });
 
-      GG
-        .selectAll()
+      GG.selectAll()
         .data(itrValues)
         .enter()
         .append("path")
@@ -297,8 +294,7 @@ export class BarPlot extends BasePlot {
         .range([0, baseScale.bandwidth()])
         .padding([0.05]);
 
-      GG
-        .append("g")
+      GG.append("g")
         .selectAll("g")
         .data(result)
         .enter()
@@ -341,8 +337,7 @@ export class BarPlot extends BasePlot {
         return newRow;
       });
 
-      GG
-        .append("g")
+      GG.append("g")
         .selectAll("g")
         .data(itrValues)
         .enter()
@@ -378,8 +373,7 @@ export class BarPlot extends BasePlot {
           ]);
         });
 
-      const legend = GG
-        .selectAll(".legend")
+      const legend = GG.selectAll(".legend")
         .data(color.domain())
         .enter()
         .append("g")
@@ -405,10 +399,5 @@ export class BarPlot extends BasePlot {
           return d;
         });
     }
-  }
-
-  replot(data, x_axis, y_axis, hue_axis, direction, width, height, margin) {
-    this.clear();
-    this.plot(data, x_axis, y_axis, hue_axis, direction, width, height, margin);
   }
 }

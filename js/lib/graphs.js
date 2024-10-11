@@ -31,28 +31,14 @@ export class BarPlotModel extends BaseModel {
 }
 
 export class BarPlotView extends BaseView {
-  render() {
-    this.plotAfterInterval();
-
-    this.model.on("change:dataRecords", () => this.plotAfterInterval(), this);
-    this.model.on("change:x", () => this.plotAfterInterval(), this);
-    this.model.on("change:y", () => this.plotAfterInterval(), this);
-    this.model.on("change:hue", () => this.plotAfterInterval(), this);
-    this.model.on("change:direction", () => this.plotAfterInterval(), this);
-    window.addEventListener("resize", () => this.plotAfterInterval());
-  }
-
-  plot() {
-    if (!this.barplot) this.barplot = new BarPlot(this.getElement());
-    this.setSizes();
-
+  params() {
     const data = this.model.get("dataRecords");
     const x = this.model.get("x");
     const y = this.model.get("y");
     const hue = this.model.get("hue");
     const direction = this.model.get("direction");
 
-    this.barplot.replot(
+    return [
       data,
       x,
       y,
@@ -61,8 +47,21 @@ export class BarPlotView extends BaseView {
       this.width,
       this.height,
       this.margin,
-      false
-    );
+      false,
+    ];
+  }
+
+  plot(element) {
+    this.widget = new BarPlot(element);
+
+    this.model.on("change:dataRecords", () => this.replot(), this);
+    this.model.on("change:x", () => this.replot(), this);
+    this.model.on("change:y", () => this.replot(), this);
+    this.model.on("change:hue", () => this.replot(), this);
+    this.model.on("change:direction", () => this.replot(), this);
+    window.addEventListener("resize", () => this.replot());
+
+    this.widget.plot(...this.params());
   }
 }
 
@@ -84,23 +83,11 @@ export class DecisionPlotModel extends BaseModel {
 }
 
 export class DecisionPlotView extends BaseView {
-  render() {
-    this.plotAfterInterval();
+  params() {
+    const data = this.model.get("dataRecords");
+    const baseValue = this.model.get("baseValue");
 
-    this.model.on("change:dataRecords", () => this.plotAfterInterval(), this);
-    this.model.on("change:baseValue", () => this.plotAfterInterval(), this);
-    window.addEventListener("resize", () => this.plotAfterInterval());
-  }
-
-  plot() {
-    if (!this.decisionPlot)
-      this.decisionPlot = new DecisionPlot(this.getElement());
-    this.setSizes();
-
-    let data = this.model.get("dataRecords");
-    let baseValue = this.model.get("baseValue");
-
-    this.decisionPlot.replot(
+    return [
       data,
       "values",
       "feature_names",
@@ -108,8 +95,18 @@ export class DecisionPlotView extends BaseView {
       this.width,
       this.height,
       { top: 20, right: 20, bottom: 30, left: 80 },
-      false
-    );
+      false,
+    ];
+  }
+
+  plot(element) {
+    this.widget = new DecisionPlot(element);
+
+    this.model.on("change:dataRecords", () => this.replot(), this);
+    this.model.on("change:baseValue", () => this.replot(), this);
+    window.addEventListener("resize", () => this.replot());
+
+    this.widget.plot(...this.params());
   }
 }
 
@@ -133,26 +130,13 @@ export class ForcePlotModel extends BaseModel {
 }
 
 export class ForcePlotView extends BaseView {
-  render() {
-    this.plotAfterInterval();
+  params() {
+    const data = this.model.get("dataRecords");
+    const x = this.model.get("x");
+    const y = this.model.get("y");
+    const baseValue = this.model.get("baseValue");
 
-    this.model.on("change:dataRecords", () => this.plotAfterInterval(), this);
-    this.model.on("change:x", () => this.plotAfterInterval(), this);
-    this.model.on("change:y", () => this.plotAfterInterval(), this);
-    this.model.on("change:baseValue", () => this.plotAfterInterval(), this);
-    window.addEventListener("resize", () => this.plotAfterInterval());
-  }
-
-  plot() {
-    if (!this.force) this.force = new ForcePlot(this.getElement());
-    this.setSizes();
-
-    let data = this.model.get("dataRecords");
-    let x = this.model.get("x");
-    let y = this.model.get("y");
-    let baseValue = this.model.get("baseValue");
-
-    this.force.replot(
+    return [
       data,
       x,
       y,
@@ -160,8 +144,20 @@ export class ForcePlotView extends BaseView {
       this.width,
       200,
       { top: 20, right: 20, bottom: 30, left: 20 },
-      false
-    );
+      false,
+    ];
+  }
+
+  plot(element) {
+    this.widget = new ForcePlot(element);
+
+    this.model.on("change:dataRecords", () => this.replot(), this);
+    this.model.on("change:x", () => this.replot(), this);
+    this.model.on("change:y", () => this.replot(), this);
+    this.model.on("change:baseValue", () => this.replot(), this);
+    window.addEventListener("resize", () => this.replot());
+
+    this.widget.plot(...this.params());
   }
 }
 
@@ -186,24 +182,14 @@ export class HeatmapPlotModel extends BaseModel {
 }
 
 export class HeatmapPlotView extends BaseView {
-  render() {
-    this.plotAfterInterval();
-
-    this.model.on("change:dataRecords", () => this.plotAfterInterval(), this);
-    window.addEventListener("resize", () => this.plotAfterInterval());
-  }
-
-  plot() {
-    if (!this.heatmap) this.heatmap = new HeatmapPlot(this.getElement());
-    this.setSizes();
-
+  params() {
     const data = this.model.get("dataRecords");
     const x_value = this.model.get("x_value");
     const y_value = this.model.get("y_value");
     const xValues = this.model.get("xValues");
     const yValues = this.model.get("yValues");
 
-    this.heatmap.replot(
+    return [
       data,
       x_value,
       y_value,
@@ -214,8 +200,17 @@ export class HeatmapPlotView extends BaseView {
       0,
       this.width,
       this.height,
-      { top: 20, right: 20, bottom: 30, left: 80 }
-    );
+      { top: 20, right: 20, bottom: 30, left: 80 },
+    ];
+  }
+
+  plot(element) {
+    this.widget = new HeatmapPlot(element);
+
+    this.model.on("change:dataRecords", () => this.replot(), this);
+    window.addEventListener("resize", () => this.replot());
+
+    this.widget.plot(...this.params());
   }
 }
 
@@ -237,30 +232,21 @@ export class HistogramPlotModel extends BaseModel {
 }
 
 export class HistogramPlotView extends BaseView {
-  render() {
-    this.plotAfterInterval();
-
-    this.model.on("change:dataRecords", () => this.plotAfterInterval(), this);
-    this.model.on("change:x", () => this.plotAfterInterval(), this);
-    window.addEventListener("resize", () => this.plotAfterInterval());
-  }
-
-  plot() {
-    if (!this.histogramplot)
-      this.histogramplot = new HistogramPlot(this.getElement());
-    this.setSizes();
-
+  params() {
     let data = this.model.get("dataRecords");
     let x = this.model.get("x");
 
-    this.histogramplot.replot(
-      data,
-      x,
-      this.width,
-      this.height,
-      this.margin,
-      false
-    );
+    return [data, x, this.width, this.height, this.margin, false];
+  }
+
+  plot(element) {
+    this.widget = new HistogramPlot(element);
+
+    this.model.on("change:dataRecords", () => this.replot(), this);
+    this.model.on("change:x", () => this.replot(), this);
+    window.addEventListener("resize", () => this.replot());
+
+    this.widget.plot(...this.params());
   }
 }
 
@@ -285,26 +271,13 @@ export class LinearPlotModel extends BaseModel {
 }
 
 export class LinearPlotView extends BaseView {
-  render() {
-    this.plotAfterInterval();
+  params() {
+    const data = this.model.get("dataRecords");
+    const x = this.model.get("x");
+    const y = this.model.get("y");
+    const hue = this.model.get("hue");
 
-    this.model.on("change:dataRecords", () => this.plotAfterInterval(), this);
-    this.model.on("change:x", () => this.plotAfterInterval(), this);
-    this.model.on("change:y", () => this.plotAfterInterval(), this);
-    this.model.on("change:hue", () => this.plotAfterInterval(), this);
-    window.addEventListener("resize", () => this.plotAfterInterval());
-  }
-
-  plot() {
-    if (!this.linearplot) this.linearplot = new LinearPlot(this.getElement());
-    this.setSizes();
-
-    let data = this.model.get("dataRecords");
-    let x = this.model.get("x");
-    let y = this.model.get("y");
-    let hue = this.model.get("hue");
-
-    this.linearplot.replot(
+    return [
       data,
       x,
       y,
@@ -314,8 +287,20 @@ export class LinearPlotView extends BaseView {
       this.height,
       this.margin,
       false,
-      false
-    );
+      false,
+    ];
+  }
+
+  plot(element) {
+    this.widget = new LinearPlot(element);
+
+    this.model.on("change:dataRecords", () => this.replot(), this);
+    this.model.on("change:x", () => this.replot(), this);
+    this.model.on("change:y", () => this.replot(), this);
+    this.model.on("change:hue", () => this.replot(), this);
+    window.addEventListener("resize", () => this.replot());
+
+    this.widget.plot(...this.params());
   }
 
   setSelectedValues(values) {
@@ -342,30 +327,21 @@ export class RidgelinePlotModel extends BaseModel {
 }
 
 export class RidgelinePlotView extends BaseView {
-  render() {
-    this.plotAfterInterval();
+  params() {
+    const data = this.model.get("dataRecords");
+    const xAxes = this.model.get("xAxes");
 
-    this.model.on("change:dataRecords", () => this.plotAfterInterval(), this);
-    this.model.on("change:x", () => this.plotAfterInterval(), this);
-    window.addEventListener("resize", () => this.plotAfterInterval());
+    return [data, xAxes, this.width, this.height, this.margin, false];
   }
 
-  plot() {
-    if (!this.ridgelineplot)
-      this.ridgelineplot = new RidgelinePlot(this.getElement());
-    this.setSizes();
+  plot(element) {
+    this.widget = new RidgelinePlot(element);
 
-    let data = this.model.get("dataRecords");
-    let xAxes = this.model.get("xAxes");
+    this.model.on("change:dataRecords", () => this.replot(), this);
+    this.model.on("change:x", () => this.replot(), this);
+    window.addEventListener("resize", () => this.replot());
 
-    this.ridgelineplot.plot(
-      data,
-      xAxes,
-      this.width,
-      this.height,
-      this.margin,
-      false
-    );
+    this.widget.plot(...this.params());
   }
 }
 
@@ -391,28 +367,13 @@ export class ScatterPlotModel extends BaseModel {
 }
 
 export class ScatterPlotView extends BaseView {
-  render() {
-    this.plotAfterInterval();
+  params() {
+    const data = this.model.get("dataRecords");
+    const x = this.model.get("x");
+    const y = this.model.get("y");
+    const hue = this.model.get("hue");
 
-    this.model.on("change:dataRecords", () => this.plotAfterInterval(), this);
-    this.model.on("change:x", () => this.plotAfterInterval(), this);
-    this.model.on("change:y", () => this.plotAfterInterval(), this);
-    this.model.on("change:hue", () => this.plotAfterInterval(), this);
-    this.model.on("change:lines", () => this.setLines(), this);
-    window.addEventListener("resize", () => this.plotAfterInterval());
-  }
-
-  plot() {
-    if (!this.scatterplot)
-      this.scatterplot = new ScatterPlot(this.getElement());
-    this.setSizes();
-
-    let data = this.model.get("dataRecords");
-    let x = this.model.get("x");
-    let y = this.model.get("y");
-    let hue = this.model.get("hue");
-
-    this.scatterplot.replot(
+    return [
       data,
       x,
       y,
@@ -422,8 +383,21 @@ export class ScatterPlotView extends BaseView {
       this.height,
       this.margin,
       false,
-      false
-    );
+      false,
+    ];
+  }
+
+  plot(element) {
+    this.widget = new ScatterPlot(element);
+
+    this.model.on("change:dataRecords", () => this.replot(), this);
+    this.model.on("change:x", () => this.replot(), this);
+    this.model.on("change:y", () => this.replot(), this);
+    this.model.on("change:hue", () => this.replot(), this);
+    this.model.on("change:lines", () => this.setLines(), this);
+    window.addEventListener("resize", () => this.replot());
+
+    this.widget.plot(...this.params());
 
     this.setLines();
   }
@@ -435,7 +409,7 @@ export class ScatterPlotView extends BaseView {
 
   setLines() {
     let lines = this.model.get("lines");
-    this.scatterplot.plotLines(lines);
+    this.widget.plotLines(lines);
   }
 }
 
@@ -459,26 +433,13 @@ export class WaterfallPlotModel extends BaseModel {
 }
 
 export class WaterfallPlotView extends BaseView {
-  render() {
-    this.plotAfterInterval();
+  params() {
+    const data = this.model.get("dataRecords");
+    const x = this.model.get("x");
+    const y = this.model.get("y");
+    const baseValue = this.model.get("baseValue");
 
-    this.model.on("change:dataRecords", () => this.plotAfterInterval(), this);
-    this.model.on("change:x", () => this.plotAfterInterval(), this);
-    this.model.on("change:y", () => this.plotAfterInterval(), this);
-    this.model.on("change:baseValue", () => this.plotAfterInterval(), this);
-    window.addEventListener("resize", () => this.plotAfterInterval());
-  }
-
-  plot() {
-    if (!this.waterfall) this.waterfall = new WaterfallPlot(this.getElement());
-    this.setSizes();
-
-    let data = this.model.get("dataRecords");
-    let x = this.model.get("x");
-    let y = this.model.get("y");
-    let baseValue = this.model.get("baseValue");
-
-    this.waterfall.replot(
+    return [
       data,
       x,
       y,
@@ -486,7 +447,19 @@ export class WaterfallPlotView extends BaseView {
       this.width,
       this.height,
       { top: 20, right: 20, bottom: 30, left: 80 },
-      false
-    );
+      false,
+    ];
+  }
+
+  plot(element) {
+    this.widget = new WaterfallPlot(element);
+
+    this.model.on("change:dataRecords", () => this.replot(), this);
+    this.model.on("change:x", () => this.replot(), this);
+    this.model.on("change:y", () => this.replot(), this);
+    this.model.on("change:baseValue", () => this.replot(), this);
+    window.addEventListener("resize", () => this.replot());
+
+    this.widget.plot(...this.params());
   }
 }

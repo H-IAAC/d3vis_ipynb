@@ -187,9 +187,4 @@ export class DecisionPlot extends BasePlot {
       .attr("height", 20)
       .style("fill", "url(#grad)");
   }
-
-  replot(data, x_value, y_value, baseValue, width, height, margin, noAxes) {
-    this.clear();
-    this.plot(data, x_value, y_value, baseValue, width, height, margin, noAxes);
-  }
 }

@@ -1,4 +1,6 @@
 import { BaseModel, BaseView } from "./base";
+import { Image } from "./medias/image";
+import { Video } from "./medias/video";
 
 export class ImageModel extends BaseModel {
   defaults() {
@@ -26,53 +28,23 @@ export class ImageView extends BaseView {
     super.remove();
   }
 
-  render() {
-    this.plotAfterInterval();
-
-    this.model.on("change:value", () => this.plotAfterInterval(), this);
-    this.model.on("change:width", () => this.plotAfterInterval(), this);
-    this.model.on("change:height", () => this.plotAfterInterval(), this);
-    window.addEventListener("resize", () => this.plotAfterInterval());
-  }
-
-  plot() {
-    this.el.innerHTML = "";
+  params() {
     let value = this.model.get("value");
     let format = this.model.get("format");
-    let modelWidth = this.model.get("width");
-    let modelHeight = this.model.get("height");
+    let width = this.model.get("width");
+    let height = this.model.get("height");
 
-    this.setSizes();
-    if (modelWidth) this.width = modelWidth;
-    if (modelHeight) this.height = modelHeight;
+    return [value, format, width, height];
+  }
 
-    const node = document.createElement("div");
-    const image = document.createElement("img");
+  plot(element) {
+    this.widget = new Image(element);
 
-    const type = `image/${format}`;
-    const blob = new Blob([value], {
-      type: type,
-    });
-    const url = URL.createObjectURL(blob);
+    this.model.on("change:value", () => this.replot(), this);
+    this.model.on("change:width", () => this.replot(), this);
+    this.model.on("change:height", () => this.replot(), this);
 
-    const oldurl = this.src;
-    this.src = url;
-    if (oldurl) {
-      URL.revokeObjectURL(oldurl);
-    }
-
-    image.setAttribute("src", this.src);
-    image.setAttribute("type", type);
-    image.style.maxWidth = "100%";
-    image.style.maxHeight = "100%";
-    image.style.margin = "auto";
-    image.style.display = "block";
-
-    node.style.width = this.width + "px";
-    node.style.height = this.height + "px";
-    node.appendChild(image);
-
-    this.getElement().appendChild(node);
+    this.widget.plot(...this.params());
   }
 }
 
@@ -119,58 +91,79 @@ export class VideoView extends BaseView {
   }
 
   play() {
-    if (!this.video) return;
-    this.video.play();
+    this.widget.play();
   }
 
   pause() {
-    if (!this.video) return;
-    this.video.pause();
+    this.widget.pause();
   }
 
   seekTo() {
-    if (!this.video) return;
     const seekTo = this.model.get("_seekTo");
-    this.video.currentTime = seekTo;
+    this.widget.seekTo(seekTo);
   }
 
-  setCurrentTime() {
-    const currentTime = this.video.currentTime;
+  setCurrentTime(currentTime) {
     this.model.set({ _currentTime: currentTime });
     this.model.save_changes();
   }
 
+  setDuration(duration) {
+    if (!duration) duration = 0;
+    this.model.set({ _duration: duration });
+    this.model.save_changes();
+  }
+
   setControls() {
-    if (!this.video) return;
     let controls = this.model.get("controls");
-    if (controls) this.video.setAttribute("controls", "");
-    else this.video.removeAttribute("controls");
+    this.widget.setControls(controls);
   }
 
   setLoop() {
-    if (!this.video) return;
     let loop = this.model.get("loop");
-    this.video.loop = loop;
+    this.widget.setLoop(loop);
   }
 
   setMuted() {
-    if (!this.video) return;
     let muted = this.model.get("muted");
-    this.video.muted = muted;
+    this.widget.setMuted(muted);
   }
 
   setVolume() {
-    if (!this.video) return;
     let volume = this.model.get("volume");
-    this.video.volume = volume;
+    this.widget.setVolume(volume);
   }
 
-  render() {
-    this.plotAfterInterval();
+  params() {
+    const value = this.model.get("value");
+    const format = this.model.get("format");
+    const width = this.model.get("width");
+    const height = this.model.get("height");
+    const controls = this.model.get("controls");
+    const loop = this.model.get("loop");
+    const muted = this.model.get("muted");
+    const volume = this.model.get("volume");
 
-    this.model.on("change:value", () => this.plotAfterInterval(), this);
-    this.model.on("change:width", () => this.plotAfterInterval(), this);
-    this.model.on("change:height", () => this.plotAfterInterval(), this);
+    return [
+      value,
+      format,
+      width,
+      height,
+      controls,
+      loop,
+      muted,
+      volume,
+      this.setCurrentTime.bind(this),
+      this.setDuration.bind(this),
+    ];
+  }
+
+  plot(element) {
+    this.widget = new Video(element);
+
+    this.model.on("change:value", () => this.replot(), this);
+    this.model.on("change:width", () => this.replot(), this);
+    this.model.on("change:height", () => this.replot(), this);
     this.model.on("change:_seeked", () => this.seekTo(), this);
     this.model.on("change:controls", () => this.setControls(), this);
     this.model.on("change:loop", () => this.setLoop(), this);
@@ -178,56 +171,7 @@ export class VideoView extends BaseView {
     this.model.on("change:volume", () => this.setVolume(), this);
     this.model.on("change:_play", () => this.play(), this);
     this.model.on("change:_pause", () => this.pause(), this);
-    window.addEventListener("resize", () => this.plotAfterInterval());
-  }
 
-  plot() {
-    this.el.innerHTML = "";
-    let value = this.model.get("value");
-    let format = this.model.get("format");
-    let modelWidth = this.model.get("width");
-    let modelHeight = this.model.get("height");
-    let controls = this.model.get("controls");
-
-    this.setSizes();
-
-    if (modelWidth) this.width = modelWidth;
-    if (modelHeight) this.height = modelHeight;
-
-    this.video = document.createElement("video");
-    const source = document.createElement("source");
-
-    const type = `video/${format}`;
-    const blob = new Blob([value], {
-      type: type,
-    });
-    const url = URL.createObjectURL(blob);
-
-    const oldurl = this.src;
-    this.src = url;
-    if (oldurl) {
-      URL.revokeObjectURL(oldurl);
-    }
-
-    source.setAttribute("src", this.src);
-    source.setAttribute("type", type);
-
-    this.video.appendChild(source);
-    if (controls) this.video.setAttribute("controls", "");
-    this.setLoop();
-    this.setMuted();
-    this.setVolume();
-    this.video.style.margin = "auto";
-    this.video.style.display = "block";
-
-    this.video.style.width = this.width + "px";
-    this.video.style.height = this.height + "px";
-    this.video.addEventListener("timeupdate", this.setCurrentTime.bind(this));
-
-    this.getElement().appendChild(this.video);
-    setTimeout(() => {
-      this.model.set({ _duration: this.video.duration });
-      this.model.save_changes();
-    }, 50);
+    this.widget.plot(...this.params());
   }
 }

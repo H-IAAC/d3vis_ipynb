@@ -5,6 +5,7 @@ const packageData = require("../package.json");
 
 export const WIDGET_HEIGHT = 400;
 export const WIDGET_MARGIN = { top: 20, right: 20, bottom: 30, left: 40 };
+export const RENDER_TIMEOUT = 20000;
 export const RENDER_INTERVAL = 100;
 
 export class BaseModel extends DOMWidgetModel {
@@ -25,13 +26,32 @@ export class BaseModel extends DOMWidgetModel {
 }
 
 export class BaseView extends DOMWidgetView {
-  plotAfterInterval() {
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-    }
-    this.timeout = setTimeout(() => {
-      this.plot();
+  render() {
+    let elapsedTime = 0;
+
+    let intr = setInterval(() => {
+      try {
+        this.element = this.getElement();
+        if (!this.element) return;
+        this.setSizes();
+        if (this.element && this.width && this.height) {
+          this.plot(this.element);
+          clearInterval(intr);
+        }
+        elapsedTime += RENDER_INTERVAL;
+        if (elapsedTime > RENDER_TIMEOUT) {
+          throw "Widget took too long to render";
+        }
+      } catch (err) {
+        console.log(err.stack);
+        clearInterval(intr);
+      }
     }, RENDER_INTERVAL);
+  }
+
+  replot() {
+    this.setSizes();
+    this.widget.replot(this.params());
   }
 
   getElement() {
@@ -52,9 +72,11 @@ export class BaseView extends DOMWidgetView {
     let element = this.el;
     if (elementId) {
       element = document.getElementById(elementId);
-      this.height = element.clientHeight;
+      if (element.clientHeight) this.height = element.clientHeight;
+      else this.height = null;
     }
-    this.width = element.clientWidth;
+    if (element.clientWidth) this.width = element.clientWidth;
+    else this.width = null;
     this.margin = WIDGET_MARGIN;
   }
 }
