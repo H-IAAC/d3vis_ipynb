@@ -72,6 +72,10 @@ function getDomain(data, x_value, baseValue) {
 
 export class DecisionPlot extends BasePlot {
   plot(data, x_value, y_value, baseValue, width, height, margin, noAxes) {
+    const randomString = Math.floor(
+      Math.random() * Date.now() * 10000
+    ).toString(36);
+
     this.baseValue = baseValue;
     data.sort(absoluteSort(x_value, true));
     this.init(width, height, margin);
@@ -162,7 +166,7 @@ export class DecisionPlot extends BasePlot {
 
     let grad = GG.append("defs")
       .append("linearGradient")
-      .attr("id", "grad")
+      .attr("id", "grad" + randomString)
       .attr("x1", "0%")
       .attr("x2", "100%")
       .attr("y1", "0%")
@@ -185,6 +189,6 @@ export class DecisionPlot extends BasePlot {
       .attr("y", -20)
       .attr("width", X.range()[1])
       .attr("height", 20)
-      .style("fill", "url(#grad)");
+      .style("fill", "url(#grad" + randomString + ")");
   }
 }

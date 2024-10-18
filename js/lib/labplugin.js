@@ -1,5 +1,7 @@
 import { IJupyterWidgetRegistry } from "@jupyter-widgets/base";
 import {
+  BeeswarmPlotModel,
+  BeeswarmPlotView,
   BarPlotModel,
   BarPlotView,
   ButtonModel,
@@ -47,6 +49,8 @@ export const helloWidgetPlugin = {
       name: "d3vis_ipynb",
       version: version,
       exports: {
+        BeeswarmPlotModel,
+        BeeswarmPlotView,
         BarPlotModel,
         BarPlotView,
         ButtonModel,

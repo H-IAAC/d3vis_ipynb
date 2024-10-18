@@ -34,6 +34,41 @@ class BarPlot(BaseWidget):
 
 
 @widgets.register
+class BeeswarmPlot(BaseWidget):
+    _view_name = Unicode("BeeswarmPlotView").tag(sync=True)
+    _model_name = Unicode("BeeswarmPlotModel").tag(sync=True)
+
+    dataRecords = List([]).tag(sync=True)
+
+    def __init__(
+        self,
+        explanation,
+        **kwargs,
+    ):
+        self.explanation = explanation
+        super().__init__(**kwargs)
+
+    @property
+    def explanation(self):
+        return self.explanation
+
+    @explanation.setter
+    def explanation(self, val):
+        valuesArray = np.transpose(val.values).tolist()
+        dataArray = np.transpose(val.data).tolist()
+        records = []
+        for i in range(len(val.feature_names)):
+            records.append(
+                {
+                    "feature_names": val.feature_names[i],
+                    "values": valuesArray[i],
+                    "data": dataArray[i],
+                }
+            )
+        self.dataRecords = records
+
+
+@widgets.register
 class DecisionPlot(BaseWidget):
     _view_name = Unicode("DecisionPlotView").tag(sync=True)
     _model_name = Unicode("DecisionPlotModel").tag(sync=True)

@@ -1,5 +1,6 @@
 import { BaseModel, BaseView } from "./base";
 import { BarPlot } from "./graphs/barplot";
+import { BeeswarmPlot } from "./graphs/beeswarm";
 import { DecisionPlot } from "./graphs/decision";
 import { ForcePlot } from "./graphs/force";
 import { HeatmapPlot } from "./graphs/heatmap";
@@ -59,6 +60,48 @@ export class BarPlotView extends BaseView {
     this.model.on("change:y", () => this.replot(), this);
     this.model.on("change:hue", () => this.replot(), this);
     this.model.on("change:direction", () => this.replot(), this);
+    window.addEventListener("resize", () => this.replot());
+
+    this.widget.plot(...this.params());
+  }
+}
+
+export class BeeswarmPlotModel extends BaseModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: BeeswarmPlotModel.model_name,
+      _view_name: BeeswarmPlotModel.view_name,
+
+      dataRecords: [],
+      elementId: String,
+    };
+  }
+
+  static model_name = "BeeswarmPlotModel";
+  static view_name = "BeeswarmPlotView";
+}
+
+export class BeeswarmPlotView extends BaseView {
+  params() {
+    const data = this.model.get("dataRecords");
+
+    return [
+      data,
+      "values",
+      "feature_names",
+      "data",
+      this.width,
+      this.height,
+      { top: 20, right: 20, bottom: 30, left: 80 },
+      false,
+    ];
+  }
+
+  plot(element) {
+    this.widget = new BeeswarmPlot(element);
+
+    this.model.on("change:dataRecords", () => this.replot(), this);
     window.addEventListener("resize", () => this.replot());
 
     this.widget.plot(...this.params());
