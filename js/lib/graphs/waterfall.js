@@ -3,6 +3,8 @@ import { BasePlot } from "./baseplot";
 
 const NEGATIVE_COLOR = "#33AFFF";
 const POSITIVE_COLOR = "#FF335B";
+const LEFT_PADDING = 30;
+const TOP_PADDING = 30;
 
 function absoluteSort(property, ascending) {
   let order = 1;
@@ -77,7 +79,17 @@ function getColor(xStart, xEnd) {
 }
 
 export class WaterfallPlot extends BasePlot {
-  plot(data, x_value, y_value, baseValue, width, height, margin, noAxes) {
+  plot(
+    data,
+    x_value,
+    y_value,
+    z_value,
+    baseValue,
+    width,
+    height,
+    margin,
+    noAxes
+  ) {
     this.baseValue = baseValue;
     data.sort(absoluteSort(x_value, true));
     this.init(width, height, margin);
@@ -85,13 +97,19 @@ export class WaterfallPlot extends BasePlot {
     const GG = this.gGrid;
 
     const xDomain = getDomain(data, x_value, baseValue);
-    const X = this.getXLinearScale(xDomain, width, margin);
+    const X = this.getXLinearScale(xDomain, width, margin,LEFT_PADDING);
     const yDomain = data.map(function (d) {
       return d[y_value];
     });
-    const Y = this.getYBandScale(yDomain, height, margin, [0.2]);
+    const Y = this.getYBandScale(yDomain, height, margin, [0.2], TOP_PADDING);
 
-    if (!noAxes) this.plotAxes(GG, X, Y, x_value, y_value);
+    function formatYAxis(yAxisGenerator) {
+      yAxisGenerator.tickFormat((x, i) => data[i][z_value] + " - " + x);
+    }
+
+    if (!noAxes) this.plotAxes(GG, X, Y, x_value, y_value, null, formatYAxis);
+
+    //.tickFormat((x) => x + "çlfksç")
 
     let startingPoint = baseValue;
     GG.selectAll()
@@ -107,7 +125,8 @@ export class WaterfallPlot extends BasePlot {
           return d.map((d) => [d.x, d.y].join(",")).join(" ");
         });
       })
-      .attr("fill", (d) => getColor(0, d[x_value]));
+      .attr("fill", (d) => getColor(0, d[x_value]))
+      .attr("cursor", "pointer");
 
     startingPoint = baseValue;
     GG.selectAll()
@@ -173,5 +192,10 @@ export class WaterfallPlot extends BasePlot {
         if (d[x_value] >= 0) text = "+" + text;
         return text;
       });
+
+    GG.append("text")
+      .attr("x", X(startingPoint) - 10)
+      .attr("y", 10)
+      .text("f(x) = " + Math.round(startingPoint * 1000) / 1000);
   }
 }

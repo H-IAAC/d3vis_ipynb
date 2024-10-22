@@ -464,8 +464,6 @@ export class WaterfallPlotModel extends BaseModel {
       _view_name: WaterfallPlotModel.view_name,
 
       dataRecords: [],
-      x: String,
-      y: String,
       baseValue: Number,
       elementId: String,
     };
@@ -478,14 +476,13 @@ export class WaterfallPlotModel extends BaseModel {
 export class WaterfallPlotView extends BaseView {
   params() {
     const data = this.model.get("dataRecords");
-    const x = this.model.get("x");
-    const y = this.model.get("y");
     const baseValue = this.model.get("baseValue");
 
     return [
       data,
-      x,
-      y,
+      "values",
+      "feature_names",
+      "data",
       baseValue,
       this.width,
       this.height,
@@ -498,8 +495,6 @@ export class WaterfallPlotView extends BaseView {
     this.widget = new WaterfallPlot(element);
 
     this.model.on("change:dataRecords", () => this.replot(), this);
-    this.model.on("change:x", () => this.replot(), this);
-    this.model.on("change:y", () => this.replot(), this);
     this.model.on("change:baseValue", () => this.replot(), this);
     window.addEventListener("resize", () => this.replot());
 
