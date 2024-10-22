@@ -84,12 +84,6 @@ export class ScatterPlot extends BasePlot {
 
     let clickSelectButton;
     function mouseClick(event, d) {
-      const text =
-        "x:" +
-        Math.round(d[x_value] * 10) / 10 +
-        "    " +
-        "y:" +
-        Math.round(d[y_value] * 10) / 10;
       if (clickSelectButton) {
         clickSelectButton.selectionClickEffect(d3.select(this));
         callUpdateSelected();

@@ -344,6 +344,7 @@ class WaterfallPlot(BaseWidget):
 
     dataRecords = List([]).tag(sync=True)
     baseValue = Float().tag(sync=True)
+    selectedValuesRecords = List([]).tag(sync=True)
 
     def __init__(
         self,
@@ -351,6 +352,7 @@ class WaterfallPlot(BaseWidget):
         **kwargs,
     ):
         self.explanation = explanation
+        self.selectedValues = pd.DataFrame()
         super().__init__(**kwargs)
 
     @property
@@ -365,3 +367,11 @@ class WaterfallPlot(BaseWidget):
         df.insert(0, "data", val.data)
         self.baseValue = val.base_values
         self.dataRecords = df.to_dict(orient="records")
+
+    @property
+    def selectedValues(self):
+        return pd.DataFrame.from_records(self.selectedValuesRecords)
+
+    @selectedValues.setter
+    def selectedValues(self, val):
+        self.selectedValuesRecords = val.to_dict(orient="records")

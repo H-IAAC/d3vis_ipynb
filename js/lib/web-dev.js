@@ -337,6 +337,7 @@ function addWaterfall() {
     "feature_names",
     "data",
     -2.5312646028291264,
+    () => {},
     800,
     600,
     { top: 20, right: 20, bottom: 30, left: 80 },

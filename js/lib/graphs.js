@@ -465,6 +465,7 @@ export class WaterfallPlotModel extends BaseModel {
 
       dataRecords: [],
       baseValue: Number,
+      selectedValuesRecords: [],
       elementId: String,
     };
   }
@@ -484,6 +485,7 @@ export class WaterfallPlotView extends BaseView {
       "feature_names",
       "data",
       baseValue,
+      this.setSelectedValues.bind(this),
       this.width,
       this.height,
       { top: 20, right: 20, bottom: 30, left: 80 },
@@ -499,5 +501,10 @@ export class WaterfallPlotView extends BaseView {
     window.addEventListener("resize", () => this.replot());
 
     this.widget.plot(...this.params());
+  }
+
+  setSelectedValues(values) {
+    this.model.set({ selectedValuesRecords: values });
+    this.model.save_changes();
   }
 }

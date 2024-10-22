@@ -85,6 +85,7 @@ export class WaterfallPlot extends BasePlot {
     y_value,
     z_value,
     baseValue,
+    setSelectedValues,
     width,
     height,
     margin,
@@ -97,7 +98,7 @@ export class WaterfallPlot extends BasePlot {
     const GG = this.gGrid;
 
     const xDomain = getDomain(data, x_value, baseValue);
-    const X = this.getXLinearScale(xDomain, width, margin,LEFT_PADDING);
+    const X = this.getXLinearScale(xDomain, width, margin, LEFT_PADDING);
     const yDomain = data.map(function (d) {
       return d[y_value];
     });
@@ -109,7 +110,17 @@ export class WaterfallPlot extends BasePlot {
 
     if (!noAxes) this.plotAxes(GG, X, Y, x_value, y_value, null, formatYAxis);
 
-    //.tickFormat((x) => x + "çlfksç")
+    function callUpdateSelected() {
+      if (setSelectedValues) {
+        setSelectedValues(GG.selectAll(".polygon.selected").data());
+      }
+    }
+
+    function mouseClick(event, d) {
+      const selection = d3.select(this);
+      selection.classed("selected", !selection.classed("selected"));
+      callUpdateSelected();
+    }
 
     let startingPoint = baseValue;
     GG.selectAll()
@@ -126,7 +137,9 @@ export class WaterfallPlot extends BasePlot {
         });
       })
       .attr("fill", (d) => getColor(0, d[x_value]))
-      .attr("cursor", "pointer");
+      .attr("cursor", "pointer")
+      .attr("class", "polygon")
+      .on("click", mouseClick);
 
     startingPoint = baseValue;
     GG.selectAll()

@@ -185,3 +185,9 @@ input[type="range"] {
   stroke-width: 1;
   fill: #ffafaf54;
 }
+
+/***** WATERFALL *****/
+
+.polygon.selected {
+  filter: drop-shadow(0 0 4px black);
+}
