@@ -106,37 +106,17 @@ class ForcePlot(BaseWidget):
     _model_name = Unicode("ForcePlotModel").tag(sync=True)
 
     dataRecords = List([]).tag(sync=True)
-    x = Unicode().tag(sync=True)
-    y = Unicode().tag(sync=True)
     baseValue = Float().tag(sync=True)
+    selectedValuesRecords = List([]).tag(sync=True)
 
     def __init__(
         self,
-        data=pd.DataFrame(),
-        x="values",
-        y="feature_names",
-        explanation=None,
-        baseValue=0,
+        explanation,
         **kwargs,
     ):
-        self.x = x
-        self.y = y
-        self.baseValue = baseValue
-        if explanation != None and not data.empty:
-            raise Exception("Initialize with explanation or data, not both.")
-        elif not data.empty:
-            self.data = data
-        else:
-            self.explanation = explanation
+        self.explanation = explanation
+        self.selectedValues = pd.DataFrame()
         super().__init__(**kwargs)
-
-    @property
-    def data(self):
-        return pd.DataFrame.from_records(self.dataRecords)
-
-    @data.setter
-    def data(self, val):
-        self.dataRecords = val.to_dict(orient="records")
 
     @property
     def explanation(self):
@@ -145,10 +125,19 @@ class ForcePlot(BaseWidget):
     @explanation.setter
     def explanation(self, val):
         df = pd.DataFrame()
-        df.insert(0, self.x, val.values)
-        df.insert(0, self.y, val.feature_names)
+        df.insert(0, "values", val.values)
+        df.insert(0, "feature_names", val.feature_names)
+        df.insert(0, "data", val.data)
         self.baseValue = val.base_values
-        self.data = df
+        self.dataRecords = df.to_dict(orient="records")
+
+    @property
+    def selectedValues(self):
+        return pd.DataFrame.from_records(self.selectedValuesRecords)
+
+    @selectedValues.setter
+    def selectedValues(self, val):
+        self.selectedValuesRecords = val.to_dict(orient="records")
 
 
 @widgets.register

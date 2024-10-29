@@ -89,7 +89,7 @@ function getScaledPolygon(xStart, xEnd, xScale, transition) {
 }
 
 function getPolygon(xStart, xEnd, lenght, xValue) {
-  const x = xStart;
+  let x = xStart;
   const y = GRAPH_Y;
   let TRI_HEIGHT = 10;
   const HALF_HEIGHT = GRAPH_HEIGHT / 2;
@@ -97,6 +97,8 @@ function getPolygon(xStart, xEnd, lenght, xValue) {
   if (lenght < 0) TRI_HEIGHT = -TRI_HEIGHT;
 
   if (xValue > 0) {
+    x = x - 1;
+    xEnd = xEnd - 1;
     polygon = [
       { x: x, y: y + HALF_HEIGHT },
       { x: x + lenght, y: y + HALF_HEIGHT },
@@ -106,6 +108,8 @@ function getPolygon(xStart, xEnd, lenght, xValue) {
       { x: x + TRI_HEIGHT, y: y },
     ];
   } else {
+    x = x + 1;
+    xEnd = xEnd + 1;
     polygon = [
       { x: xEnd - lenght, y: y + HALF_HEIGHT },
       { x: xEnd, y: y + HALF_HEIGHT },
@@ -126,7 +130,17 @@ function getColor(xStart, xEnd) {
 }
 
 export class ForcePlot extends BasePlot {
-  plot(data, x_value, y_value, baseValue, width, height, margin) {
+  plot(
+    data,
+    x_value,
+    y_value,
+    z_value,
+    baseValue,
+    setSelectedValues,
+    width,
+    height,
+    margin
+  ) {
     const informationCard = new InformationCard(this.element);
 
     this.baseValue = baseValue;
@@ -151,11 +165,24 @@ export class ForcePlot extends BasePlot {
 
     const xDomain = getDomain(data, x_value, baseValue);
     const X = this.getXLinearScale(xDomain, width, margin);
+    const tickValues = [baseValue];
+
+    let initialValue = baseValue;
+    let finalValue = baseValue;
+    while (initialValue >= xDomain[0] || finalValue <= xDomain[1]) {
+      initialValue -= 1;
+      finalValue += 1;
+      tickValues.push(initialValue);
+      tickValues.push(finalValue);
+    }
+    tickValues.sort;
 
     const xAxis = GG.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + (GRAPH_Y + GRAPH_HEIGHT) + ")")
-      .call(d3.axisBottom(X));
+      .call(
+        d3.axisBottom(X).tickValues(tickValues).tickFormat(d3.format(".3f"))
+      );
 
     xAxis
       .append("text")
@@ -170,12 +197,24 @@ export class ForcePlot extends BasePlot {
     let lastValue = 0;
     let transition = false;
 
+    function callUpdateSelected() {
+      if (setSelectedValues) {
+        setSelectedValues(GG.selectAll(".polygon.selected").data());
+      }
+    }
+
+    function mouseClick(event, d) {
+      const selection = d3.select(this);
+      selection.classed("selected", !selection.classed("selected"));
+      callUpdateSelected();
+    }
+
     function mouseover(event, d) {
       if (d[x_value] >= 0)
         d3.select(this).attr("fill", POSITIVE_SELECTED_COLOR);
       else d3.select(this).attr("fill", NEGATIVE_SELECTED_COLOR);
 
-      const text = d[y_value];
+      const text = d[y_value] + "=" + d[z_value];
       informationCard.showText(text, event.offsetX, event.offsetY);
     }
 
@@ -184,8 +223,6 @@ export class ForcePlot extends BasePlot {
       else d3.select(this).attr("fill", NEGATIVE_COLOR);
       informationCard.hide();
     }
-
-    function mouseClick(event, d) {}
 
     const arrows = GG.selectAll().data(data).enter().append("polygon");
 
@@ -201,7 +238,9 @@ export class ForcePlot extends BasePlot {
           }
         );
       })
-      .attr("fill", (d) => getColor(0, d[x_value]));
+      .attr("fill", (d) => getColor(0, d[x_value]))
+      .attr("cursor", "pointer")
+      .attr("class", "polygon");
 
     arrows
       .on("mouseover", mouseover)

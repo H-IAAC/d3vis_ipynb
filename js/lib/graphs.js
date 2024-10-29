@@ -161,9 +161,8 @@ export class ForcePlotModel extends BaseModel {
       _view_name: ForcePlotModel.view_name,
 
       dataRecords: [],
-      x: String,
-      y: String,
       baseValue: Number,
+      selectedValuesRecords: [],
       elementId: String,
     };
   }
@@ -175,15 +174,15 @@ export class ForcePlotModel extends BaseModel {
 export class ForcePlotView extends BaseView {
   params() {
     const data = this.model.get("dataRecords");
-    const x = this.model.get("x");
-    const y = this.model.get("y");
     const baseValue = this.model.get("baseValue");
 
     return [
       data,
-      x,
-      y,
+      "values",
+      "feature_names",
+      "data",
       baseValue,
+      this.setSelectedValues.bind(this),
       this.width,
       200,
       { top: 20, right: 20, bottom: 30, left: 20 },
@@ -201,6 +200,11 @@ export class ForcePlotView extends BaseView {
     window.addEventListener("resize", () => this.replot());
 
     this.widget.plot(...this.params());
+  }
+
+  setSelectedValues(values) {
+    this.model.set({ selectedValuesRecords: values });
+    this.model.save_changes();
   }
 }
 
