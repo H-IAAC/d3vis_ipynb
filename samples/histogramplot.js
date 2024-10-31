@@ -1,13 +1,5 @@
-function histogramplot(
-  data,
-  x_axis,
-  xStart,
-  xEnd,
-  element,
-  width,
-  height,
-  margin
-) {
+function plot(data, x_axis, xStart, xEnd) {
+  const margin = { top: 20, right: 20, bottom: 30, left: 40 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 

@@ -8,18 +8,8 @@ function setSelectedValues(values) {
   model.save_changes();
 }
 
-function scatterplot(
-  data,
-  x_value,
-  y_value,
-  hue,
-  element,
-  setValue,
-  setSelectedValues,
-  width,
-  height,
-  margin
-) {
+function plot(data, x_value, y_value, hue) {
+  const margin = { top: 20, right: 20, bottom: 30, left: 40 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
@@ -119,14 +109,14 @@ function scatterplot(
     .style("text-anchor", "end");
 
   svg
-    .selectAll(".dot")
+    .selectAll(".customdot")
     .data(data)
     .enter()
     .append("circle")
     .attr("id", function (d, i) {
       return "dot-" + randomString + d.id;
     })
-    .attr("class", "dot")
+    .attr("class", "customdot")
     .attr("r", 3.5)
     .attr("cx", function (d) {
       return x(d[x_value]);
@@ -140,16 +130,6 @@ function scatterplot(
     .on("mouseover", mouseover)
     .on("mouseout", mouseout)
     .on("click", mouseClick);
-
-  function resetColor() {
-    svg
-      .selectAll(".dot")
-      .data(data)
-      .attr("r", 3.5)
-      .style("fill", function (d) {
-        return color(d[hue]);
-      });
-  }
 
   function setLassoValues(values) {
     if (setSelectedValues !== undefined) {
@@ -165,7 +145,6 @@ function scatterplot(
     y_value,
     margin.left,
     margin.top,
-    resetColor,
     setLassoValues,
     randomString
   );
@@ -223,7 +202,6 @@ function lasso(
   y_value,
   x_translate,
   y_translate,
-  resetColor,
   setLassoValues,
   randomString
 ) {
@@ -255,7 +233,7 @@ function lasso(
     return inside;
   };
 
-  const circles = d3.select(element).selectAll(".dot");
+  const circles = d3.select(element).selectAll(".customdot");
 
   function drawPath() {
     d3.select("#lasso" + randomString)
@@ -267,7 +245,6 @@ function lasso(
 
   function dragStart() {
     coords = [];
-    resetColor();
     d3.select(element)
       .select("svg")
       .append("path")
@@ -289,10 +266,10 @@ function lasso(
         yScale(d[y_value]) + y_translate,
       ];
       if (pointInPolygon(point, coords)) {
-        d3.select("#dot-" + randomString + d.id)
-          .style("fill", SELECTED_DOTS_COLOR)
-          .attr("r", 6);
+        d3.select("#dot-" + randomString + d.id).classed("selected", true);
         selectedDots.push(d);
+      } else {
+        d3.select("#dot-" + randomString + d.id).classed("selected", false);
       }
     });
     d3.select("#lasso" + randomString).remove();

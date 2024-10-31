@@ -4,17 +4,8 @@ function setValues(min, max) {
   model.save_changes();
 }
 
-function rangeslider(
-  data,
-  variable,
-  step,
-  description,
-  fromValue,
-  toValue,
-  setValues,
-  element,
-  margin
-) {
+function plot(data, variable, step, description, fromValue, toValue) {
+  const margin = { top: 20, right: 20, bottom: 30, left: 40 };
   const rangeOutsideContainer = document.createElement("div");
   rangeOutsideContainer.classList.add("range_outside_container");
   rangeOutsideContainer.style.margin =
