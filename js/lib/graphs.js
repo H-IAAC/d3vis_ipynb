@@ -117,6 +117,7 @@ export class DecisionPlotModel extends BaseModel {
 
       dataRecords: [],
       baseValue: Number,
+      selectedValuesRecords: [],
       elementId: String,
     };
   }
@@ -134,7 +135,9 @@ export class DecisionPlotView extends BaseView {
       data,
       "values",
       "feature_names",
+      "data",
       baseValue,
+      this.setSelectedValues.bind(this),
       this.width,
       this.height,
       { top: 20, right: 20, bottom: 30, left: 80 },
@@ -150,6 +153,11 @@ export class DecisionPlotView extends BaseView {
     window.addEventListener("resize", () => this.replot());
 
     this.widget.plot(...this.params());
+  }
+
+  setSelectedValues(values) {
+    this.model.set({ selectedValuesRecords: values });
+    this.model.save_changes();
   }
 }
 

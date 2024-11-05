@@ -191,3 +191,9 @@ input[type="range"] {
 .polygon.selected {
   filter: drop-shadow(0 0 4px black);
 }
+
+/***** DECISION *****/
+
+.decision-path.selected {
+  filter: drop-shadow(0 0 4px black);
+}

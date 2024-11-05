@@ -3,6 +3,7 @@ import copy
 import ipywidgets as widgets
 import numpy as np
 import pandas as pd
+import shap
 from traitlets import Dict, Float, List, Unicode
 
 from d3vis_ipynb.base_widget import BaseWidget
@@ -50,10 +51,11 @@ class BeeswarmPlot(BaseWidget):
 
     @property
     def explanation(self):
-        return self.explanation
+        return self.__explanation
 
     @explanation.setter
     def explanation(self, val):
+        self.__explanation = val
         valuesArray = np.transpose(val.values).tolist()
         dataArray = np.transpose(val.data).tolist()
         records = []
@@ -75,6 +77,7 @@ class DecisionPlot(BaseWidget):
 
     dataRecords = List([]).tag(sync=True)
     baseValue = Float().tag(sync=True)
+    selectedValuesRecords = List([]).tag(sync=True)
 
     def __init__(
         self,
@@ -86,18 +89,40 @@ class DecisionPlot(BaseWidget):
 
     @property
     def explanation(self):
-        return self.explanation
+        return self.__explanation
 
     @explanation.setter
     def explanation(self, val):
+        self.__explanation = val
         valuesArray = np.transpose(val.values).tolist()
+        dataArray = np.transpose(val.data).tolist()
         records = []
         for i in range(len(val.feature_names)):
             records.append(
-                {"feature_names": val.feature_names[i], "values": valuesArray[i]}
+                {
+                    "feature_names": val.feature_names[i],
+                    "values": valuesArray[i],
+                    "data": dataArray[i],
+                }
             )
         self.baseValue = val.base_values[0]
         self.dataRecords = records
+
+    @property
+    def selectedValues(self):
+        if not self.selectedValuesRecords:
+            return None
+        df = pd.DataFrame.from_records(self.selectedValuesRecords)
+        exp = shap.Explanation(
+            values=np.transpose(np.stack(df['values'].values)),
+            data=np.transpose(np.stack(df['data'].values)),
+            feature_names=np.transpose(np.stack(df['feature_names'].values)),
+            base_values=np.full(len(df['values'][0]), df['base_values'][0]),
+        )
+        return exp
+
+    def on_select_values(self, callback):
+        self.observe(callback, names=["selectedValuesRecords"])
 
 
 @widgets.register
@@ -120,10 +145,11 @@ class ForcePlot(BaseWidget):
 
     @property
     def explanation(self):
-        return self.explanation
+        return self.__explanation
 
     @explanation.setter
     def explanation(self, val):
+        self.__explanation = val
         df = pd.DataFrame()
         df.insert(0, "values", val.values)
         df.insert(0, "feature_names", val.feature_names)
@@ -346,10 +372,11 @@ class WaterfallPlot(BaseWidget):
 
     @property
     def explanation(self):
-        return self.explanation
+        return self.__explanation
 
     @explanation.setter
     def explanation(self, val):
+        self.__explanation = val
         df = pd.DataFrame()
         df.insert(0, "values", val.values)
         df.insert(0, "feature_names", val.feature_names)

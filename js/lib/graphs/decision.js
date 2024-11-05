@@ -71,7 +71,18 @@ function getDomain(data, x_value, baseValue) {
 }
 
 export class DecisionPlot extends BasePlot {
-  plot(data, x_value, y_value, baseValue, width, height, margin, noAxes) {
+  plot(
+    data,
+    x_value,
+    y_value,
+    z_value,
+    baseValue,
+    setSelectedValues,
+    width,
+    height,
+    margin,
+    noAxes
+  ) {
     const randomString = Math.floor(
       Math.random() * Date.now() * 10000
     ).toString(36);
@@ -121,7 +132,7 @@ export class DecisionPlot extends BasePlot {
 
     function addPath(data, i) {
       let pathPoint = baseValue;
-      let datum = [{ x: X(pathPoint), y: Y.range()[0] }];
+      let datum = [{ x: X(pathPoint), y: Y.range()[0], index: i }];
       data.forEach((d) => {
         pathPoint += d[x_value][i];
         datum.push({ x: X(pathPoint), y: Y(d[y_value]) });
@@ -142,11 +153,34 @@ export class DecisionPlot extends BasePlot {
         ")",
       ].join("");
 
+      function callUpdateSelected() {
+        if (setSelectedValues) {
+          const selectedData = GG.selectAll(".decision-path.selected").data();
+          const indexes = selectedData.map((val) => val[0].index);
+          const filteredData = data.map((d) => {
+            return {
+              [y_value]: d[y_value],
+              [x_value]: indexes.map((i) => d[x_value][i]),
+              [z_value]: indexes.map((i) => d[z_value][i]),
+              'base_values': baseValue
+            };
+          });
+          setSelectedValues(filteredData);
+        }
+      }
+
+      function mouseClick(event, d) {
+        const selection = d3.select(this);
+        selection.classed("selected", !selection.classed("selected"));
+        callUpdateSelected();
+      }
+
       GG.append("path")
         .datum(datum)
         .attr("fill", "none")
         .attr("stroke", lineColorRGB)
         .attr("stroke-width", 2)
+        .attr("cursor", "pointer")
         .attr(
           "d",
           d3
@@ -157,7 +191,9 @@ export class DecisionPlot extends BasePlot {
             .y((d) => {
               return d.y;
             })
-        );
+        )
+        .classed("decision-path", true)
+        .on("click", mouseClick);
     }
 
     for (let i = 0; i < numLines; i++) {
