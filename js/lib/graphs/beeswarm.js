@@ -34,7 +34,18 @@ function absoluteSort(property, ascending) {
 }
 
 export class BeeswarmPlot extends BasePlot {
-  plot(data, x_value, y_value, color_value, width, height, margin, noAxes) {
+  plot(
+    data,
+    x_value,
+    y_value,
+    z_value,
+    baseValue,
+    setSelectedValues,
+    width,
+    height,
+    margin,
+    noAxes
+  ) {
     const randomString = Math.floor(
       Math.random() * Date.now() * 10000
     ).toString(36);
@@ -86,20 +97,28 @@ export class BeeswarmPlot extends BasePlot {
       });
 
     let scatteredData = {};
+    const dataSize = data[0][x_value].length;
+    let forceValue = 1;
+    if (dataSize < 50) {
+      forceValue = 3;
+    } else if (dataSize < 300) {
+      forceValue = 2;
+    }
     data.forEach((d, i) => {
       const nodes = d[x_value].map((v) => ({ value: v }));
+
       const simulation = d3
         .forceSimulation(nodes)
         .force("x", d3.forceX((d) => X(d.value)).strength(1))
-        .force("y", d3.forceY(Y(d[y_value]) + Y.bandwidth() / 2).strength(4))
-        .force("collide", d3.forceCollide(2))
+        .force("y", d3.forceY(Y(d[y_value]) + Y.bandwidth() / 2).strength(1))
+        .force("collide", d3.forceCollide(forceValue))
         .stop();
 
-      simulation.tick(120);
-      const colorDomain = d3.extent(d[color_value]);
+      simulation.tick(50);
+      const colorDomain = d3.extent(d[z_value]);
 
       nodes.forEach((d, j) => {
-        const value = data[i][color_value][j];
+        const value = data[i][z_value][j];
 
         let lineXScalePercentage =
           (value - colorDomain[0]) / (colorDomain[1] - colorDomain[0]);
@@ -125,14 +144,75 @@ export class BeeswarmPlot extends BasePlot {
       ].join("");
     }
 
+    this.svg.on("click", () => {
+      return GG.selectAll(".beeswarm-dot-selected").remove();
+    });
+
+    function dotClick(event, d) {
+      setTimeout(() => {
+        const selectedData = GG.selectAll(".beeswarm-dot-" + d.row).data();
+
+        GG.selectAll(".beeswarm-dot-selected").remove();
+
+        GG.append("path")
+          .datum(selectedData)
+          .attr("fill", "none")
+          .attr("stroke", "grey")
+          .attr("stroke-width", 2)
+          .attr(
+            "d",
+            d3
+              .line()
+              .x((d) => {
+                return d.x;
+              })
+              .y((d) => {
+                return d.y;
+              })
+          )
+          .attr("class", "beeswarm-dot-selected");
+
+        GG.selectAll(".dot")
+          .data(selectedData)
+          .enter()
+          .append("circle")
+          .attr("r", 6)
+          .attr("fill", function (d) {
+            return d.color;
+          })
+          .attr("stroke", "white")
+          .attr("stroke-width", "1")
+          .attr("cx", function (d) {
+            return d.x;
+          })
+          .attr("cy", function (d) {
+            return d.y;
+          })
+          .attr("class", "beeswarm-dot-selected");
+
+          if (setSelectedValues) {
+            const indexes = [selectedData[0].row];
+            const filteredData = data.map((d) => {
+              return {
+                [y_value]: d[y_value],
+                [x_value]: indexes.map((i) => d[x_value][i]),
+                [z_value]: indexes.map((i) => d[z_value][i]),
+                'base_values': baseValue
+              };
+            });
+            setSelectedValues(filteredData);
+          }
+      }, 10);
+    }
+
     function addPoints(data, scatteredData, i) {
       let datum = [];
       data.forEach((d) => {
-        // console.log(d[y_value] + " - " + scatteredData[d[y_value]][i].color)
         datum.push({
           x: X(d[x_value][i]),
           y: scatteredData[d[y_value]][i].y,
           color: getColor(scatteredData[d[y_value]][i].color),
+          row: i,
         });
       });
 
@@ -149,7 +229,12 @@ export class BeeswarmPlot extends BasePlot {
         })
         .attr("cy", function (d) {
           return d.y;
-        });
+        })
+        .attr("cursor", "pointer")
+        .attr("class", function (d) {
+          return "beeswarm-dot-" + d.row;
+        })
+        .on("click", dotClick);
     }
 
     for (let i = 0; i < numLines; i++) {

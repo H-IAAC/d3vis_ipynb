@@ -249,6 +249,8 @@ function addDecision() {
 }
 
 function addBeeswarm() {
+  const base_value = 1;
+
   const element = document.createElement("div");
   element.id = "component";
   element.style.width = "1000px";
@@ -261,6 +263,8 @@ function addBeeswarm() {
     "values",
     "feature_names",
     "data",
+    base_value,
+    () => {},
     800,
     600,
     { top: 40, right: 20, bottom: 30, left: 80 },
@@ -268,4 +272,4 @@ function addBeeswarm() {
   );
 }
 
-addDecision();
+addBeeswarm();

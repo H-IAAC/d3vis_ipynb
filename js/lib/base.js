@@ -3,7 +3,7 @@ import "../css/widget.css";
 
 const packageData = require("../package.json");
 
-export const WIDGET_HEIGHT = 400;
+export const WIDGET_HEIGHT = 500;
 export const WIDGET_MARGIN = { top: 20, right: 20, bottom: 30, left: 40 };
 export const RENDER_TIMEOUT = 20000;
 export const RENDER_INTERVAL = 100;

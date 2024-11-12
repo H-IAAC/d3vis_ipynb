@@ -74,6 +74,8 @@ export class BeeswarmPlotModel extends BaseModel {
       _view_name: BeeswarmPlotModel.view_name,
 
       dataRecords: [],
+      baseValue: Number,
+      selectedValuesRecords: [],
       elementId: String,
     };
   }
@@ -85,12 +87,15 @@ export class BeeswarmPlotModel extends BaseModel {
 export class BeeswarmPlotView extends BaseView {
   params() {
     const data = this.model.get("dataRecords");
+    const baseValue = this.model.get("baseValue");
 
     return [
       data,
       "values",
       "feature_names",
       "data",
+      baseValue,
+      this.setSelectedValues.bind(this),
       this.width,
       this.height,
       { top: 20, right: 20, bottom: 30, left: 80 },
@@ -102,9 +107,15 @@ export class BeeswarmPlotView extends BaseView {
     this.widget = new BeeswarmPlot(element);
 
     this.model.on("change:dataRecords", () => this.replot(), this);
+    this.model.on("change:baseValue", () => this.replot(), this);
     window.addEventListener("resize", () => this.replot());
 
     this.widget.plot(...this.params());
+  }
+
+  setSelectedValues(values) {
+    this.model.set({ selectedValuesRecords: values });
+    this.model.save_changes();
   }
 }
 

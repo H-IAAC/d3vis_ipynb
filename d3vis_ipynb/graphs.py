@@ -40,6 +40,8 @@ class BeeswarmPlot(BaseWidget):
     _model_name = Unicode("BeeswarmPlotModel").tag(sync=True)
 
     dataRecords = List([]).tag(sync=True)
+    baseValue = Float().tag(sync=True)
+    selectedValuesRecords = List([]).tag(sync=True)
 
     def __init__(
         self,
@@ -67,8 +69,24 @@ class BeeswarmPlot(BaseWidget):
                     "data": dataArray[i],
                 }
             )
+        self.baseValue = val.base_values[0]
         self.dataRecords = records
 
+    @property
+    def selectedValues(self):
+        if not self.selectedValuesRecords:
+            return None
+        df = pd.DataFrame.from_records(self.selectedValuesRecords)
+        exp = shap.Explanation(
+            values=np.transpose(np.stack(df['values'].values)),
+            data=np.transpose(np.stack(df['data'].values)),
+            feature_names=np.transpose(np.stack(df['feature_names'].values)),
+            base_values=np.full(len(df['values'][0]), df['base_values'][0]),
+        )
+        return exp
+
+    def on_select_values(self, callback):
+        self.observe(callback, names=["selectedValuesRecords"])
 
 @widgets.register
 class DecisionPlot(BaseWidget):
