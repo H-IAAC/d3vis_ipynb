@@ -74,7 +74,7 @@ export class LinearPlot extends BasePlot {
         "y: " +
         Math.round(d[y_value] * 100) / 100;
 
-      informationCard.showText(text, event.offsetX, event.offsetY);
+      informationCard.showText(text, event.layerX, event.layerY);
     }
 
     function mouseout() {

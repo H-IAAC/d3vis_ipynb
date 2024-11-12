@@ -215,7 +215,7 @@ export class ForcePlot extends BasePlot {
       else d3.select(this).attr("fill", NEGATIVE_SELECTED_COLOR);
 
       const text = d[y_value] + "=" + d[z_value];
-      informationCard.showText(text, event.offsetX, event.offsetY);
+      informationCard.showText(text, event.layerX, event.layerY);
     }
 
     function mouseout(event, d) {
