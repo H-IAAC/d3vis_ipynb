@@ -35,7 +35,10 @@ export class BaseButton {
 
   createButton(icon) {
     this.button = document.createElement("button");
-    if (this.isSelected) this.button.classList.add("is_selected");
+    if (this.isSelected) {
+      this.button.classList.add("is_selected");
+      if (this.whenSelectedCallback) this.whenSelectedCallback();
+    }
     this.button.addEventListener("click", this.on_click.bind(this));
     const iconElement = createElement(icon);
     this.button.appendChild(iconElement);

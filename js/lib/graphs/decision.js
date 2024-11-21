@@ -1,10 +1,25 @@
 import * as d3 from "d3";
 import { BasePlot } from "./baseplot";
+import { SideBar } from "./tools/side_bar";
+import { ClickSelectButton } from "./tools/button_click_select";
+import { LineDragButton } from "./tools/button_line_drag";
 
 const colors = [
   { r: 17, g: 102, b: 255 },
   { r: 255, g: 51, b: 51 },
 ];
+
+function getColor(percentage) {
+  return [
+    "rgb(",
+    percentage * colors[1].r + (1 - percentage) * colors[0].r,
+    ",",
+    percentage * colors[1].g + (1 - percentage) * colors[0].g,
+    ",",
+    percentage * colors[1].b + (1 - percentage) * colors[0].b,
+    ")",
+  ].join("");
+}
 
 function absoluteSort(property, ascending) {
   function arrayAbsSum(array) {
@@ -81,11 +96,14 @@ export class DecisionPlot extends BasePlot {
     width,
     height,
     margin,
-    noAxes
+    noAxes,
+    noSideBar
   ) {
     const randomString = Math.floor(
       Math.random() * Date.now() * 10000
     ).toString(36);
+
+    if (!noSideBar) width = width - SideBar.SIDE_BAR_WIDTH - 1;
 
     this.baseValue = baseValue;
     data.sort(absoluteSort(x_value, true));
@@ -119,87 +137,6 @@ export class DecisionPlot extends BasePlot {
         ]);
       });
 
-    GG.append("path")
-      .attr("fill", "none")
-      .attr("stroke", "grey")
-      .attr("stroke-width", 2)
-      .attr("d", function (d) {
-        return d3.line()([
-          [X(baseValue), Y.range()[0]],
-          [X(baseValue), Y(data.at(-1)[y_value])],
-        ]);
-      });
-
-    function addPath(data, i) {
-      let pathPoint = baseValue;
-      let datum = [{ x: X(pathPoint), y: Y.range()[0], index: i }];
-      data.forEach((d) => {
-        pathPoint += d[x_value][i];
-        datum.push({ x: X(pathPoint), y: Y(d[y_value]) });
-      });
-
-      const lineXScalePercentage = X(pathPoint) / X.range()[1];
-
-      const lineColorRGB = [
-        "rgb(",
-        lineXScalePercentage * colors[1].r +
-          (1 - lineXScalePercentage) * colors[0].r,
-        ",",
-        lineXScalePercentage * colors[1].g +
-          (1 - lineXScalePercentage) * colors[0].g,
-        ",",
-        lineXScalePercentage * colors[1].b +
-          (1 - lineXScalePercentage) * colors[0].b,
-        ")",
-      ].join("");
-
-      function callUpdateSelected() {
-        if (setSelectedValues) {
-          const selectedData = GG.selectAll(".decision-path.selected").data();
-          const indexes = selectedData.map((val) => val[0].index);
-          const filteredData = data.map((d) => {
-            return {
-              [y_value]: d[y_value],
-              [x_value]: indexes.map((i) => d[x_value][i]),
-              [z_value]: indexes.map((i) => d[z_value][i]),
-              'base_values': baseValue
-            };
-          });
-          setSelectedValues(filteredData);
-        }
-      }
-
-      function mouseClick(event, d) {
-        const selection = d3.select(this);
-        selection.classed("selected", !selection.classed("selected"));
-        callUpdateSelected();
-      }
-
-      GG.append("path")
-        .datum(datum)
-        .attr("fill", "none")
-        .attr("stroke", lineColorRGB)
-        .attr("stroke-width", 2)
-        .attr("cursor", "pointer")
-        .attr(
-          "d",
-          d3
-            .line()
-            .x((d) => {
-              return d.x;
-            })
-            .y((d) => {
-              return d.y;
-            })
-        )
-        .classed("decision-path", true)
-        .on("click", mouseClick);
-    }
-
-    for (let i = 0; i < numLines; i++) {
-      addPath(data, i);
-    }
-
     let grad = GG.append("defs")
       .append("linearGradient")
       .attr("id", "grad" + randomString)
@@ -226,5 +163,161 @@ export class DecisionPlot extends BasePlot {
       .attr("width", X.range()[1])
       .attr("height", 20)
       .style("fill", "url(#grad" + randomString + ")");
+
+    GG.append("path")
+      .attr("fill", "none")
+      .attr("stroke", "grey")
+      .attr("stroke-width", 2)
+      .attr("d", function (d) {
+        return d3.line()([
+          [X(baseValue), Y.range()[0]],
+          [X(baseValue), Y(data.at(-1)[y_value])],
+        ]);
+      });
+
+    function callUpdateSelected(indexes) {
+      allPaths.forEach((path) => {
+        if (indexes.includes(path.data()[0][0].index)) {
+          path.classed("selected", true);
+        } else {
+          path.classed("selected", false);
+        }
+      });
+      if (setSelectedValues) {
+        const filteredData = data.map((d) => {
+          return {
+            [y_value]: d[y_value],
+            [x_value]: indexes.map((i) => d[x_value][i]),
+            [z_value]: indexes.map((i) => d[z_value][i]),
+            base_values: baseValue,
+          };
+        });
+        setSelectedValues(filteredData);
+      }
+    }
+
+    const allPaths = [];
+    const selectedPaths = [];
+
+    function clearSelectedPaths() {
+      selectedPaths.length = 0;
+      callUpdateSelected(selectedPaths);
+    }
+
+    function selectAllPaths() {
+      selectedPaths.length = 0;
+      for (let i = 0; i < numLines; i++) selectedPaths.push(i);
+      callUpdateSelected(selectedPaths);
+    }
+
+    function pathClick(event, d) {
+      setTimeout(() => {
+        selectedPaths.push(d[0].index);
+        callUpdateSelected(selectedPaths);
+      }, 10);
+    }
+
+    function addPath(data, i) {
+      let pathPoint = baseValue;
+      let datum = [{ x: X(pathPoint), y: Y.range()[0], index: i }];
+      data.forEach((d) => {
+        pathPoint += d[x_value][i];
+        datum.push({
+          x: X(pathPoint),
+          y: Y(d[y_value]),
+          [y_value]: d[y_value],
+        });
+      });
+
+      const lineXScalePercentage = X(pathPoint) / X.range()[1];
+
+      const newPath = GG.append("path").datum(datum);
+
+      newPath
+        .attr("fill", "none")
+        .attr("stroke", getColor(lineXScalePercentage))
+        .attr("stroke-width", 2)
+        .attr(
+          "d",
+          d3
+            .line()
+            .x((d) => {
+              return d.x;
+            })
+            .y((d) => {
+              return d.y;
+            })
+        )
+        .classed("decision-path", true)
+        .attr("opacity", 0.4);
+
+      allPaths.push(newPath);
+    }
+
+    for (let i = 0; i < numLines; i++) {
+      addPath(data, i);
+    }
+
+    const referenceLines = GG.selectAll().data(data).enter().append("path");
+
+    referenceLines
+      .attr("visibility", "hidden")
+      .attr("stroke", "white")
+      .attr("stroke-width", "5")
+      .attr("stroke-opacity", "0")
+      .attr("d", function (d) {
+        return d3.line()([
+          [X.range()[0], Y(d[y_value])],
+          [X.range()[1], Y(d[y_value])],
+        ]);
+      });
+
+    function selectButtonStart() {
+      clearSelectedPaths();
+      this.svg.on("click", clearSelectedPaths);
+      allPaths.forEach((path) =>
+        path.on("click", pathClick).attr("cursor", "pointer")
+      );
+    }
+
+    function selectButtonEnd() {
+      this.svg.on("click", null);
+      allPaths.forEach((path) => path.on("click", null).attr("cursor", ""));
+    }
+
+    function lineDragButtonStart() {
+      selectAllPaths();
+      referenceLines.attr("cursor", "crosshair");
+    }
+
+    function lineDragButtonEnd() {
+      referenceLines.attr("cursor", "");
+    }
+
+    if (!noSideBar) {
+      const clickSelectButton = new ClickSelectButton(true);
+      clickSelectButton.addWhenSelectedCallback(selectButtonStart.bind(this));
+      clickSelectButton.addWhenUnselectedCallback(selectButtonEnd.bind(this));
+      const lineDragButton = new LineDragButton(
+        X,
+        Y,
+        x_value,
+        y_value,
+        margin.left,
+        margin.top,
+        referenceLines,
+        GG.selectAll(".decision-path"),
+        callUpdateSelected,
+        GG
+      );
+      lineDragButton.addWhenSelectedCallback(lineDragButtonStart.bind(this));
+      lineDragButton.addWhenUnselectedCallback(lineDragButtonEnd.bind(this));
+
+      const sideBar = new SideBar(
+        this.element,
+        clickSelectButton,
+        lineDragButton
+      );
+    }
   }
 }

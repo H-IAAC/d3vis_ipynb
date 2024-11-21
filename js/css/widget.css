@@ -195,5 +195,5 @@ input[type="range"] {
 /***** DECISION *****/
 
 .decision-path.selected {
-  filter: drop-shadow(0 0 4px black);
+  opacity: 1;
 }

@@ -229,8 +229,8 @@ function addDecision() {
 
   const element = document.createElement("div");
   element.id = "component";
-  element.style.width = "1000px";
-  element.style.height = "1000px";
+  element.style.width = "800px";
+  element.style.height = "600px";
   document.body.appendChild(element);
 
   const decision = new DecisionPlot(element);
@@ -253,8 +253,8 @@ function addBeeswarm() {
 
   const element = document.createElement("div");
   element.id = "component";
-  element.style.width = "1000px";
-  element.style.height = "1000px";
+  element.style.width = "800px";
+  element.style.height = "600px";
   document.body.appendChild(element);
 
   const decision = new BeeswarmPlot(element);
@@ -268,8 +268,9 @@ function addBeeswarm() {
     800,
     600,
     { top: 40, right: 20, bottom: 30, left: 80 },
+    false,
     false
   );
 }
 
-addBeeswarm();
+addDecision();
