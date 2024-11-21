@@ -4,10 +4,6 @@ import { BaseButton } from "./button_base";
 
 export class LineDragButton extends BaseButton {
   constructor(
-    xScale,
-    yScale,
-    x_value,
-    y_value,
     x_translate,
     y_translate,
     referenceLines,
@@ -17,10 +13,6 @@ export class LineDragButton extends BaseButton {
     selected
   ) {
     super(selected);
-    this.xScale = xScale;
-    this.yScale = yScale;
-    this.x_value = x_value;
-    this.y_value = y_value;
     this.x_translate = x_translate;
     this.y_translate = y_translate;
     this.referenceLines = referenceLines;
@@ -45,6 +37,7 @@ export class LineDragButton extends BaseButton {
           }
           if (line.feature_names === position.feature_names) {
             this.pathsData[line.feature_names][index] = position.x;
+            this.markLines[line.feature_names]["y"] = position.y;
             break;
           }
         }
@@ -139,8 +132,8 @@ export class LineDragButton extends BaseButton {
   dragStart(event, d) {
     let mouseX = event.sourceEvent.offsetX;
     this.coords = [
-      [mouseX - this.x_translate, this.yScale(d.feature_names)],
-      [mouseX - this.x_translate, this.yScale(d.feature_names)],
+      [mouseX - this.x_translate, this.markLines[d.feature_names].y],
+      [mouseX - this.x_translate, this.markLines[d.feature_names].y],
     ];
     this.currentReference = d.feature_names;
     this.newMark = this.interationRect

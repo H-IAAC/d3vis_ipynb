@@ -197,3 +197,9 @@ input[type="range"] {
 .decision-path.selected {
   opacity: 1;
 }
+
+/***** BEESWARM *****/
+
+.beeswarm-path.selected {
+  visibility: visible;
+}

@@ -299,10 +299,6 @@ export class DecisionPlot extends BasePlot {
       clickSelectButton.addWhenSelectedCallback(selectButtonStart.bind(this));
       clickSelectButton.addWhenUnselectedCallback(selectButtonEnd.bind(this));
       const lineDragButton = new LineDragButton(
-        X,
-        Y,
-        x_value,
-        y_value,
         margin.left,
         margin.top,
         referenceLines,
