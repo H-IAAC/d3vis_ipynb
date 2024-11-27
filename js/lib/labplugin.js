@@ -1,5 +1,7 @@
 import { IJupyterWidgetRegistry } from "@jupyter-widgets/base";
 import {
+  CheckboxModel,
+  CheckboxView,
   BeeswarmPlotModel,
   BeeswarmPlotView,
   BarPlotModel,
@@ -22,6 +24,8 @@ import {
   InputView,
   LinearPlotModel,
   LinearPlotView,
+  MapPlotModel,
+  MapPlotView,
   MatrixLayoutModel,
   MatrixLayoutView,
   RangeSliderModel,
@@ -49,6 +53,8 @@ export const helloWidgetPlugin = {
       name: "d3vis_ipynb",
       version: version,
       exports: {
+        CheckboxModel,
+        CheckboxView,
         BeeswarmPlotModel,
         BeeswarmPlotView,
         BarPlotModel,
@@ -71,6 +77,8 @@ export const helloWidgetPlugin = {
         InputView,
         LinearPlotModel,
         LinearPlotView,
+        MapPlotModel,
+        MapPlotView,
         MatrixLayoutModel,
         MatrixLayoutView,
         RangeSliderModel,

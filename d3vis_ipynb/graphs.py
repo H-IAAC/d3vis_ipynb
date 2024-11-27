@@ -228,6 +228,33 @@ class LinearPlot(BaseWidget):
     def on_select_values(self, callback):
         self.observe(callback, names=["selectedValuesRecords"])
 
+@widgets.register
+class MapPlot(BaseWidget):
+    _view_name = Unicode("MapPlotView").tag(sync=True)
+    _model_name = Unicode("MapPlotModel").tag(sync=True)
+    dataRecords = List([]).tag(sync=True)
+    selectionRecords = List([]).tag(sync=True)
+
+    def __init__(self, data, **kwargs):
+        self.data = data
+        self.selection = pd.DataFrame()
+        super().__init__(**kwargs)
+
+    @property
+    def data(self):
+        return pd.DataFrame.from_records(self.dataRecords)
+
+    @data.setter
+    def data(self, val):
+        self.dataRecords = val.to_dict(orient="records")
+
+    @property
+    def selection(self):
+        return pd.DataFrame.from_records(self.selectionRecords)
+
+    @selection.setter
+    def selection(self, val):
+        self.selectionRecords = val.to_dict(orient="records")
 
 @widgets.register
 class RidgelinePlot(BaseWidget):
@@ -364,3 +391,4 @@ class WaterfallPlot(BaseWidget):
     @selectedValues.setter
     def selectedValues(self, val):
         self.selectedValuesRecords = val.to_dict(orient="records")
+
