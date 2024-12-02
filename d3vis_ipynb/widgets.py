@@ -26,6 +26,18 @@ class Button(BaseWidget):
 
 
 @widgets.register
+class Checkbox(BaseWidget):
+    _view_name = Unicode("CheckboxView").tag(sync=True)
+    _model_name = Unicode("CheckboxModel").tag(sync=True)
+
+    description = Unicode().tag(sync=True)
+    value = Bool().tag(sync=True)
+    disabled = Bool().tag(sync=True)
+
+    def on_check(self, callback):
+        self.observe(callback, names=["value"])
+
+@widgets.register
 class Dropdown(BaseWidget):
     _view_name = Unicode("DropdownView").tag(sync=True)
     _model_name = Unicode("DropdownModel").tag(sync=True)

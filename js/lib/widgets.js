@@ -1,5 +1,6 @@
 import { BaseModel, BaseView, WIDGET_MARGIN } from "./base";
 import { Button } from "./widgets/button";
+import { Checkbox } from "./widgets/checkbox";
 import { Dropdown } from "./widgets/dropdown";
 import { Input } from "./widgets/input";
 import { RangeSlider } from "./widgets/rangeslider";
@@ -103,6 +104,65 @@ export class ButtonView extends BaseView {
 
     this.model.on("change:description", () => this.setDescription(), this);
     this.model.on("change:disabled", () => this.setDisabled(), this);
+
+    this.widget.plot(...this.params());
+  }
+}
+
+export class CheckboxModel extends BaseModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: CheckboxModel.model_name,
+      _view_name: CheckboxModel.view_name,
+
+      description: String,
+      checked: false,
+      disabled: false,
+      elementId: String,
+    };
+  }
+
+  static model_name = "CheckboxModel";
+  static view_name = "CheckboxView";
+}
+
+export class CheckboxView extends BaseView {
+  setDescription() {
+    const description = this.model.get("description");
+    this.widget.onDescriptionChanged(description);
+  }
+
+  setDisabled() {
+    const disabled = this.model.get("disabled");
+    this.widget.onDisabledChanged(disabled);
+  }
+
+  setChecked() {
+    const checked = this.model.get("checked");
+    this.widget.onCheckedChanged(checked);
+  }
+
+  updateChecked(change) {
+    const checked = change.checked;
+    this.model.set({ checked: checked });
+    this.model.save_changes();
+    console.log("Checkbox checked state:", checked); // Adiciona log para o estado do checkbox
+  }
+
+  params() {
+    const description = this.model.get("description");
+    const disabled = this.model.get("disabled");
+    const checked = this.model.get("checked");
+    return [description, checked, this.updateChecked.bind(this)];
+  }
+
+  plot(element) {
+    this.widget = new Checkbox(element);
+
+    this.model.on("change:description", () => this.setDescription(), this);
+    this.model.on("change:disabled", () => this.setDisabled(), this);
+    this.model.on("change:checked", () => this.setChecked(), this);
 
     this.widget.plot(...this.params());
   }
