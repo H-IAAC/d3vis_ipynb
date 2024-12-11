@@ -6,6 +6,7 @@ import { ForcePlot } from "./graphs/force";
 import { HeatmapPlot } from "./graphs/heatmap";
 import { HistogramPlot } from "./graphs/histogramplot";
 import { LinearPlot } from "./graphs/linearplot";
+import { MapPlot } from "./graphs/mapplot";
 import { RidgelinePlot } from "./graphs/ridgelineplot";
 import { ScatterPlot } from "./graphs/scatterplot";
 import { WaterfallPlot } from "./graphs/waterfall";
@@ -364,6 +365,53 @@ export class LinearPlotView extends BaseView {
     this.model.on("change:x", () => this.replot(), this);
     this.model.on("change:y", () => this.replot(), this);
     this.model.on("change:hue", () => this.replot(), this);
+    window.addEventListener("resize", () => this.replot());
+
+    this.widget.plot(...this.params());
+  }
+
+  setSelectedValues(values) {
+    this.model.set({ selectedValuesRecords: values });
+    this.model.save_changes();
+  }
+}
+
+export class MapPlotModel extends BaseModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: MapPlotModel.model_name,
+      _view_name: MapPlotModel.view_name,
+
+      dataRecords: [],
+      elementId: String,
+      selectedValuesRecords: [],
+    };
+  }
+
+  static model_name = "MapPlotModel";
+  static view_name = "MapPlotView";
+}
+
+export class MapPlotView extends BaseView {
+  params() {
+    const data = this.model.get("dataRecords");
+
+    return [
+      data,
+      this.setSelectedValues.bind(this),
+      this.width,
+      this.height,
+      this.margin,
+      false,
+      false,
+    ];
+  }
+
+  plot(element) {
+    this.widget = new MapPlot(element);
+
+    this.model.on("change:dataRecords", () => this.replot(), this);
     window.addEventListener("resize", () => this.replot());
 
     this.widget.plot(...this.params());
