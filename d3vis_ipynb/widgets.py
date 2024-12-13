@@ -1,6 +1,6 @@
 import ipywidgets as widgets
 import pandas as pd
-from traitlets import Float, List, Unicode, Bool
+from traitlets import Bool, Float, List, Unicode
 
 from d3vis_ipynb.base_widget import BaseWidget
 
@@ -23,6 +23,18 @@ class Button(BaseWidget):
 
     def on_click(self, callback):
         self.observe(callback, names=["_clicked"])
+
+
+@widgets.register
+class Checkbox(BaseWidget):
+    _view_name = Unicode("CheckboxView").tag(sync=True)
+    _model_name = Unicode("CheckboxModel").tag(sync=True)
+
+    description = Unicode().tag(sync=True)
+    checked = Bool().tag(sync=True)
+
+    def on_check(self, callback):
+        self.observe(callback, names=["checked"])
 
 
 @widgets.register

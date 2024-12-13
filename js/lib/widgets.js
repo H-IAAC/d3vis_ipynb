@@ -1,5 +1,6 @@
 import { BaseModel, BaseView, WIDGET_MARGIN } from "./base";
 import { Button } from "./widgets/button";
+import { Checkbox } from "./widgets/checkbox";
 import { Dropdown } from "./widgets/dropdown";
 import { Input } from "./widgets/input";
 import { RangeSlider } from "./widgets/rangeslider";
@@ -103,6 +104,49 @@ export class ButtonView extends BaseView {
 
     this.model.on("change:description", () => this.setDescription(), this);
     this.model.on("change:disabled", () => this.setDisabled(), this);
+
+    this.widget.plot(...this.params());
+  }
+}
+
+export class CheckboxModel extends BaseModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: CheckboxModel.model_name,
+      _view_name: CheckboxModel.view_name,
+
+      description: String,
+      checked: false,
+      elementId: String,
+    };
+  }
+
+  static model_name = "CheckboxModel";
+  static view_name = "CheckboxView";
+}
+
+export class CheckboxView extends BaseView {
+  setDescription() {
+    const description = this.model.get("description");
+    this.widget.onDescriptionChanged(description);
+  }
+
+  setChecked(change) {
+    const checked = change.checked;
+    this.model.set({ checked: checked });
+    this.model.save_changes();
+  }
+
+  params() {
+    const description = this.model.get("description");
+    return [description, this.setChecked.bind(this)];
+  }
+
+  plot(element) {
+    this.widget = new Checkbox(element);
+
+    this.model.on("change:description", () => this.setDescription(), this);
 
     this.widget.plot(...this.params());
   }
