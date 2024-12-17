@@ -73,9 +73,9 @@ function getDomain(data, x_value, baseValue) {
   }
 
   if (max - baseValue > baseValue - min) {
-    min = baseValue - max;
+    min = 2 * baseValue - max;
   } else {
-    max = baseValue - min;
+    max = 2 * baseValue - min;
   }
 
   const total = max - min;
