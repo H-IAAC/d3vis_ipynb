@@ -1,10 +1,12 @@
 import * as d3 from "d3";
+import { WIDGET_MARGIN } from "../base";
 
 export class BasePlot {
   element;
 
   constructor(element) {
     this.element = element;
+    this.margin = WIDGET_MARGIN;
   }
 
   replot(params) {
@@ -17,7 +19,7 @@ export class BasePlot {
     }, 100);
   }
 
-  init(width, height, margin) {
+  init(width, height) {
     this.svg = d3
       .select(this.element)
       .append("svg")
@@ -27,35 +29,38 @@ export class BasePlot {
 
     this.gGrid = this.svg
       .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      .attr(
+        "transform",
+        "translate(" + this.margin.left + "," + this.margin.top + ")"
+      );
   }
 
-  getXLinearScale(domain, width, margin, leftPadding = 0) {
-    const innerWidth = width - margin.left - margin.right;
+  getXLinearScale(domain, width, leftPadding = 0) {
+    const innerWidth = width - this.margin.left - this.margin.right;
     const scale = d3.scaleLinear().range([leftPadding, innerWidth]);
     scale.domain(domain).nice();
 
     return scale;
   }
 
-  getYLinearScale(domain, height, margin, topPadding = 0) {
-    const innerHeight = height - margin.top - margin.bottom;
+  getYLinearScale(domain, height, topPadding = 0) {
+    const innerHeight = height - this.margin.top - this.margin.bottom;
     const scale = d3.scaleLinear().range([innerHeight, topPadding]);
     scale.domain(domain).nice();
 
     return scale;
   }
 
-  getXBandScale(x_values, width, margin, padding, leftPadding = 0) {
-    const innerWidth = width - margin.left - margin.right;
+  getXBandScale(x_values, width, padding, leftPadding = 0) {
+    const innerWidth = width - this.margin.left - this.margin.right;
     const scale = d3.scaleBand().range([leftPadding, innerWidth]);
     scale.domain(x_values).padding(padding);
 
     return scale;
   }
 
-  getYBandScale(y_values, height, margin, padding, topPadding = 0) {
-    const innerHeight = height - margin.top - margin.bottom;
+  getYBandScale(y_values, height, padding, topPadding = 0) {
+    const innerHeight = height - this.margin.top - this.margin.bottom;
     const scale = d3.scaleBand().range([innerHeight, topPadding]);
     scale.domain(y_values).padding(padding);
 
@@ -65,6 +70,40 @@ export class BasePlot {
   plotAxes(svg, xScale, yScale, xLabel, yLabel, xAxisFormater, yAxisFormater) {
     const width = xScale.range()[1];
     const height = yScale.range()[0];
+
+    const yAxisGenerator = d3.axisLeft(yScale);
+
+    if (yAxisFormater) {
+      yAxisFormater(yAxisGenerator);
+    }
+
+    const yAxis = svg.append("g").attr("class", "y axis").call(yAxisGenerator);
+
+    const tickText = yAxis.selectAll(".tick text");
+
+    let maxWidth = 0;
+
+    tickText.each(function () {
+      const bbox = this.getBBox();
+      maxWidth = Math.max(maxWidth, bbox.width);
+    });
+
+    yAxis
+      .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dx", -yScale.range()[1])
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .attr("fill", "black")
+      .text(yLabel);
+
+    const xRange = xScale.range();
+    xRange[0] += maxWidth;
+    xScale.range(xRange);
+
+    yAxis.attr("transform", "translate(" + xScale.range()[0] + ",0)");
 
     const xAxisGenerator = d3.axisBottom(xScale);
 
@@ -86,29 +125,6 @@ export class BasePlot {
       .style("text-anchor", "end")
       .attr("fill", "black")
       .text(xLabel);
-
-    const yAxisGenerator = d3.axisLeft(yScale);
-
-    if (yAxisFormater) {
-      yAxisFormater(yAxisGenerator);
-    }
-
-    const yAxis = svg
-      .append("g")
-      .attr("class", "y axis")
-      .attr("transform", "translate(" + xScale.range()[0] + ",0)")
-      .call(yAxisGenerator);
-
-    yAxis
-      .append("text")
-      .attr("class", "label")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dx", -yScale.range()[1])
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .attr("fill", "black")
-      .text(yLabel);
 
     return [xAxis, yAxis];
   }

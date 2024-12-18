@@ -138,14 +138,13 @@ export class ForcePlot extends BasePlot {
     baseValue,
     setSelectedValues,
     width,
-    height,
-    margin
+    height
   ) {
     const informationCard = new InformationCard(this.element);
 
     this.baseValue = baseValue;
     data.sort(invertedSort(x_value));
-    this.init(width, height, margin);
+    this.init(width, height);
 
     var zoom = d3
       .zoom()
@@ -164,7 +163,7 @@ export class ForcePlot extends BasePlot {
     this.svg.call(zoom);
 
     const xDomain = getDomain(data, x_value, baseValue);
-    const X = this.getXLinearScale(xDomain, width, margin);
+    const X = this.getXLinearScale(xDomain, width);
     const tickValues = [baseValue];
 
     let initialValue = baseValue;

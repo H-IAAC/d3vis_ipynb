@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import { BasePlot } from "./baseplot";
 
 export class HistogramPlot extends BasePlot {
-  plot(data, x_axis, width, height, margin, noAxes, gGrid, xScale) {
+  plot(data, x_axis, width, height, noAxes, gGrid, xScale) {
     const bins = d3
       .bin()
       .thresholds(40)
@@ -11,8 +11,9 @@ export class HistogramPlot extends BasePlot {
     let GG;
     if (gGrid) GG = gGrid;
     else {
-      this.init(width, height, margin);
-    GG = this.gGrid;}
+      this.init(width, height);
+      GG = this.gGrid;
+    }
 
     let X;
     if (xScale) X = xScale;
@@ -20,11 +21,13 @@ export class HistogramPlot extends BasePlot {
       const xDomain = d3.extent(data, function (d) {
         return d[x_axis];
       });
-      X = this.getXLinearScale(xDomain, width, margin);
+      X = this.getXLinearScale(xDomain, width);
     }
 
     const yDomain = [0, d3.max(bins, (d) => d.length)];
-    const Y = this.getYLinearScale(yDomain, height, margin);
+    const Y = this.getYLinearScale(yDomain, height);
+
+    if (!noAxes) this.plotAxes(GG, X, Y, x_axis);
 
     GG.append("g")
       .attr("fill", "steelblue")
@@ -35,7 +38,5 @@ export class HistogramPlot extends BasePlot {
       .attr("width", (d) => X(d.x1) - X(d.x0) - 1)
       .attr("y", (d) => Y(d.length))
       .attr("height", (d) => Y(0) - Y(d.length));
-
-    if (!noAxes) this.plotAxes(GG, X, Y, x_axis);
   }
 }

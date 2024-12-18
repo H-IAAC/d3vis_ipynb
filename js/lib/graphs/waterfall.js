@@ -3,7 +3,6 @@ import { BasePlot } from "./baseplot";
 
 const NEGATIVE_COLOR = "#33AFFF";
 const POSITIVE_COLOR = "#FF335B";
-const LEFT_PADDING = 30;
 const TOP_PADDING = 30;
 
 function absoluteSort(property, ascending) {
@@ -29,7 +28,7 @@ function getDomain(data, x_value, baseValue) {
   let min = baseValue;
   let max = baseValue;
   let currentValue = baseValue;
-  const margin = 0.05;
+  const error_margin = 0.05;
 
   data.forEach((d) => {
     currentValue = currentValue + d[x_value];
@@ -38,8 +37,8 @@ function getDomain(data, x_value, baseValue) {
   });
 
   const total = max - min;
-  min = min - total * margin;
-  max = max + total * margin;
+  min = min - total * error_margin;
+  max = max + total * error_margin;
 
   return [min, max];
 }
@@ -88,24 +87,25 @@ export class WaterfallPlot extends BasePlot {
     setSelectedValues,
     width,
     height,
-    margin,
     noAxes
   ) {
     this.baseValue = baseValue;
     data.sort(absoluteSort(x_value, true));
-    this.init(width, height, margin);
+    this.init(width, height);
 
     const GG = this.gGrid;
 
     const xDomain = getDomain(data, x_value, baseValue);
-    const X = this.getXLinearScale(xDomain, width, margin, LEFT_PADDING);
+    const X = this.getXLinearScale(xDomain, width);
     const yDomain = data.map(function (d) {
       return d[y_value];
     });
-    const Y = this.getYBandScale(yDomain, height, margin, [0.2], TOP_PADDING);
+    const Y = this.getYBandScale(yDomain, height, [0.2], TOP_PADDING);
 
     function formatYAxis(yAxisGenerator) {
-      yAxisGenerator.tickFormat((x, i) => data[i][z_value] + " - " + x);
+      yAxisGenerator.tickFormat(
+        (x, i) => Math.round(data[i][z_value] * 1000) / 1000 + " - " + x
+      );
     }
 
     if (!noAxes) this.plotAxes(GG, X, Y, x_value, y_value, null, formatYAxis);

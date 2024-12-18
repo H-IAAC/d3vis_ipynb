@@ -16,12 +16,11 @@ export class HeatmapPlot extends BasePlot {
     color_domain,
     color_scheme,
     width,
-    height,
-    margin
+    height
   ) {
     const informationCard = new InformationCard(this.element);
 
-    this.init(width, height, margin);
+    this.init(width, height);
 
     const SVG = this.svg;
     const GG = this.gGrid;
@@ -40,7 +39,7 @@ export class HeatmapPlot extends BasePlot {
         .sort();
     }
 
-    const X = this.getXBandScale(xDomain, width - GRAD_BAR_WIDTH, margin, [0]);
+    const X = this.getXBandScale(xDomain, width - GRAD_BAR_WIDTH, [0]);
     let yDomain;
     if (yValues) {
       yDomain = yValues;
@@ -56,7 +55,7 @@ export class HeatmapPlot extends BasePlot {
     }
     yDomain = yDomain.reverse();
 
-    const Y = this.getYBandScale(yDomain, height, margin, [0]);
+    const Y = this.getYBandScale(yDomain, height, [0]);
 
     function mouseover(event, d) {
       const text =
@@ -84,6 +83,9 @@ export class HeatmapPlot extends BasePlot {
 
     var myColor = getColorScale(color_domain, color_scheme);
 
+    let xAxis, yAxis;
+    [xAxis, yAxis] = this.plotAxes(GG, X, Y, x_value, y_value);
+
     const rects = GG.selectAll()
       .data(data, function (d) {
         return d.group + ":" + d.variable;
@@ -105,9 +107,6 @@ export class HeatmapPlot extends BasePlot {
       })
       .on("mouseover", mouseover)
       .on("mouseout", mouseout);
-
-    let xAxis, yAxis;
-    [xAxis, yAxis] = this.plotAxes(GG, X, Y, x_value, y_value);
 
     let grad = GG.append("defs")
       .append("linearGradient")

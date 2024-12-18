@@ -17,20 +17,20 @@ export class RidgelinePlot extends BasePlot {
     return d3.extent(domains);
   }
 
-  plot(data, x_axes, width, height, margin, noAxes) {
+  plot(data, x_axes, width, height, noAxes) {
     d3.select(this.element).selectAll("*").remove();
 
     const numAxes = x_axes.length;
     const histHeight = height / numAxes;
 
-    this.init(width, height, margin);
+    this.init(width, height);
 
     const SVG = this.svg;
     const GG = this.gGrid;
 
     const xDomain = this.getXDomain(data, x_axes);
-    const X = this.getXLinearScale(xDomain, width, margin);
-    const Y = this.getYBandScale(x_axes, height, margin, [0.2]);
+    const X = this.getXLinearScale(xDomain, width);
+    const Y = this.getYBandScale(x_axes, height, [0.2]);
 
     if (!noAxes) this.plotAxes(GG, X, Y);
 
@@ -39,14 +39,15 @@ export class RidgelinePlot extends BasePlot {
       const x_axis = x_axes[i];
       const histPlot = new HistogramPlot(this.element);
       this.histList.push(histPlot);
-      const histMargin = structuredClone(margin);
-      histMargin.bottom = margin.bottom + i * histHeight;
-      histMargin.top = margin.top + (numAxes - i - 1) * histHeight;
+      const histMargin = structuredClone(this.margin);
+      histMargin.bottom = this.margin.bottom + i * histHeight;
+      histMargin.top = this.margin.top + (numAxes - i - 1) * histHeight;
       const newGG = GG.append("g").attr(
         "transform",
-        "translate(0," + (histMargin.top - margin.top) + ")"
+        "translate(0," + (histMargin.top - this.margin.top) + ")"
       );
-      histPlot.plot(data, x_axis, width, height, histMargin, true, newGG, X);
+      histPlot.margin = histMargin;
+      histPlot.plot(data, x_axis, width, height, true, newGG, X);
     }
   }
 }

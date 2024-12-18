@@ -15,8 +15,8 @@ function getCI(array) {
 }
 
 export class BarPlot extends BasePlot {
-  plot(data, x_value, y_value, hue, direction, width, height, margin, noAxes) {
-    this.init(width, height, margin);
+  plot(data, x_value, y_value, hue, direction, width, height, noAxes) {
+    this.init(width, height);
 
     const GG = this.gGrid;
 
@@ -103,8 +103,8 @@ export class BarPlot extends BasePlot {
         baseLenght,
         sideLenght;
       if (direction === "vertical") {
-        X = that.getXBandScale(groups, width, margin, [0.2]);
-        Y = that.getYLinearScale(side_domain, height, margin);
+        X = that.getXBandScale(groups, width, [0.2]);
+        Y = that.getYLinearScale(side_domain, height);
         [baseScale, sideScale, baseAxis, sideAxis, baseLenght, sideLenght] = [
           X,
           Y,
@@ -114,8 +114,8 @@ export class BarPlot extends BasePlot {
           "height",
         ];
       } else {
-        X = that.getXLinearScale(side_domain, width, margin);
-        Y = that.getYBandScale(groups, height, margin, [0.2]);
+        X = that.getXLinearScale(side_domain, width);
+        Y = that.getYBandScale(groups, height, [0.2]);
         [baseScale, sideScale, baseAxis, sideAxis, baseLenght, sideLenght] = [
           Y,
           X,
@@ -263,8 +263,8 @@ export class BarPlot extends BasePlot {
         baseLenght,
         sideLenght;
       if (direction === "vertical") {
-        X = that.getXBandScale(groups, width, margin, [0.2]);
-        Y = that.getYLinearScale(side_domain, height, margin);
+        X = that.getXBandScale(groups, width, [0.2]);
+        Y = that.getYLinearScale(side_domain, height);
         [baseScale, sideScale, baseAxis, sideAxis, baseLenght, sideLenght] = [
           X,
           Y,
@@ -274,8 +274,8 @@ export class BarPlot extends BasePlot {
           "height",
         ];
       } else {
-        X = that.getXLinearScale(side_domain, width, margin);
-        Y = that.getYBandScale(groups, height, margin, [0.2]);
+        X = that.getXLinearScale(side_domain, width);
+        Y = that.getYBandScale(groups, height, [0.2]);
         [baseScale, sideScale, baseAxis, sideAxis, baseLenght, sideLenght] = [
           Y,
           X,
@@ -384,14 +384,14 @@ export class BarPlot extends BasePlot {
 
       legend
         .append("rect")
-        .attr("x", width - margin.left - margin.right - 18)
+        .attr("x", width - this.margin.left - this.margin.right - 18)
         .attr("width", 18)
         .attr("height", 18)
         .style("fill", color);
 
       legend
         .append("text")
-        .attr("x", width - margin.left - margin.right - 24)
+        .attr("x", width - this.margin.left - this.margin.right - 24)
         .attr("y", 9)
         .attr("dy", ".35em")
         .style("text-anchor", "end")

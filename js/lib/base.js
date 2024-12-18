@@ -4,7 +4,7 @@ import "../css/widget.css";
 const packageData = require("../package.json");
 
 export const WIDGET_HEIGHT = 500;
-export const WIDGET_MARGIN = { top: 20, right: 20, bottom: 30, left: 40 };
+export const WIDGET_MARGIN = { top: 20, right: 20, bottom: 30, left: 20 };
 export const RENDER_TIMEOUT = 20000;
 export const RENDER_INTERVAL = 100;
 
@@ -77,6 +77,5 @@ export class BaseView extends DOMWidgetView {
     }
     if (element.clientWidth) this.width = element.clientWidth;
     else this.width = null;
-    this.margin = WIDGET_MARGIN;
   }
 }

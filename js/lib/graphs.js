@@ -40,17 +40,7 @@ export class BarPlotView extends BaseView {
     const hue = this.model.get("hue");
     const direction = this.model.get("direction");
 
-    return [
-      data,
-      x,
-      y,
-      hue,
-      direction,
-      this.width,
-      this.height,
-      this.margin,
-      false,
-    ];
+    return [data, x, y, hue, direction, this.width, this.height, false];
   }
 
   plot(element) {
@@ -99,7 +89,6 @@ export class BeeswarmPlotView extends BaseView {
       this.setSelectedValues.bind(this),
       this.width,
       this.height,
-      { top: 20, right: 20, bottom: 30, left: 80 },
       false,
     ];
   }
@@ -152,7 +141,6 @@ export class DecisionPlotView extends BaseView {
       this.setSelectedValues.bind(this),
       this.width,
       this.height,
-      { top: 20, right: 20, bottom: 30, left: 80 },
       false,
     ];
   }
@@ -205,7 +193,6 @@ export class ForcePlotView extends BaseView {
       this.setSelectedValues.bind(this),
       this.width,
       200,
-      { top: 20, right: 20, bottom: 30, left: 20 },
       false,
     ];
   }
@@ -267,7 +254,6 @@ export class HeatmapPlotView extends BaseView {
       0,
       this.width,
       this.height,
-      { top: 20, right: 20, bottom: 30, left: 80 },
     ];
   }
 
@@ -303,7 +289,7 @@ export class HistogramPlotView extends BaseView {
     let data = this.model.get("dataRecords");
     let x = this.model.get("x");
 
-    return [data, x, this.width, this.height, this.margin, false];
+    return [data, x, this.width, this.height, false];
   }
 
   plot(element) {
@@ -352,7 +338,6 @@ export class LinearPlotView extends BaseView {
       this.setSelectedValues.bind(this),
       this.width,
       this.height,
-      this.margin,
       false,
       false,
     ];
@@ -402,7 +387,6 @@ export class MapPlotView extends BaseView {
       this.setSelectedValues.bind(this),
       this.width,
       this.height,
-      this.margin,
       false,
       false,
     ];
@@ -445,7 +429,7 @@ export class RidgelinePlotView extends BaseView {
     const data = this.model.get("dataRecords");
     const xAxes = this.model.get("xAxes");
 
-    return [data, xAxes, this.width, this.height, this.margin, false];
+    return [data, xAxes, this.width, this.height, false];
   }
 
   plot(element) {
@@ -495,7 +479,6 @@ export class ScatterPlotView extends BaseView {
       this.setSelectedValues.bind(this),
       this.width,
       this.height,
-      this.margin,
       false,
       false,
     ];
@@ -559,7 +542,6 @@ export class WaterfallPlotView extends BaseView {
       this.setSelectedValues.bind(this),
       this.width,
       this.height,
-      { top: 20, right: 20, bottom: 30, left: 80 },
       false,
     ];
   }

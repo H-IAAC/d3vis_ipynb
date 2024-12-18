@@ -46,7 +46,6 @@ export class BeeswarmPlot extends BasePlot {
     setSelectedValues,
     width,
     height,
-    margin,
     noAxes,
     noSideBar
   ) {
@@ -57,7 +56,7 @@ export class BeeswarmPlot extends BasePlot {
     if (!noSideBar) width = width - SideBar.SIDE_BAR_WIDTH - 1;
 
     data.sort(absoluteSort(x_value, true));
-    this.init(width, height, margin);
+    this.init(width, height);
 
     const GG = this.gGrid;
 
@@ -66,13 +65,11 @@ export class BeeswarmPlot extends BasePlot {
     }, []);
     const xDomain = d3.extent(allValues);
 
-    const X = this.getXLinearScale(xDomain, width - GRAD_BAR_WIDTH, margin);
+    const X = this.getXLinearScale(xDomain, width - GRAD_BAR_WIDTH);
     const yDomain = data.map(function (d) {
       return d[y_value];
     });
-    const Y = this.getYBandScale(yDomain, height, margin, [0.2]).paddingOuter(
-      0
-    );
+    const Y = this.getYBandScale(yDomain, height, [0.2]).paddingOuter(0);
 
     if (!noAxes) this.plotAxes(GG, X, Y, x_value, y_value);
 
@@ -365,8 +362,8 @@ export class BeeswarmPlot extends BasePlot {
       clickSelectButton.addWhenSelectedCallback(selectButtonStart.bind(this));
       clickSelectButton.addWhenUnselectedCallback(selectButtonEnd.bind(this));
       const lineDragButton = new LineDragButton(
-        margin.left,
-        margin.top,
+        this.margin.left,
+        this.margin.top,
         referenceLines,
         GG.selectAll(".beeswarm-path"),
         callUpdateSelected,

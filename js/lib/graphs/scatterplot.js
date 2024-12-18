@@ -16,7 +16,6 @@ export class ScatterPlot extends BasePlot {
     setSelectedValues,
     width,
     height,
-    margin,
     noAxes,
     noSideBar
   ) {
@@ -45,7 +44,7 @@ export class ScatterPlot extends BasePlot {
       ])
       .on("zoom", onZoom);
 
-    this.init(width, height, margin);
+    this.init(width, height);
 
     const SVG = this.svg;
     const GG = this.gGrid;
@@ -55,12 +54,12 @@ export class ScatterPlot extends BasePlot {
     const xDomain = d3.extent(data, function (d) {
       return d[x_value];
     });
-    const X = this.getXLinearScale(xDomain, width, margin);
+    const X = this.getXLinearScale(xDomain, width);
     this.xScale = X;
     const yDomain = d3.extent(data, function (d) {
       return d[y_value];
     });
-    const Y = this.getYLinearScale(yDomain, height, margin);
+    const Y = this.getYLinearScale(yDomain, height);
     this.yScale = Y;
 
     const color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -134,14 +133,14 @@ export class ScatterPlot extends BasePlot {
 
       legend
         .append("rect")
-        .attr("x", width - margin.left - margin.right - 18)
+        .attr("x", width - this.margin.left - this.margin.right - 18)
         .attr("width", 18)
         .attr("height", 18)
         .style("fill", color);
 
       legend
         .append("text")
-        .attr("x", width - margin.left - margin.right - 24)
+        .attr("x", width - this.margin.left - this.margin.right - 24)
         .attr("y", 9)
         .attr("dy", ".35em")
         .style("text-anchor", "end")
@@ -167,8 +166,8 @@ export class ScatterPlot extends BasePlot {
         Y,
         x_value,
         y_value,
-        margin.left,
-        margin.top,
+        this.margin.left,
+        this.margin.top,
         dots,
         callUpdateSelected,
         SVG
@@ -179,8 +178,8 @@ export class ScatterPlot extends BasePlot {
         Y,
         x_value,
         y_value,
-        margin.left,
-        margin.top,
+        this.margin.left,
+        this.margin.top,
         dots,
         callUpdateSelected,
         SVG

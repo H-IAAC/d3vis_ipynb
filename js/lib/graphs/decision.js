@@ -64,7 +64,7 @@ function getDomain(data, x_value, baseValue) {
   let max = baseValue;
 
   const numLines = data[0][x_value].length;
-  const margin = 0.02;
+  const error_margin = 0.02;
 
   for (let i = 0; i < numLines; i++) {
     const lineMinMax = getMinMax(i);
@@ -79,8 +79,8 @@ function getDomain(data, x_value, baseValue) {
   }
 
   const total = max - min;
-  min = min - total * margin;
-  max = max + total * margin;
+  min = min - total * error_margin;
+  max = max + total * error_margin;
 
   return [min, max];
 }
@@ -95,7 +95,6 @@ export class DecisionPlot extends BasePlot {
     setSelectedValues,
     width,
     height,
-    margin,
     noAxes,
     noSideBar
   ) {
@@ -107,18 +106,16 @@ export class DecisionPlot extends BasePlot {
 
     this.baseValue = baseValue;
     data.sort(absoluteSort(x_value, true));
-    this.init(width, height, margin);
+    this.init(width, height);
 
     const GG = this.gGrid;
 
     const xDomain = getDomain(data, x_value, baseValue);
-    const X = this.getXLinearScale(xDomain, width, margin);
+    const X = this.getXLinearScale(xDomain, width);
     const yDomain = data.map(function (d) {
       return d[y_value];
     });
-    const Y = this.getYBandScale(yDomain, height, margin, [0.2]).paddingOuter(
-      0
-    );
+    const Y = this.getYBandScale(yDomain, height, [0.2]).paddingOuter(0);
 
     if (!noAxes) this.plotAxes(GG, X, Y, x_value, y_value);
 
@@ -299,8 +296,8 @@ export class DecisionPlot extends BasePlot {
       clickSelectButton.addWhenSelectedCallback(selectButtonStart.bind(this));
       clickSelectButton.addWhenUnselectedCallback(selectButtonEnd.bind(this));
       const lineDragButton = new LineDragButton(
-        margin.left,
-        margin.top,
+        this.margin.left,
+        this.margin.top,
         referenceLines,
         GG.selectAll(".decision-path"),
         callUpdateSelected,

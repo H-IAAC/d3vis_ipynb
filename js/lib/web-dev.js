@@ -6,6 +6,7 @@ import { ForcePlot } from "./graphs/force";
 import { HeatmapPlot } from "./graphs/heatmap";
 import { HistogramPlot } from "./graphs/histogramplot";
 import { LinearPlot } from "./graphs/linearplot";
+import { RidgelinePlot } from "./graphs/ridgelineplot";
 import { ScatterPlot } from "./graphs/scatterplot";
 import { WaterfallPlot } from "./graphs/waterfall";
 import {
@@ -37,22 +38,7 @@ function addBarplot() {
   const end = false;
 
   const barplot = new BarPlot(element);
-  barplot.plot(
-    scatterplotData,
-    x,
-    y,
-    hue,
-    direction,
-    800,
-    600,
-    {
-      top: 40,
-      right: 20,
-      bottom: 30,
-      left: 80,
-    },
-    false
-  );
+  barplot.plot(scatterplotData, x, y, hue, direction, 800, 600, false);
 }
 
 function addForce() {
@@ -71,13 +57,7 @@ function addForce() {
     -2.5312646028291264,
     () => {},
     800,
-    200,
-    {
-      top: 20,
-      right: 20,
-      bottom: 30,
-      left: 20,
-    }
+    200
   );
 }
 
@@ -94,25 +74,7 @@ function addHeatmapPlot() {
   const hue = "value";
 
   const heatmapPlot = new HeatmapPlot(element);
-  heatmapPlot.plot(
-    data,
-    x,
-    y,
-    hue,
-    null,
-    null,
-    null,
-    0,
-    1000,
-    600,
-    {
-      top: 40,
-      right: 20,
-      bottom: 30,
-      left: 80,
-    },
-    false
-  );
+  heatmapPlot.plot(data, x, y, hue, null, null, null, 0, 1000, 600, false);
 }
 
 function addHistogram() {
@@ -125,19 +87,20 @@ function addHistogram() {
   const x = "x_axis";
 
   const histogramplot = new HistogramPlot(element);
-  histogramplot.plot(
-    scatterplotData,
-    x,
-    800,
-    600,
-    {
-      top: 40,
-      right: 20,
-      bottom: 30,
-      left: 80,
-    },
-    false
-  );
+  histogramplot.plot(scatterplotData, x, 800, 600, false);
+}
+
+function addRidgeline() {
+  const element = document.createElement("div");
+  element.id = "component";
+  element.style.width = "600px";
+  element.style.height = "300px";
+  document.body.appendChild(element);
+
+  const xAxes = ["x_axis", "y_axis"];
+
+  const ridgelinePlot = new RidgelinePlot(element);
+  ridgelinePlot.plot(scatterplotData, xAxes, 800, 600, false);
 }
 
 function addLinearplot() {
@@ -152,23 +115,7 @@ function addLinearplot() {
   const hue = "hue";
 
   const linearplot = new LinearPlot(element);
-  linearplot.plot(
-    scatterplotData,
-    x,
-    y,
-    hue,
-    () => {},
-    800,
-    600,
-    {
-      top: 40,
-      right: 20,
-      bottom: 30,
-      left: 80,
-    },
-    false,
-    false
-  );
+  linearplot.plot(scatterplotData, x, y, hue, () => {}, 800, 600, false, false);
 }
 
 function addScatterplot() {
@@ -191,12 +138,7 @@ function addScatterplot() {
     () => {},
     800,
     600,
-    {
-      top: 40,
-      right: 20,
-      bottom: 30,
-      left: 80,
-    },
+
     false,
     false
   );
@@ -219,7 +161,7 @@ function addWaterfall() {
     () => {},
     800,
     600,
-    { top: 20, right: 20, bottom: 30, left: 80 },
+
     false
   );
 }
@@ -243,7 +185,7 @@ function addDecision() {
     () => {},
     800,
     600,
-    { top: 40, right: 20, bottom: 30, left: 80 },
+
     false
   );
 }
@@ -267,10 +209,9 @@ function addBeeswarm() {
     () => {},
     800,
     600,
-    { top: 40, right: 20, bottom: 30, left: 80 },
     false,
     false
   );
 }
 
-addBeeswarm();
+addRidgeline();
