@@ -1,6 +1,6 @@
 {
   "name": "d3vis_ipynb",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "A Custom Jupyter Widget Library with visualizations created with D3.js.",
   "author": "Daniel Adam Miranda",
   "license": "BSD-3-Clause",
